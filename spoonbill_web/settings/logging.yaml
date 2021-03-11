@@ -1,0 +1,33 @@
+version: 1
+disable_existing_loggers: no
+formatters:
+  simple:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+
+loggers:
+  backoff:
+    handlers: [console]
+    propagate: no
+    level: INFO
+  django:
+    handlers: [console]
+    propagate: yes
+    level: INFO
+  django.request:
+    handlers: [console]
+    propagate: no
+    level: ERROR
+  core:
+    handlers: [console]
+    propagate: no
+    level: INFO
+  "":
+    handlers: [console]
+    level: INFO
