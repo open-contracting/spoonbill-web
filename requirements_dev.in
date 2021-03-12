@@ -5,5 +5,8 @@ isort
 pip-tools
 pre-commit
 pytest
+pytest-asyncio
 pytest-cov
 pytest-django
+pytest-env
+pytest-mock
