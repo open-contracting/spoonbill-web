@@ -52,7 +52,6 @@ click==7.1.2
     #   click-didyoumean
     #   click-plugins
     #   click-repl
-    #   uvicorn
 constantly==15.1.0
     # via twisted
 cryptography==3.4.6
@@ -61,7 +60,9 @@ cryptography==3.4.6
     #   pyopenssl
     #   service-identity
 daphne==3.0.1
-    # via channels
+    # via
+    #   -r requirements.in
+    #   channels
 django-celery-beat==2.2.0
     # via -r requirements.in
 django-celery-results==2.0.1
@@ -77,10 +78,6 @@ django==3.1.7
     #   djangorestframework
 djangorestframework==3.12.2
     # via -r requirements.in
-gunicorn==20.0.4
-    # via -r requirements.in
-h11==0.12.0
-    # via uvicorn
 hiredis==1.1.0
     # via aioredis
 hyperlink==21.0.0
@@ -143,11 +140,7 @@ twisted[tls]==21.2.0
 txaio==21.2.1
     # via autobahn
 typing-extensions==3.7.4.3
-    # via
-    #   importlib-metadata
-    #   uvicorn
-uvicorn==0.13.4
-    # via -r requirements.in
+    # via importlib-metadata
 vine==5.0.0
     # via
     #   amqp

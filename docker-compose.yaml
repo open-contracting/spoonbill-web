@@ -3,7 +3,7 @@ version: '3.7'
 services:
   app:
     build: .
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
     container_name: app
     depends_on:
       - postgres
@@ -28,8 +28,6 @@ services:
     volumes:
       - temporary-data:/tmp
     restart: on-failure
-    depends_on:
-      - postgres
   postgres:
     container_name: postgres
     hostname: postgres

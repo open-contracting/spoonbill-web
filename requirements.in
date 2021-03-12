@@ -1,13 +1,12 @@
 celery
 channels
 channels_redis
+daphne
 django
 django-celery-beat
 django-celery-results
 djangorestframework
-gunicorn
 psycopg2
 pyyaml
 redis
 sqlalchemy
-uvicorn
