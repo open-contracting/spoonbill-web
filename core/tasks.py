@@ -53,15 +53,7 @@ def cleanup_upload(upload_id):
             % (upload.id, upload.expired_at.isoformat())
         )
         return
-    shutil.rmtree(f"{settings.UPLOAD_PATH_PREFIX}{upload.id}")
+    shutil.rmtree(f"{settings.UPLOAD_PATH_PREFIX}{upload.id}", ignore_errors=True)
     upload.deleted = True
     upload.save(update_fields=["deleted"])
     logger.info("Remove all data from %s%s" % (settings.UPLOAD_PATH_PREFIX, upload.id))
-
-
-@celery_app.task
-def flatten():
-    timeout = randint(20, 30)
-    logger.info("FLATTEN: Going to sleep for %d sec." % timeout)
-    time.sleep(timeout)
-    return "Some flatten data"
