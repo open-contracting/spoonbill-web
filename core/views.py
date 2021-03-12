@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
@@ -22,19 +23,13 @@ class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     parser_classes = [MultiPartParser]
 
     def retrieve(self, request, id=None, *args, **kwargs):
-        try:
-            serializer = self.get_serializer_class()(self.get_object())
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except ObjectDoesNotExist:
-            return Response(
-                {"detail": _("Upload with provided id does not exist")},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        serializer = self.get_serializer_class()(self.get_object())
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         try:
             if not request.FILES.get("file"):
-                return Response({"detail": _("File is required")})
+                return Response({"detail": _("File is required")}, status=status.HTTP_400_BAD_REQUEST)
             data = {"filename": request.FILES["file"].name}
             serializer = self.get_serializer_class()(data=data)
             if serializer.is_valid():
@@ -47,7 +42,7 @@ class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 validation_obj.save(update_fields=["task_id"])
 
                 upload_obj.validation = validation_obj
-                upload_obj.expired_at = datetime.now() + timedelta(
+                upload_obj.expired_at = timezone.now() + timedelta(
                     days=settings.UPLOAD_TIMEDELTA
                 )
                 upload_obj.save(update_fields=["validation", "expired_at"])
@@ -58,8 +53,6 @@ class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                     status=status.HTTP_201_CREATED,
                 )
             else:
-                return Response(
-                    {"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
-                )
+                return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as error:
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
