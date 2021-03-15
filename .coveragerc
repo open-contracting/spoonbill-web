@@ -1,0 +1,10 @@
+[run]
+omit =
+    *tests*
+    *.venv*
+    lib*
+    *migrations*
+    */apps.py
+
+[report]
+show_missing = True

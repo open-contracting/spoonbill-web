@@ -1,0 +1,119 @@
+version: '3.7'
+
+services:
+  app:
+    build: .
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
+    container_name: app
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+    hostname: app
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=qgop1_i7%*3r9-=z-+_mz4r-!tool@(-a_r(g@k6jb6w5r13%m
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill
+      - POSTGRES_DB=spoonbill
+      - POSTGRES_USER=spoonbilluser
+      - POSTGRES_PASSWORD=spoonbillpwd
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+    image: app-image
+    networks:
+      - main
+    volumes:
+      - temporary-data:/tmp
+    restart: on-failure
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=spoonbilluser
+      - POSTGRES_PASSWORD=spoonbillpwd
+      - POSTGRES_DB=spoonbill
+    networks:
+      - main
+    ports:
+      - "5432:5432"
+    restart: on-failure
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis:latest
+    networks:
+      - main
+    restart: on-failure
+    ports:
+      - "6379:6379"
+  celery_worker:
+    command: celery -A spoonbill_web worker -l INFO --concurrency=4
+    container_name: celery_worker
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=qgop1_i7%*3r9-=z-+_mz4r-!tool@(-a_r(g@k6jb6w5r13%m
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill
+      - POSTGRES_DB=spoonbill
+      - POSTGRES_USER=spoonbilluser
+      - POSTGRES_PASSWORD=spoonbillpwd
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+    depends_on:
+      - app
+      - postgres
+      - redis
+    volumes:
+      - temporary-data:/tmp
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+    hostname: celery_worker
+    image: app-image
+    networks:
+      - main
+    restart: on-failure
+  celery_beat:
+    command: celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    container_name: celery_beat
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=qgop1_i7%*3r9-=z-+_mz4r-!tool@(-a_r(g@k6jb6w5r13%m
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill
+      - POSTGRES_DB=spoonbill
+      - POSTGRES_USER=spoonbilluser
+      - POSTGRES_PASSWORD=spoonbillpwd
+      - DB_HOST=postgres
+    depends_on:
+      - app
+      - postgres
+      - redis
+    hostname: celery_beat
+    image: app-image
+    networks:
+      - main
+    restart: on-failure
+
+networks:
+  main:
+
+volumes:
+  postgresql-data:
+  temporary-data:

@@ -1,0 +1,12 @@
+-r requirements.in
+coveralls
+flake8
+isort
+pip-tools
+pre-commit
+pytest
+pytest-asyncio
+pytest-cov
+pytest-django
+pytest-env
+pytest-mock
