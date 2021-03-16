@@ -8,7 +8,6 @@ from core.models import Upload, Validation
 
 
 class Task:
-
     @property
     def id(self):
         return str(uuid.uuid4())
@@ -25,20 +24,20 @@ def dataset():
 
 @pytest.fixture
 def validation_task(mocker):
-    mock = mocker.patch('core.views.validate_data')
+    mock = mocker.patch("core.views.validate_data")
     mock.delay.return_value = Task()
     return mock
 
 
 @pytest.fixture
 def cleanup_upload_task(mocker):
-    mock = mocker.patch('core.views.cleanup_upload')
+    mock = mocker.patch("core.views.cleanup_upload")
     return mock
 
 
 @pytest.fixture
 def mocked_sleep(mocker):
-    mock = mocker.patch('core.tasks.time.sleep')
+    mock = mocker.patch("core.tasks.time.sleep")
     return mock
 
 
@@ -49,4 +48,4 @@ def validation_obj():
 
 @pytest.fixture
 def upload_obj(validation_obj):
-    return Upload.objects.create(filename='don.json', validation=validation_obj, expired_at=timezone.now())
+    return Upload.objects.create(filename="don.json", validation=validation_obj, expired_at=timezone.now())

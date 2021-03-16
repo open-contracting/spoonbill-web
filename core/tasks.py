@@ -22,10 +22,7 @@ def validate_data(upload_id, validation_id):
     validation = Validation.objects.get(id=validation_id)
 
     timeout = randint(10, 20)
-    logger.info(
-        "Start validation for %s file with duration about %d sec."
-        % (upload.filename, timeout)
-    )
+    logger.info("Start validation for %s file with duration about %d sec." % (upload.filename, timeout))
     time.sleep(timeout)
 
     validation.is_valid = True
@@ -48,10 +45,7 @@ def cleanup_upload(upload_id):
     """
     upload = Upload.objects.get(id=upload_id)
     if upload.expired_at > utc.localize(datetime.now()):
-        logger.info(
-            "Skip upload cleanup %s, expired_at in future %s"
-            % (upload.id, upload.expired_at.isoformat())
-        )
+        logger.info("Skip upload cleanup %s, expired_at in future %s" % (upload.id, upload.expired_at.isoformat()))
         return
     shutil.rmtree(f"{settings.UPLOAD_PATH_PREFIX}{upload.id}", ignore_errors=True)
     upload.deleted = True

@@ -28,9 +28,7 @@ class Upload(models.Model):
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     filename = models.CharField(max_length=64)
-    validation = models.ForeignKey(
-        "Validation", blank=True, null=True, on_delete=models.CASCADE
-    )
+    validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     expired_at = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False)

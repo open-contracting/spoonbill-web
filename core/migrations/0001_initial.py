@@ -16,9 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        auto_created=True, primary_key=True, serialize=False
-                    ),
+                    models.UUIDField(auto_created=True, primary_key=True, serialize=False),
                 ),
                 ("filename", models.CharField(max_length=64)),
                 ("validation_task_id", models.CharField(max_length=64)),
