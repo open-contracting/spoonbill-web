@@ -7,11 +7,14 @@ repos:
     rev: 5.5.4
     hooks:
     - id: isort
-# -   repo: https://github.com/ambv/black
-#     rev: 20.8b1
-#     hooks:
-#     - id: black
-#       language_version: python3.7
+-   repo: https://github.com/ambv/black
+    rev: 20.8b1
+    hooks:
+    - id: black
+      language_version: python3.7
+      args:
+        - --target-version=py37
+        - --line-length=119
 -   repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.4
     hooks:
