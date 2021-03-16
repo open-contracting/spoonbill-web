@@ -9,10 +9,9 @@ from core.tasks import cleanup_upload, validate_data
 
 @pytest.mark.django_db
 class TestValidateDataTask:
-
     def test_success(self, mocked_sleep):
         validation = Validation.objects.create()
-        upload = Upload.objects.create(filename='don.json', validation=validation)
+        upload = Upload.objects.create(filename="don.json", validation=validation)
 
         assert upload.validation.is_valid is None
 
@@ -24,11 +23,10 @@ class TestValidateDataTask:
 
 @pytest.mark.django_db
 class TestCleanupUploadTask:
-
     def test_success(self):
         expired_at = timezone.now()
         validation = Validation.objects.create()
-        upload = Upload.objects.create(filename='don.json', validation=validation, expired_at=expired_at)
+        upload = Upload.objects.create(filename="don.json", validation=validation, expired_at=expired_at)
         assert not upload.deleted
 
         cleanup_upload(upload.id)
@@ -38,7 +36,7 @@ class TestCleanupUploadTask:
     def test_skip_cleanup(self):
         expired_at = timezone.now() + timedelta(minutes=1)
         validation = Validation.objects.create()
-        upload = Upload.objects.create(filename='don.json', validation=validation, expired_at=expired_at)
+        upload = Upload.objects.create(filename="don.json", validation=validation, expired_at=expired_at)
         assert not upload.deleted
 
         cleanup_upload(upload.id)
