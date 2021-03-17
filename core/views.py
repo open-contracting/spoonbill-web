@@ -36,16 +36,14 @@ class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 validation_obj = Validation.objects.create()
                 upload_obj = Upload.objects.create(**serializer.data)
                 handle_upload_file(request.FILES["file"], upload_obj.id)
-
-                task = validate_data.delay(upload_obj.id, validation_obj.id)
+                task = validate_data.delay(upload_obj.id, model="Upload")
                 validation_obj.task_id = task.id
                 validation_obj.save(update_fields=["task_id"])
 
                 upload_obj.validation = validation_obj
                 upload_obj.expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)
                 upload_obj.save(update_fields=["validation", "expired_at"])
-
-                cleanup_upload.apply_async((upload_obj.id,), eta=upload_obj.expired_at)
+                cleanup_upload.apply_async((upload_obj.id, "Upload"), eta=upload_obj.expired_at)
                 return Response(
                     self.get_serializer_class()(upload_obj).data,
                     status=status.HTTP_201_CREATED,

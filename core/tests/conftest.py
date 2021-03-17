@@ -36,12 +36,6 @@ def cleanup_upload_task(mocker):
 
 
 @pytest.fixture
-def mocked_sleep(mocker):
-    mock = mocker.patch("core.tasks.time.sleep")
-    return mock
-
-
-@pytest.fixture
 def validation_obj():
     return Validation.objects.create()
 

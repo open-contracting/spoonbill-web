@@ -9,13 +9,13 @@ from core.tasks import cleanup_upload, validate_data
 
 @pytest.mark.django_db
 class TestValidateDataTask:
-    def test_success(self, mocked_sleep):
+    def test_success(self):
         validation = Validation.objects.create()
         upload = Upload.objects.create(filename="don.json", validation=validation)
 
         assert upload.validation.is_valid is None
 
-        validate_data(upload.id, validation.id)
+        validate_data(upload.id, model="Upload")
 
         upload = Upload.objects.get(id=upload.id)
         assert upload.validation.is_valid
@@ -29,7 +29,7 @@ class TestCleanupUploadTask:
         upload = Upload.objects.create(filename="don.json", validation=validation, expired_at=expired_at)
         assert not upload.deleted
 
-        cleanup_upload(upload.id)
+        cleanup_upload(upload.id, model="Upload")
         upload = Upload.objects.get(id=upload.id)
         assert upload.deleted
 
@@ -39,6 +39,11 @@ class TestCleanupUploadTask:
         upload = Upload.objects.create(filename="don.json", validation=validation, expired_at=expired_at)
         assert not upload.deleted
 
-        cleanup_upload(upload.id)
+        cleanup_upload(upload.id, model="Upload")
         upload = Upload.objects.get(id=upload.id)
         assert not upload.deleted
+
+    def test_unregistered_model(self, upload_obj, mocker):
+        shutil = mocker.patch("core.tasks.shutil")
+        cleanup_upload(upload_obj.id, model="SomeNew")
+        assert shutil.rmtree.call_count == 0
