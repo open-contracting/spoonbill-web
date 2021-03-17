@@ -16,3 +16,6 @@ class ValidationConsumer(AsyncWebsocketConsumer):
 
     async def task_validate(self, event):
         await self.send(text_data=json.dumps(event))
+
+    async def task_download_data_source(self, event):
+        await self.send(text_data=json.dumps(event))

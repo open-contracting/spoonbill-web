@@ -22,6 +22,7 @@ from core import views
 
 router = routers.DefaultRouter()
 router.register(r"uploads", views.UploadViewSet, basename="upload")
+router.register(r"urls", views.URLViewSet, basename="url")
 
 urlpatterns = [
     path("", include(router.urls)),

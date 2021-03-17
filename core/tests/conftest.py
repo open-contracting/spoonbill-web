@@ -1,16 +1,14 @@
 import os
+import shutil
 import uuid
 
 import pytest
+from django.conf import settings
 from django.utils import timezone
 
-from core.models import Upload, Validation
+from core.models import Upload, Url, Validation
 
-
-class Task:
-    @property
-    def id(self):
-        return str(uuid.uuid4())
+from .utils import Response, Task
 
 
 @pytest.fixture
@@ -36,6 +34,12 @@ def cleanup_upload_task(mocker):
 
 
 @pytest.fixture
+def download_datasource_task(mocker):
+    mock = mocker.patch("core.views.download_data_source")
+    return mock
+
+
+@pytest.fixture
 def validation_obj():
     return Validation.objects.create()
 
@@ -43,3 +47,28 @@ def validation_obj():
 @pytest.fixture
 def upload_obj(validation_obj):
     return Upload.objects.create(filename="don.json", validation=validation_obj, expired_at=timezone.now())
+
+
+@pytest.fixture
+def url_obj(validation_obj):
+    return Url.objects.create(
+        filename=f"{uuid.uuid4().hex}.json",
+        url="https://example.org/dataset.json",
+        analyzed_data_url="https://example.org/analyzed.json",
+        analyzed_data_filename=f"{uuid.uuid4().hex}.json",
+        validation=validation_obj,
+        expired_at=timezone.now(),
+    )
+
+
+@pytest.fixture
+def mocked_request(mocker, url_obj):
+    request = mocker.patch("core.tasks.requests")
+    path = os.path.dirname(__file__) + "/data/don.json"
+    with open(path) as f:
+        data = f.read()
+    response = Response(body=data)
+    request.get.return_value = response
+    yield request
+
+    shutil.rmtree(f"{settings.UPLOAD_PATH_PREFIX}{url_obj.id}", ignore_errors=True)
