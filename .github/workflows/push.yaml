@@ -1,0 +1,95 @@
+name: push
+on:
+  push:
+    branches:
+       - master
+       - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: spoonbillpwd
+          POSTGRES_USER: spoonbilluser
+          POSTGRES_DB: spoonbill
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install requirements
+        run: pip install -r requirements_dev.txt
+      - name: Run pre-commit
+        run: |
+            pip install --upgrade pre-commit
+            pre-commit autoupdate
+            pre-commit run --all-files
+      - name: Run tests
+        run: |
+            sed -i 1d .envrc
+            source .envrc
+            pytest
+  build:
+    runs-on: ubuntu-latest
+    needs: tests
+    env:
+      CI: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Build container image
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.R_USER }}
+          password: ${{ secrets.R_SECRET }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/${{ secrets.IMAGE_NAME }}
+          tag_with_sha: true
+          tag_with_ref: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      CI: true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Copy folder content recursively to remote
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: ./docker-compose.deploy.yaml
+          remote: ./git/docker-compose.deploy.yaml
+          rmRemote: true
+          recursive: false
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Deploy docker-compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+              cd git
+              docker login -u ${{ secrets.R_USER }} -p ${{ secrets.R_SECRET }}  docker.pkg.github.com/${{ github.repository }}/
+              docker-compose -f docker-compose.deploy.yaml pull celery_worker celery_beat app
+              docker-compose -f docker-compose.deploy.yaml stop celery_worker celery_beat app &&
+              docker-compose -f docker-compose.deploy.yaml up -d celery_worker celery_beat app
