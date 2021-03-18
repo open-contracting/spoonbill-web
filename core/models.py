@@ -1,7 +1,12 @@
 import uuid
 
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from core.utils import instance_directory_path
+
+fs = FileSystemStorage()
 
 
 # Create your models here.
@@ -33,7 +38,7 @@ class Upload(models.Model):
         (VALIDATION, _("Validation")),
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    filename = models.CharField(max_length=64)
+    file = models.FileField(upload_to=instance_directory_path, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_VALIDATION)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -65,8 +70,8 @@ class Url(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     url = models.URLField()
     analyzed_data_url = models.URLField(blank=True, null=True)
-    analyzed_data_filename = models.CharField(max_length=64, blank=True, null=True)
-    filename = models.CharField(max_length=64, blank=True, null=True)
+    analyzed_data_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
+    data_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_DOWNLOAD)
     created_at = models.DateTimeField(auto_now_add=True)

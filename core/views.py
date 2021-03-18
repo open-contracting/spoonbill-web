@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import mixins, permissions, status, viewsets
@@ -12,7 +13,6 @@ from rest_framework.response import Response
 from core.models import Upload, Url, Validation
 from core.serializers import UploadSerializer, UrlSerializer
 from core.tasks import cleanup_upload, download_data_source, validate_data
-from core.utils import handle_upload_file
 
 
 class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -31,26 +31,21 @@ class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         try:
             if not request.FILES.get("file"):
                 return Response({"detail": _("File is required")}, status=status.HTTP_400_BAD_REQUEST)
-            data = {"filename": request.FILES["file"].name}
-            serializer = self.get_serializer_class()(data=data)
-            if serializer.is_valid():
-                validation_obj = Validation.objects.create()
-                upload_obj = Upload.objects.create(**serializer.data)
-                handle_upload_file(request.FILES["file"], upload_obj.id)
-                task = validate_data.delay(upload_obj.id, model="Upload")
-                validation_obj.task_id = task.id
-                validation_obj.save(update_fields=["task_id"])
+            file_ = File(request.FILES["file"])
+            validation_obj = Validation.objects.create()
+            upload_obj = Upload.objects.create(file=file_, validation=validation_obj)
+            task = validate_data.delay(upload_obj.id, model="Upload")
+            validation_obj.task_id = task.id
+            validation_obj.save(update_fields=["task_id"])
 
-                upload_obj.validation = validation_obj
-                upload_obj.expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)
-                upload_obj.save(update_fields=["validation", "expired_at"])
-                cleanup_upload.apply_async((upload_obj.id, "Upload"), eta=upload_obj.expired_at)
-                return Response(
-                    self.get_serializer_class()(upload_obj).data,
-                    status=status.HTTP_201_CREATED,
-                )
-            else:
-                return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            upload_obj.validation = validation_obj
+            upload_obj.expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)
+            upload_obj.save(update_fields=["validation", "expired_at"])
+            cleanup_upload.apply_async((upload_obj.id, "Upload"), eta=upload_obj.expired_at)
+            return Response(
+                self.get_serializer_class()(upload_obj).data,
+                status=status.HTTP_201_CREATED,
+            )
         except ValidationError as error:
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -72,12 +67,7 @@ class URLViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if not url:
                 return Response({"detail": _("Url is required")}, status=status.HTTP_400_BAD_REQUEST)
 
-            data = {"filename": f"{uuid4().hex}.json", "url": url}
-            if "analyzed_data_url" in request.POST:
-                data["analyzed_data_url"] = request.POST["analyzed_data_url"]
-                data["analyzed_data_filename"] = f"{uuid4().hex}.json"
-
-            serializer = self.get_serializer_class()(data=data)
+            serializer = self.get_serializer_class()(data=request.POST)
             if serializer.is_valid():
                 validation_obj = Validation.objects.create()
                 url_obj = Url.objects.create(**serializer.data)

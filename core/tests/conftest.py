@@ -4,6 +4,7 @@ import uuid
 
 import pytest
 from django.conf import settings
+from django.core.files import File
 from django.utils import timezone
 
 from core.models import Upload, Url, Validation
@@ -45,17 +46,16 @@ def validation_obj():
 
 
 @pytest.fixture
-def upload_obj(validation_obj):
-    return Upload.objects.create(filename="don.json", validation=validation_obj, expired_at=timezone.now())
+def upload_obj(validation_obj, dataset):
+    file_ = File(dataset)
+    return Upload.objects.create(file=file_, validation=validation_obj, expired_at=timezone.now())
 
 
 @pytest.fixture
 def url_obj(validation_obj):
     return Url.objects.create(
-        filename=f"{uuid.uuid4().hex}.json",
         url="https://example.org/dataset.json",
         analyzed_data_url="https://example.org/analyzed.json",
-        analyzed_data_filename=f"{uuid.uuid4().hex}.json",
         validation=validation_obj,
         expired_at=timezone.now(),
     )
@@ -71,4 +71,4 @@ def mocked_request(mocker, url_obj):
     request.get.return_value = response
     yield request
 
-    shutil.rmtree(f"{settings.UPLOAD_PATH_PREFIX}{url_obj.id}", ignore_errors=True)
+    shutil.rmtree(f"{settings.MEDIA_ROOT}{url_obj.id}", ignore_errors=True)

@@ -1,12 +1,13 @@
 import logging
-import os
 import shutil
 from datetime import timedelta
+from tempfile import TemporaryFile
 
 import requests
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
+from django.core.files import File
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
@@ -70,10 +71,10 @@ def cleanup_upload(object_id, model=None):
             "Skip datasource cleanup %s, expired_at in future %s" % (datasource.id, datasource.expired_at.isoformat())
         )
         return
-    shutil.rmtree(f"{settings.UPLOAD_PATH_PREFIX}{datasource.id}", ignore_errors=True)
+    shutil.rmtree(f"{settings.MEDIA_ROOT}{datasource.id}", ignore_errors=True)
     datasource.deleted = True
     datasource.save(update_fields=["deleted"])
-    logger.info("Remove all data from %s%s" % (settings.UPLOAD_PATH_PREFIX, datasource.id))
+    logger.debug("Remove all data from %s%s" % (settings.MEDIA_ROOT, datasource.id))
 
 
 @celery_app.task
@@ -133,11 +134,9 @@ def download_data_source(object_id, model=None):
         size = int(r.headers.get("Content-Length", 0))
         downloaded = 0
         chunk_size = 10240
-        os.mkdir(f"{settings.UPLOAD_PATH_PREFIX}{object_id}")
-        path = f"{settings.UPLOAD_PATH_PREFIX}{object_id}/{datasource.filename}"
-        with open(path, "wb") as destination:
+        with TemporaryFile() as temp:
             for chunk in r.iter_content(chunk_size=chunk_size):
-                destination.write(chunk)
+                temp.write(chunk)
             downloaded += chunk_size
             progress = (downloaded / size) * 100
             progress = progress if progress < 100 else 100
@@ -149,6 +148,9 @@ def download_data_source(object_id, model=None):
                     "progress": int(progress),
                 },
             )
+            temp.seek(0)
+            datasource.data_file = File(temp)
+            datasource.save(update_fields=["data_file"])
 
         if datasource.analyzed_data_url:
             r = requests.get(datasource.analyzed_data_url, stream=True)
@@ -176,10 +178,9 @@ def download_data_source(object_id, model=None):
             downloaded = 0
             datasource.status = "analyzed_data.downloading"
             datasource.save(update_fields=["status"])
-            path = f"{settings.UPLOAD_PATH_PREFIX}{object_id}/{datasource.analyzed_data_filename}"
-            with open(path, "wb") as destination:
+            with TemporaryFile() as temp:
                 for chunk in r.iter_content(chunk_size=chunk_size):
-                    destination.write(chunk)
+                    temp.write(chunk)
                 downloaded += chunk_size
                 progress = (downloaded / size) * 100
                 progress = progress if progress < 100 else 100
@@ -191,7 +192,9 @@ def download_data_source(object_id, model=None):
                         "progress": int(progress),
                     },
                 )
-
+                temp.seek(0)
+                datasource.analyzed_data_file = File(temp)
+                datasource.save(update_fields=["analyzed_data_file"])
         datasource.status = "queued.validation"
         datasource.downloaded = True
         expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)
@@ -211,7 +214,6 @@ def download_data_source(object_id, model=None):
                 "MESSAGE_ID": "download_complete",
                 "UPLOAD_ID": object_id,
                 "URL": datasource.url,
-                "PATH": path,
                 "EXPIRED_AT": expired_at.isoformat(),
             },
         )

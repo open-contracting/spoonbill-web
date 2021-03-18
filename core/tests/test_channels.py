@@ -6,16 +6,15 @@ from channels.testing import WebsocketCommunicator
 from django.urls import re_path
 
 from core.consumers import ValidationConsumer
-from core.models import Upload, Validation
+from core.models import Upload
 from core.tasks import download_data_source, validate_data
 
 
 @pytest.mark.django_db
 @pytest.mark.asyncio
 class TestValidationConsumer:
-    def test_task_validate(self, event_loop):
-        validation = Validation.objects.create()
-        upload = Upload.objects.create(filename="don.json", validation=validation)
+    def test_task_validate(self, event_loop, upload_obj):
+        upload = Upload.objects.get(id=upload_obj.id)
 
         application = URLRouter([re_path(r"ws/api/(?P<upload_id>[0-9a-f-]+)/$", ValidationConsumer.as_asgi())])
         communicator = WebsocketCommunicator(application, f"/ws/api/{upload.id}/")

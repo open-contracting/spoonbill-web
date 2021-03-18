@@ -1,5 +1,4 @@
 import json
-from copy import deepcopy
 from datetime import timedelta
 
 import pytest
@@ -14,9 +13,8 @@ from .utils import Response
 
 @pytest.mark.django_db
 class TestValidateDataTask:
-    def test_success(self):
-        validation = Validation.objects.create()
-        upload = Upload.objects.create(filename="don.json", validation=validation)
+    def test_success(self, upload_obj):
+        upload = Upload.objects.get(id=upload_obj.id)
 
         assert upload.validation.is_valid is None
 
@@ -36,25 +34,25 @@ class TestValidateDataTask:
 
 @pytest.mark.django_db
 class TestCleanupUploadTask:
-    def test_success(self):
+    def test_success(self, upload_obj):
         expired_at = timezone.now()
-        validation = Validation.objects.create()
-        upload = Upload.objects.create(filename="don.json", validation=validation, expired_at=expired_at)
-        assert not upload.deleted
+        upload_obj.expired_at = expired_at
+        upload_obj.save(update_fields=["expired_at"])
+        assert not upload_obj.deleted
 
-        cleanup_upload(upload.id, model="Upload")
-        upload = Upload.objects.get(id=upload.id)
-        assert upload.deleted
+        cleanup_upload(upload_obj.id, model="Upload")
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert upload_obj.deleted
 
-    def test_skip_cleanup(self):
+    def test_skip_cleanup(self, upload_obj):
         expired_at = timezone.now() + timedelta(minutes=1)
-        validation = Validation.objects.create()
-        upload = Upload.objects.create(filename="don.json", validation=validation, expired_at=expired_at)
-        assert not upload.deleted
+        upload_obj.expired_at = expired_at
+        upload_obj.save(update_fields=["expired_at"])
+        assert not upload_obj.deleted
 
-        cleanup_upload(upload.id, model="Upload")
-        upload = Upload.objects.get(id=upload.id)
-        assert not upload.deleted
+        cleanup_upload(upload_obj.id, model="Upload")
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert not upload_obj.deleted
 
     def test_unregistered_model(self, upload_obj, mocker):
         shutil = mocker.patch("core.tasks.shutil")
@@ -76,11 +74,11 @@ class TestDownloadDataSource:
         assert url_obj.downloaded
 
         test_dataset = json.loads(dataset.read())
-        with open(f"{settings.UPLOAD_PATH_PREFIX}/{url_obj.id}/{url_obj.filename}") as f:
+        with open(url_obj.data_file.path) as f:
             data = json.loads(f.read())
         assert data == test_dataset
 
-        with open(f"{settings.UPLOAD_PATH_PREFIX}/{url_obj.id}/{url_obj.analyzed_data_filename}") as f:
+        with open(url_obj.analyzed_data_file.path) as f:
             data = json.loads(f.read())
         assert data == test_dataset
 
@@ -118,7 +116,7 @@ class TestDownloadDataSource:
         assert url_obj.error == f"{response.status_code}: {response.reason}"
         assert mocked_request.get.call_count == 2
 
-        with open(f"{settings.UPLOAD_PATH_PREFIX}/{url_obj.id}/{url_obj.filename}") as f:
+        with open(url_obj.data_file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())
 
@@ -136,6 +134,6 @@ class TestDownloadDataSource:
         assert url_obj.error == "Something went wrong. Contact with support service."
         assert mocked_request.get.call_count == 2
 
-        with open(f"{settings.UPLOAD_PATH_PREFIX}/{url_obj.id}/{url_obj.filename}") as f:
+        with open(url_obj.data_file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())

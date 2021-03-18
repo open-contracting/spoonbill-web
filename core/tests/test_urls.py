@@ -16,14 +16,14 @@ class TestUrl:
         assert response.status_code == 201
         url = response.json()
         assert set(url.keys()) == {
-            "analyzed_data_filename",
+            "analyzed_data_file",
             "analyzed_data_url",
             "created_at",
             "deleted",
             "downloaded",
             "error",
             "expired_at",
-            "filename",
+            "data_file",
             "id",
             "status",
             "url",
