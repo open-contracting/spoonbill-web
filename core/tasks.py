@@ -42,7 +42,7 @@ def validate_data(object_id, model=None):
         {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
     )
 
-    logger.info("Start validation for %s file" % object_id)
+    logger.debug("Start validation for %s file" % object_id)
 
     datasource.validation.is_valid = True
     datasource.validation.save(update_fields=["is_valid"])
@@ -104,7 +104,7 @@ def download_data_source(object_id, model=None):
                 "datasource": serializer.to_representation(instance=datasource),
             },
         )
-        logger.info(
+        logger.debug(
             "Start download for %s" % object_id,
             extra={"MESSAGE_ID": "download_start", "UPLOAD_ID": object_id, "URL": datasource.url},
         )
