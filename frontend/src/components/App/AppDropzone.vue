@@ -28,31 +28,20 @@ export default {
 
     methods: {
         onFileSelect(ev) {
-            this.$emit('input', Array.from(ev.target.files));
-            ev.target.value = null;
+            console.log(ev);
+            if (ev.target.files) {
+                this.$emit('input', Array.from(ev.target.files));
+                ev.target.value = null;
+            }
         },
 
         dropHandler(ev) {
             ev.preventDefault();
             this.highlighted = false;
 
-            const files = [];
-
-            if (ev.dataTransfer.items) {
-                for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-                    if (ev.dataTransfer.items[i].kind === 'file') {
-                        const file = ev.dataTransfer.items[i].getAsFile();
-                        files.push(file);
-                    }
-                }
-            } else {
-                for (let i = 0; i < ev.dataTransfer.files.length; i++) {
-                    const file = ev.dataTransfer.files[i];
-                    files.push(file);
-                }
+            if (ev.dataTransfer?.files?.length) {
+                this.$emit('input', Array.from(ev.dataTransfer.files));
             }
-
-            this.$emit('input', files);
         },
     },
 };

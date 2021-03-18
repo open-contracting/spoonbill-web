@@ -115,6 +115,9 @@ dmypy.json
 node_modules
 /dist
 
+#coverage
+frontend/coverage
+
 # local env files
 .env.local
 .env.*.local
