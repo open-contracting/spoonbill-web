@@ -3,8 +3,7 @@ FROM python:3.7-alpine
 ARG USER=spoonbill
 
 # Install dependencies required for psycopg2 python package
-RUN apk update && apk add libpq && apk add --update sudo
-RUN apk update && apk add --virtual .build-deps gcc python3-dev musl-dev postgresql-dev libffi-dev rust cargo g++
+RUN apk update && apk add libpq && apk add --update sudo && apk add --virtual .build-deps gcc python3-dev musl-dev postgresql-dev libffi-dev rust cargo g++
 
 RUN adduser -D $USER \
         && echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER \
