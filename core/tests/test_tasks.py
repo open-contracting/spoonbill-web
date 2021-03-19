@@ -2,10 +2,9 @@ import json
 from datetime import timedelta
 
 import pytest
-from django.conf import settings
 from django.utils import timezone
 
-from core.models import Upload, Url, Validation
+from core.models import Upload, Url
 from core.tasks import cleanup_upload, download_data_source, validate_data
 
 from .utils import Response
@@ -14,14 +13,24 @@ from .utils import Response
 @pytest.mark.django_db
 class TestValidateDataTask:
     def test_success(self, upload_obj):
-        upload = Upload.objects.get(id=upload_obj.id)
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert upload_obj.validation.is_valid is None
 
-        assert upload.validation.is_valid is None
+        validate_data(upload_obj.id, model="Upload")
 
-        validate_data(upload.id, model="Upload")
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert upload_obj.validation.is_valid
 
-        upload = Upload.objects.get(id=upload.id)
-        assert upload.validation.is_valid
+    def test_json_w_records(self, upload_obj):
+        with open(upload_obj.file.path, "w") as f:
+            f.write('{"records": ["record"]}')
+
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert not upload_obj.validation.is_valid
+
+        validate_data(upload_obj.id, model="Upload")
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert upload_obj.validation.is_valid
 
     def test_unregistered_model(self, url_obj):
         url_obj = Url.objects.get(id=url_obj.id)
@@ -30,6 +39,17 @@ class TestValidateDataTask:
         validate_data(url_obj.id, model="SomeNew")
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.validation.is_valid is None
+
+    def test_not_json_file(self, upload_obj):
+        with open(upload_obj.file.path, "w") as f:
+            f.write("some txt file")
+
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert not upload_obj.validation.is_valid
+
+        validate_data(upload_obj.id, model="Upload")
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert not upload_obj.validation.is_valid
 
 
 @pytest.mark.django_db
@@ -74,11 +94,11 @@ class TestDownloadDataSource:
         assert url_obj.downloaded
 
         test_dataset = json.loads(dataset.read())
-        with open(url_obj.data_file.path) as f:
+        with open(url_obj.file.path) as f:
             data = json.loads(f.read())
         assert data == test_dataset
 
-        with open(url_obj.analyzed_data_file.path) as f:
+        with open(url_obj.analyzed_file.path) as f:
             data = json.loads(f.read())
         assert data == test_dataset
 
@@ -116,7 +136,7 @@ class TestDownloadDataSource:
         assert url_obj.error == f"{response.status_code}: {response.reason}"
         assert mocked_request.get.call_count == 2
 
-        with open(url_obj.data_file.path) as f:
+        with open(url_obj.file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())
 
@@ -134,6 +154,6 @@ class TestDownloadDataSource:
         assert url_obj.error == "Something went wrong. Contact with support service."
         assert mocked_request.get.call_count == 2
 
-        with open(url_obj.data_file.path) as f:
+        with open(url_obj.file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())

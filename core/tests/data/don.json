@@ -1,3 +1,5 @@
 {
-  "key": "value"
+  "releases": [
+    "value"
+  ]
 }

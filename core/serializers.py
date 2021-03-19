@@ -30,8 +30,8 @@ class UrlSerializer(serializers.ModelSerializer):
             "deleted",
             "downloaded",
             "status",
-            "analyzed_data_file",
-            "data_file",
+            "analyzed_file",
+            "file",
             "validation",
             "error",
         )
