@@ -51,6 +51,69 @@ class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class URLViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """URL based datasource
+
+    This endpoint allows providing URLs for the dataset file and analyzed dataset file which is placed in some cloud
+    services or data registries (data lakes) that provide HTTP access for their data.
+
+    For providing a dataset placed somewhere on the Internet it is enough to provide a URL attribute in the body of
+    the POST request.
+
+    **Example (data from some cloud):**
+    ```python
+    >>> import requests
+    >>> response = request.post('/urls/', {'url': 'https://<filehosting.host>/<json-file>'})
+    >>> response.json()
+    {
+        "id": "96224033-73ef-430a-bc46-67cd205f249f",
+        "validation": {
+            "id": "642149d1-2488-493c-927c-f29f875ac3a6",
+            "task_id": None,
+            "is_valid": None,
+            "errors": None
+        },
+        "url": "https://<filehosting.host>/<json-file>",
+        "analyzed_data_url": "",
+        "analyzed_data_file": None,
+        "data_file": None,
+        "status": "queued.download",
+        "created_at": "2021-03-19T10:42:48.265943Z",
+        "expired_at": None,
+        "deleted": False,
+        "downloaded": False,
+        "error": None
+    }
+
+    ```
+
+    **Example (data from OCDS data registry):**
+    ```python
+    >>> response = request.post('/urls/', {'url': 'https://<data-registry.host>/<dataset-query>',
+                                           'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>'})
+    >>> response.json()
+    {
+        "id": "cb82da20-1aa2-4574-a8f7-3fbe92c7b412",
+        "validation": {
+            "id": "f961e1c2-69f0-408e-989a-cd7d50c497c2",
+            "task_id": None,
+            "is_valid": None,
+            "errors": None
+        },
+        "url": "https://<data-registry.host>/<dataset-query>",
+        "analyzed_data_url": "https://<data-registry.host>/<analyzed-data-query>",
+        "analyzed_data_file": None,
+        "data_file": None,
+        "status": "queued.download",
+        "created_at": "2021-03-19T10:51:39.482275Z",
+        "expired_at": None,
+        "deleted": False,
+        "downloaded": False,
+        "error": None
+    }
+
+    ```
+    """
+
     permissions_classes = permissions.AllowAny
     lookup_field = "id"
     http_method_names = ["get", "post", "head", "options", "trace"]
