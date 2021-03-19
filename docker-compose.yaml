@@ -53,7 +53,7 @@ services:
     ports:
       - "6379:6379"
   celery_worker:
-    command: celery -A spoonbill_web worker -l INFO --concurrency=4
+    command: celery -A spoonbill_web worker -l INFO --concurrency=2
     container_name: celery_worker
     environment:
       - DEBUG=1
@@ -72,17 +72,6 @@ services:
       - redis
     volumes:
       - temporary-data:/tmp
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 50M
-        reservations:
-          cpus: '0.25'
-          memory: 20M
     hostname: celery_worker
     image: app-image
     networks:

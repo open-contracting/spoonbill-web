@@ -9,4 +9,5 @@ djangorestframework
 psycopg2
 pyyaml
 redis
+requests
 sqlalchemy

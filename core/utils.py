@@ -1,12 +1,6 @@
-import os
-
-from django.conf import settings
+import uuid
 
 
-def handle_upload_file(f, dirname):
-    os.mkdir(f"{settings.UPLOAD_PATH_PREFIX}{dirname}")
-    path = f"{settings.UPLOAD_PATH_PREFIX}{dirname}/{f.name}"
-
-    with open(path, "wb+") as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
+def instance_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/<id>/<filename>
+    return "{0}/{1}.json".format(instance.id, uuid.uuid4().hex)

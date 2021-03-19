@@ -18,7 +18,7 @@ from yaml import safe_load as load
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-root = lambda *x: os.path.join(BASE_DIR, *x)
+root = lambda *x: os.path.join(BASE_DIR, *x)  # noqa
 
 # Logging
 LOGGING_CONFIG_PATH = root("settings", "logging.yaml")
@@ -146,7 +146,9 @@ CELERY_BROKER_URL = os.getenv("CELERY_BROKER", "")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "")
 
 UPLOAD_TIMEDELTA = 1  # days
-UPLOAD_PATH_PREFIX = "/tmp/"
+
+MEDIA_ROOT = "/tmp/"
+MEDIA_URL = "/files/"
 
 # Channels
 ASGI_APPLICATION = "spoonbill_web.asgi.application"
