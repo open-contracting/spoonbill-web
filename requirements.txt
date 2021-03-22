@@ -81,6 +81,10 @@ django==3.1.7
     #   django-timezone-field
     #   djangorestframework
 djangorestframework==3.12.2
+    # via
+    #   -r requirements.in
+    #   drf-extensions
+drf-extensions==0.7.0
     # via -r requirements.in
 greenlet==1.0.0
     # via sqlalchemy
@@ -110,7 +114,7 @@ markdown==3.3.4
     # via -r requirements.in
 msgpack==1.0.2
     # via channels-redis
-prompt-toolkit==3.0.17
+prompt-toolkit==3.0.18
     # via click-repl
 psycopg2==2.8.6
     # via -r requirements.in
@@ -147,7 +151,7 @@ six==1.15.0
     #   click-repl
     #   pyopenssl
     #   python-dateutil
-sqlalchemy==1.4.1
+sqlalchemy==1.4.2
     # via -r requirements.in
 sqlparse==0.4.1
     # via django
@@ -167,7 +171,7 @@ wcwidth==0.2.5
     # via prompt-toolkit
 zipp==3.4.1
     # via importlib-metadata
-zope.interface==5.2.0
+zope.interface==5.3.0
     # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:

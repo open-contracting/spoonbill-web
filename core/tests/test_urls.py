@@ -3,6 +3,8 @@ import pytest
 from core.models import Url
 from core.serializers import UrlSerializer
 
+from .utils import create_data_selection, get_data_selections
+
 
 @pytest.mark.django_db
 class TestUrl:
@@ -18,7 +20,9 @@ class TestUrl:
         assert set(url.keys()) == {
             "analyzed_data_url",
             "analyzed_file",
+            "available_tables",
             "created_at",
+            "selections",
             "deleted",
             "downloaded",
             "error",
@@ -45,3 +49,9 @@ class TestUrl:
         response = client.get(f"/urls/{url_obj.id}/")
         assert response.status_code == 200
         assert UrlSerializer(url_obj).data == response.json()
+
+    def test_create_selections_successful(self, client, url_obj):
+        create_data_selection(client, url_obj, prefix="urls")
+
+    def test_get_selections_successful(self, client, url_obj):
+        get_data_selections(client, url_obj, "urls")

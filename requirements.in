@@ -6,6 +6,7 @@ django
 django-celery-beat
 django-celery-results
 djangorestframework
+drf-extensions
 ijson
 markdown
 psycopg2

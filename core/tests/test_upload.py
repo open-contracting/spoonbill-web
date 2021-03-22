@@ -5,6 +5,7 @@ from django.conf import settings
 
 from core.models import Upload
 from core.serializers import UploadSerializer
+from core.tests.utils import create_data_selection, get_data_selections
 
 
 @pytest.mark.django_db
@@ -18,7 +19,17 @@ class TestUpload:
         response = client.post("/uploads/", {"file": dataset})
         assert response.status_code == 201
         upload = response.json()
-        assert set(upload.keys()) == {"expired_at", "id", "deleted", "validation", "created_at", "file", "status"}
+        assert set(upload.keys()) == {
+            "available_tables",
+            "expired_at",
+            "id",
+            "deleted",
+            "validation",
+            "created_at",
+            "file",
+            "status",
+            "selections",
+        }
         assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert upload["file"].startswith(settings.MEDIA_URL)
         assert not upload["deleted"]
@@ -39,3 +50,9 @@ class TestUpload:
         response = client.get(f"/uploads/{upload_obj.id}/")
         assert response.status_code == 200
         assert UploadSerializer(upload_obj).data == response.json()
+
+    def test_create_selections_successful(self, client, upload_obj):
+        create_data_selection(client, upload_obj, "uploads")
+
+    def test_get_selections_successful(self, client, upload_obj):
+        get_data_selections(client, upload_obj, "uploads")

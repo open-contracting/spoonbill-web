@@ -16,14 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
-from rest_framework import routers
-
-from core import views
-
-router = routers.DefaultRouter()
-router.register(r"uploads", views.UploadViewSet, basename="upload")
-router.register(r"urls", views.URLViewSet, basename="url")
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("", include("core.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
