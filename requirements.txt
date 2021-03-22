@@ -71,7 +71,7 @@ django-celery-beat==2.2.0
     # via -r requirements.in
 django-celery-results==2.0.1
     # via -r requirements.in
-django-timezone-field==4.1.1
+django-timezone-field==4.1.2
     # via django-celery-beat
 django==3.1.7
     # via
@@ -98,11 +98,14 @@ idna==2.10
 importlib-metadata==3.7.3
     # via
     #   kombu
+    #   markdown
     #   sqlalchemy
 incremental==21.3.0
     # via twisted
 kombu==5.0.2
     # via celery
+markdown==3.3.4
+    # via -r requirements.in
 msgpack==1.0.2
     # via channels-redis
 prompt-toolkit==3.0.17
@@ -142,7 +145,7 @@ six==1.15.0
     #   click-repl
     #   pyopenssl
     #   python-dateutil
-sqlalchemy==1.4.0
+sqlalchemy==1.4.1
     # via -r requirements.in
 sqlparse==0.4.1
     # via django
