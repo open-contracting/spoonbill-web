@@ -1,7 +1,7 @@
 <template>
-    <v-app-bar app dark height="110" elevation="0">
+    <v-app-bar app color="primary" height="120" elevation="0">
         <v-container>
-            <h3>OPEN<br />CONTRACTING<br />PARTNERSHIP</h3>
+            <v-img max-width="230" contain src="@/assets/images/ocp-logo.svg" />
         </v-container>
     </v-app-bar>
 </template>
@@ -12,4 +12,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+::v-deep .v-toolbar__content {
+    padding-left: 0;
+    padding-right: 0;
+}
+</style>

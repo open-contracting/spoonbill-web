@@ -28,7 +28,6 @@ export default {
 
     methods: {
         onFileSelect(ev) {
-            console.log(ev);
             if (ev.target.files) {
                 this.$emit('input', Array.from(ev.target.files));
                 ev.target.value = null;
