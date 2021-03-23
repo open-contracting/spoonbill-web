@@ -3,13 +3,17 @@
         <layout-header />
 
         <v-main>
-            <v-container class="d-flex justify-space-between">
-                <div class="main-block">
-                    <h1>OCDS Flatten Tool</h1>
-                    <p class="mb-15">Convert your OCDS JSON data into Excel</p>
-                    <router-view />
-                </div>
-                <FAQ class="mt-10" v-if="$vuetify.breakpoint.mdAndUp" />
+            <v-container>
+                <v-row>
+                    <v-col cols="12" md="8" xl="9">
+                        <h1>OCDS Flatten Tool</h1>
+                        <p class="mb-15">Convert your OCDS JSON data into Excel</p>
+                        <router-view />
+                    </v-col>
+                    <v-col cols="12" md="4" xl="3">
+                        <FAQ class="mt-10" />
+                    </v-col>
+                </v-row>
             </v-container>
         </v-main>
     </v-app>
@@ -32,8 +36,3 @@ export default {
     }),
 };
 </script>
-<style scoped lang="scss">
-.main-block {
-    flex-grow: 1;
-}
-</style>

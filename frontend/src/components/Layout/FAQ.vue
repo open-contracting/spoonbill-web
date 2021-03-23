@@ -54,7 +54,6 @@ export default {
 
 <style scoped lang="scss">
 .faq-block {
-    max-width: 377px;
     width: 100%;
     border: 4px solid map-get($colors, 'gray-dark');
     border-radius: 0 !important;

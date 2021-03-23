@@ -5,7 +5,7 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import axios from 'axios';
 
-axios.defaults.baseURL = process.env.API_URL;
+axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 Vue.config.productionTip = false;
 
 new Vue({
