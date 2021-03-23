@@ -5,6 +5,7 @@ daphne
 django
 django-celery-beat
 django-celery-results
+django-cors-headers
 djangorestframework
 ijson
 markdown
