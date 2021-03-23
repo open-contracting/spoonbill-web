@@ -8,10 +8,9 @@
 import AppDropzone from '../components/App/AppDropzone';
 
 export default {
-    name: 'Home',
-
-    components: {
-        AppDropzone,
-    },
+    name: 'SelectData',
+    components: { AppDropzone },
 };
 </script>
+
+<style scoped></style>
