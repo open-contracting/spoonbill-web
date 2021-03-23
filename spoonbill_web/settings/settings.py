@@ -53,12 +53,14 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_celery_beat",
     "django_celery_results",
+    "corsheaders",
     "core",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -140,6 +142,15 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# CORS settings
+CORS_ORIGIN_WHITELIST = (
+    "127.0.0.1:8080",
+    "localhost:8080",
+)
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
+
 
 # Celery config
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER", "")
