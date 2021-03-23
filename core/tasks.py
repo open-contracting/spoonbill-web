@@ -3,6 +3,7 @@ import shutil
 from datetime import timedelta
 from tempfile import TemporaryFile
 
+import ijson
 import requests
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -16,7 +17,6 @@ from core.serializers import UploadSerializer, UrlSerializer
 from spoonbill_web.celery import app as celery_app
 
 logger = logging.getLogger(__name__)
-
 
 getters = {
     "Upload": {"model": Upload, "serializer": UploadSerializer},
@@ -45,7 +45,28 @@ def validate_data(object_id, model=None):
 
     logger.debug("Start validation for %s file" % object_id)
 
-    datasource.validation.is_valid = True
+    is_valid = False
+    try:
+        with open(datasource.file.path, "rb") as f:
+            items = ijson.items(f, "records.item")
+            for item in items:
+                if item:
+                    is_valid = True
+                    break
+        if not is_valid:
+            with open(datasource.file.path, "rb") as f:
+                items = ijson.items(f, "releases.item")
+                for item in items:
+                    if item:
+                        is_valid = True
+                        break
+    except (ijson.JSONError, ijson.IncompleteJSONError) as e:
+        logger.info(
+            "Error while validating data %s" % object_id,
+            extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+        )
+
+    datasource.validation.is_valid = is_valid
     datasource.validation.save(update_fields=["is_valid"])
 
     async_to_sync(channel_layer.group_send)(
@@ -149,8 +170,8 @@ def download_data_source(object_id, model=None):
                 },
             )
             temp.seek(0)
-            datasource.data_file = File(temp)
-            datasource.save(update_fields=["data_file"])
+            datasource.file = File(temp)
+            datasource.save(update_fields=["file"])
 
         if datasource.analyzed_data_url:
             r = requests.get(datasource.analyzed_data_url, stream=True)
@@ -193,8 +214,8 @@ def download_data_source(object_id, model=None):
                     },
                 )
                 temp.seek(0)
-                datasource.analyzed_data_file = File(temp)
-                datasource.save(update_fields=["analyzed_data_file"])
+                datasource.analyzed_file = File(temp)
+                datasource.save(update_fields=["analyzed_file"])
         datasource.status = "queued.validation"
         datasource.downloaded = True
         expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)

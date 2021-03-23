@@ -1,6 +1,5 @@
 import os
 import shutil
-import uuid
 
 import pytest
 from django.conf import settings
@@ -48,17 +47,30 @@ def validation_obj():
 @pytest.fixture
 def upload_obj(validation_obj, dataset):
     file_ = File(dataset)
-    return Upload.objects.create(file=file_, validation=validation_obj, expired_at=timezone.now())
+    obj = Upload.objects.create(file=file_, validation=validation_obj, expired_at=timezone.now())
+    yield obj
+
+    shutil.rmtree(f"{settings.MEDIA_ROOT}{obj.id}", ignore_errors=True)
 
 
 @pytest.fixture
-def url_obj(validation_obj):
+def url_obj(validation_obj, dataset):
     return Url.objects.create(
         url="https://example.org/dataset.json",
         analyzed_data_url="https://example.org/analyzed.json",
         validation=validation_obj,
         expired_at=timezone.now(),
     )
+
+
+@pytest.fixture
+def url_obj_w_files(url_obj, dataset):
+    url_obj.file = File(dataset)
+    url_obj.analyzed_file = File(dataset)
+
+    yield url_obj
+
+    shutil.rmtree(f"{settings.MEDIA_ROOT}{url_obj.id}", ignore_errors=True)
 
 
 @pytest.fixture

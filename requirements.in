@@ -6,6 +6,7 @@ django
 django-celery-beat
 django-celery-results
 djangorestframework
+ijson
 markdown
 psycopg2
 pyyaml

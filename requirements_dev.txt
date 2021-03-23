@@ -122,6 +122,8 @@ idna==2.10
     #   hyperlink
     #   requests
     #   twisted
+ijson==3.1.4
+    # via -r requirements.in
 importlib-metadata==3.7.3
     # via
     #   flake8
