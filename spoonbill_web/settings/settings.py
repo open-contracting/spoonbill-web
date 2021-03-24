@@ -144,10 +144,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # CORS settings
-CORS_ORIGIN_WHITELIST = (
-    "http://127.0.0.1:8080",
-    "http://localhost:8080",
-)
+CORS_ORIGIN_WHITELIST = os.getenv("CORS_ORIGIN_WHITELIST", "http://127.0.0.1:8080,http://localhost:8080").split(",")
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
