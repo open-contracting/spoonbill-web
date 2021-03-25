@@ -16,7 +16,9 @@ export default {
     methods: {
         async onFileSelect(ev) {
             if (ev && ev.length) {
-                ApiService.sendFile(ev[0]).then((res) => {
+                const formData = new FormData();
+                formData.append('file', ev[0]);
+                ApiService.sendFile(formData).then((res) => {
                     console.log(res);
                 });
             }
