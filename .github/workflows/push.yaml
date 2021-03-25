@@ -4,6 +4,8 @@ on:
     branches:
        - master
        - main
+    paths-ignore:
+       - 'frontend/**'
 
 jobs:
   tests:
@@ -62,6 +64,7 @@ jobs:
           repository: ${{ github.repository }}/${{ secrets.IMAGE_NAME }}
           tag_with_sha: true
           tag_with_ref: true
+          tags: latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -81,8 +84,10 @@ jobs:
               echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
               echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
               echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+              echo "CORS_ORIGIN_WHITELIST=${{ secrets.CORS_ORIGIN_WHITELIST }}" >> .env
               echo "CELERY_BACKEND=db+postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres/${{ secrets.POSTGRES_DB }}" >> .env
               echo "IMAGE=docker.pkg.github.com/${{ github.repository }}/${{ secrets.IMAGE_NAME }}:sha-${{ steps.short-sha.outputs.sha }}" >> .env
+              echo "FRONT_IMAGE=docker.pkg.github.com/${{ github.repository }}/${{ secrets.FRONT_IMAGE_NAME }}:latest" >> .env
       - name: Copy .env
         uses: garygrossgarten/github-action-scp@release
         with:
@@ -112,6 +117,6 @@ jobs:
           script: |
               cd git
               docker login -u ${{ secrets.R_USER }} -p ${{ secrets.R_SECRET }}  docker.pkg.github.com/${{ github.repository }}/
-              docker-compose -f docker-compose.deploy.yaml pull celery_worker celery_beat app
-              docker-compose -f docker-compose.deploy.yaml stop celery_worker celery_beat app &&
-              docker-compose -f docker-compose.deploy.yaml up -d celery_worker celery_beat app
+              docker-compose -f docker-compose.deploy.yaml pull celery_worker celery_beat app front &&
+              docker-compose -f docker-compose.deploy.yaml stop celery_worker celery_beat app front &&
+              docker-compose -f docker-compose.deploy.yaml up -d celery_worker celery_beat front app
