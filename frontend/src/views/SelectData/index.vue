@@ -51,10 +51,6 @@ export default {
 
     components: { SelectDataFAQ, LayoutInfo, SelectDataOptions },
 
-    created() {
-        console.log(this.$vuetify.breakpoint);
-    },
-
     methods: {
         /**
          * Handle option select
