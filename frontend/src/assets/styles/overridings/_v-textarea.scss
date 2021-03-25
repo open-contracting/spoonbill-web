@@ -1,0 +1,12 @@
+.v-textarea.v-text-field--outlined {
+    .v-input__slot {
+        background-color: #ffffff !important;
+        border-radius: 0 !important;
+        border: 1px solid map-get($colors, 'gray-dark') !important;
+    }
+    &:not(.error--text) {
+        fieldset {
+            border: none;
+        }
+    }
+}

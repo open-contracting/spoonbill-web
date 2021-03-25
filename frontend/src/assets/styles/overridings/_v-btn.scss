@@ -1,0 +1,11 @@
+.v-btn {
+    box-shadow: none;
+    &__content {
+        text-transform: none;
+    }
+    &.accent {
+        .v-btn__content {
+            color: map-get($colors, 'darkest');
+        }
+    }
+}

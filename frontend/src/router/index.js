@@ -10,6 +10,16 @@ const routes = [
         component: () => import('@/views/SelectData'),
     },
     {
+        path: '/select-data/select-file',
+        name: 'select file',
+        component: () => import('@/views/SelectData/SelectFile'),
+    },
+    {
+        path: '/select-data/select-tables',
+        name: 'select tables',
+        component: () => import('@/views/SelectData/SelectTables'),
+    },
+    {
         path: '*',
         redirect: '/select-data',
     },

@@ -3,32 +3,33 @@
         <layout-header />
 
         <v-main>
-            <v-container>
-                <v-row>
-                    <v-col cols="12" md="8" xl="9">
-                        <h1>OCDS Flatten Tool</h1>
-                        <p class="mb-15">Convert your OCDS JSON data into Excel</p>
-                        <router-view />
-                    </v-col>
-                    <v-col cols="12" md="4" xl="3">
-                        <FAQ class="mt-10" />
-                    </v-col>
-                </v-row>
-            </v-container>
+            <router-view />
         </v-main>
+
+        <v-snackbar v-model="snackbar.opened" multi-line :color="snackbar.color" right bottom>
+            {{ snackbar.text }}
+
+            <template v-slot:action="{ attrs }">
+                <v-btn icon v-bind="attrs" @click="$store.commit('closeSnackbar')">
+                    <v-icon color="primary">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-app>
 </template>
 
 <script>
 import LayoutHeader from './components/Layout/LayoutHeader';
-import FAQ from '@/components/Layout/FAQ';
 
 export default {
     name: 'App',
 
-    components: {
-        FAQ,
-        LayoutHeader,
+    components: { LayoutHeader },
+
+    computed: {
+        snackbar() {
+            return this.$store.state.snackbar;
+        },
     },
 
     data: () => ({
@@ -36,3 +37,6 @@ export default {
     }),
 };
 </script>
+<style lang="scss">
+@import 'src/assets/styles/main';
+</style>
