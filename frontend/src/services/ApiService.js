@@ -1,7 +1,15 @@
 import axios from 'axios';
 
 export default {
-    sendFile(file) {
-        return axios.post('uploads/', file);
+    sendFile(file, cancelToken) {
+        return axios.post('uploads/', file, {
+            cancelToken,
+        });
+    },
+
+    sendUrl(url) {
+        return axios.post('urls/', {
+            url,
+        });
     },
 };

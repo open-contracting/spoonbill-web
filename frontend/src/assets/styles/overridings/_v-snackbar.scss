@@ -1,0 +1,18 @@
+.v-snack {
+    .v-snack__wrapper {
+        border-left: 8px solid transparent;
+        .v-snack__content {
+            font-size: 14px;
+            font-weight: 300;
+            color: map-get($colors, 'primary');
+        }
+        &.error {
+            background-color: #ffe8e8 !important;
+            border-color: #ff9393 !important;
+        }
+        &.success {
+            background-color: #f0f8e5 !important;
+            border-color: #71b604 !important;
+        }
+    }
+}

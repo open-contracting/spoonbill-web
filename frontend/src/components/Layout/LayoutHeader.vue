@@ -1,7 +1,9 @@
 <template>
     <v-app-bar app color="primary" height="120" elevation="0">
         <v-container>
-            <v-img max-width="230" contain src="@/assets/images/ocp-logo.svg" />
+            <router-link to="/select-data">
+                <v-img max-width="230" contain src="@/assets/images/ocp-logo.svg" />
+            </router-link>
         </v-container>
     </v-app-bar>
 </template>

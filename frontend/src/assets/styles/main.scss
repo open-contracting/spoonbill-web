@@ -1,6 +1,45 @@
 @import "fonts";
 @import "variables";
+@import "overridings";
 
-.v-application {
+body .theme--light.v-application {
     font-family: 'GT Eesti Pro Display', sans-serif;
+    color: map-get($colors, 'primary');
+    background-color: map-get($colors, 'super-light') !important;
+}
+
+h1, h2, h3 {
+    color: map-get($colors, 'darkest');
+}
+
+.text-link {
+    color: map-get($colors, 'darkest');
+    text-decoration: none;
+    border-bottom: 2px solid map-get($colors, 'accent');
+}
+
+.rounded-box {
+    border-radius: 32px 8px 0 16px;
+}
+
+.page-title {
+    font-size: 1.5em;
+    font-weight: 400;
+}
+
+.page-description {
+    margin-top: 24px;
+    margin-bottom: 0!important;
+    font-weight: 300;
+}
+
+.v-stepper {
+    box-shadow: none;
+}
+
+.app-btn {
+    border: 1px solid map-get($colors, 'gray-dark');
+    .v-btn__content {
+        color: map-get($colors, 'darkest');
+    }
 }
