@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 export default {
-    sendFile(file, cancelToken) {
+    sendFile(file, cancelToken, onUploadProgress) {
         return axios.post('uploads/', file, {
             cancelToken,
+            onUploadProgress,
         });
     },
 
@@ -11,5 +12,9 @@ export default {
         return axios.post('urls/', {
             url,
         });
+    },
+
+    getUploadInfo(id) {
+        return axios.get('uploads/' + id);
     },
 };
