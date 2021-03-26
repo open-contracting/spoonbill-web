@@ -59,6 +59,7 @@ coverage.xml
 # Translations
 *.mo
 *.pot
+*.po
 
 # Scrapy stuff:
 .scrapy

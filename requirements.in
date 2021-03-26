@@ -16,3 +16,4 @@ redis
 requests
 sentry-sdk
 sqlalchemy
+transifex-client
