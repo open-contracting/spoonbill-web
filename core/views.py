@@ -130,7 +130,7 @@ class URLViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if not url:
                 return Response({"detail": _("Url is required")}, status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = self.get_serializer_class()(data=request.POST)
+            serializer = self.get_serializer_class()(data=request.POST or request.data)
             if serializer.is_valid():
                 validation_obj = Validation.objects.create()
                 url_obj = Url.objects.create(**serializer.data)
