@@ -63,7 +63,6 @@ export default new Vuex.Store({
             const connection = new WebSocket(`${process.env.VUE_APP_WEBSOCKET_URL}/${id}/`);
 
             connection.onmessage = (event) => {
-                console.log(JSON.parse(event.data));
                 if (event.data?.type === 'task.validate') {
                     commit('setUploadDetails', event.data.datasource);
                 }
@@ -74,7 +73,6 @@ export default new Vuex.Store({
             };
 
             connection.onopen = () => {
-                console.log('OPENED WEBSOCKET CONNECTION TO JOB ' + id);
                 commit('setConnection', connection);
                 dispatch('fetchUploadDetails', id);
             };

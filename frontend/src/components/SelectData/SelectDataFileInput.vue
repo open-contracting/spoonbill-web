@@ -184,7 +184,7 @@ export default {
                 const formData = new FormData();
                 formData.append('file', file);
                 const { data } = await ApiService.sendFile(formData, this.cancelTokenSource.token, (ev) => {
-                    this.loading.value = Math.floor((ev.loaded * 100) / ev.total);
+                    this.loading.percent = Math.floor((ev.loaded * 100) / ev.total);
                 });
                 this.$store.dispatch('setupConnection', data.id);
             } catch (e) {
