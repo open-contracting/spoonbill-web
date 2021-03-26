@@ -127,7 +127,7 @@ class URLViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
-            url = request.POST.get("url", "")
+            url = request.POST.get("url", "") or request.data.get("url", "")
             if not url:
                 return Response({"detail": _("Url is required")}, status=status.HTTP_400_BAD_REQUEST)
 
