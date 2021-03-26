@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib.postgres.fields import ArrayField
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -44,6 +45,8 @@ class Upload(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     expired_at = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False)
+    selections = models.ManyToManyField("DataSelection", blank=True)
+    available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
 
     class Meta:
         db_table = "uploads"
@@ -79,8 +82,25 @@ class Url(models.Model):
     deleted = models.BooleanField(default=False)
     downloaded = models.BooleanField(default=False)
     error = models.TextField(blank=True, null=True)
+    selections = models.ManyToManyField("DataSelection", blank=True)
+    available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
 
     class Meta:
         db_table = "urls"
         verbose_name = _("Url")
         verbose_name_plural = _("Urls")
+
+
+class DataSelection(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    tables = models.ManyToManyField("Table", blank=True)
+
+    class Meta:
+        db_table = "data_selections"
+        verbose_name = _("Data Selection")
+        verbose_name_plural = _("Data Selections")
+
+
+class Table(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    name = models.CharField(max_length=120)

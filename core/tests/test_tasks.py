@@ -12,14 +12,27 @@ from .utils import Response
 
 @pytest.mark.django_db
 class TestValidateDataTask:
-    def test_success(self, upload_obj):
+    def test_upload_success(self, upload_obj):
         upload_obj = Upload.objects.get(id=upload_obj.id)
         assert upload_obj.validation.is_valid is None
+        assert not upload_obj.available_tables
 
         validate_data(upload_obj.id, model="Upload")
 
         upload_obj = Upload.objects.get(id=upload_obj.id)
         assert upload_obj.validation.is_valid
+        assert len(upload_obj.available_tables) == 4
+
+    def test_url_success(self, url_obj_w_files):
+        url_obj_w_files = Url.objects.get(id=url_obj_w_files.id)
+        assert url_obj_w_files.validation.is_valid is None
+        assert not url_obj_w_files.available_tables
+
+        validate_data(url_obj_w_files.id, model="Url")
+
+        url_obj_w_files = Url.objects.get(id=url_obj_w_files.id)
+        assert url_obj_w_files.validation.is_valid
+        assert len(url_obj_w_files.available_tables) == 4
 
     def test_json_w_records(self, upload_obj):
         with open(upload_obj.file.path, "w") as f:

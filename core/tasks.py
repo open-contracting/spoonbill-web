@@ -1,3 +1,4 @@
+import json
 import logging
 import shutil
 from datetime import timedelta
@@ -68,6 +69,51 @@ def validate_data(object_id, model=None):
 
     datasource.validation.is_valid = is_valid
     datasource.validation.save(update_fields=["is_valid"])
+
+    # TODO: Replace dummy available tables to data from analyzed_data
+    if is_valid and not datasource.available_tables and not hasattr(datasource, "analyzed_file"):
+        datasource.available_tables = [
+            {
+                "arrays": {
+                    "count": 2,
+                    "threshold": 5,
+                    "below_threshold": ["parties/0/roles"],
+                    "above_threshold": ["tenderer"],
+                },
+                "name": "parties",
+                "rows": 5,
+                "available_data": {
+                    "columns": {"total": 22, "available": 18, "additional": ["parties/0/identifier/Name"]}
+                },
+            },
+            {
+                "arrays": {"count": 7, "threshold": 5, "above_threshold": ["tender/items"]},
+                "name": "tenders",
+                "rows": 11,
+                "available_data": {"columns": {"total": 35, "available": 34}},
+            },
+            {
+                "arrays": {"count": 2, "threshold": 5, "above_threshold": ["awards/0/suppliers", "awards/0/items"]},
+                "available_data": {"total": 16, "available": 9},
+                "name": "awards",
+                "rows": 4,
+            },
+            {
+                "available_data": {
+                    "total": 10,
+                    "available": 10,
+                    "additional": ["documents/0/datePublished", "documents/0/..."],
+                },
+                "name": "documents",
+                "rows": 5,
+            },
+        ]
+        datasource.save(update_fields=["available_tables"])
+    elif hasattr(datasource, "analyzed_file"):
+        with open(datasource.analyzed_file.path) as f:
+            data = json.loads(f.read())
+            datasource.available_tables = data["tables"]
+            datasource.save(update_fields=["available_tables"])
 
     async_to_sync(channel_layer.group_send)(
         f"validate_data_{datasource.id}",

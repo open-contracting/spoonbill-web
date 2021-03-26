@@ -9,9 +9,10 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from core.models import Upload, Url, Validation
-from core.serializers import UploadSerializer, UrlSerializer
+from core.models import DataSelection, Table, Upload, Url, Validation
+from core.serializers import DataSelectionSerializer, TablesSerializer, UploadSerializer, UrlSerializer
 from core.tasks import cleanup_upload, download_data_source, validate_data
 
 
@@ -142,3 +143,27 @@ class URLViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as error:
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DataSelectionViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    serializer_class = DataSelectionSerializer
+    queryset = DataSelection.objects.all()
+    http_method_names = ["get", "post", "head", "options", "trace"]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class()(data=request.data or request.POST)
+        parent_data = self.get_parents_query_dict()
+        parent_key = next(iter(parent_data))
+        if serializer.is_valid():
+            ds = DataSelection.objects.create()
+            for table in request.data.get("tables", []):
+                tb = Table.objects.create(**table)
+                ds.tables.add(tb)
+            parent_set = getattr(ds, f"{parent_key}_set")
+            parent_set.add(parent_data[parent_key])
+            return Response(self.get_serializer_class()(ds).data, status=status.HTTP_201_CREATED)
+
+
+class TableViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    serializer_class = TablesSerializer
+    queryset = Table.objects.all()

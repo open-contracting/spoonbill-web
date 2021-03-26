@@ -1,0 +1,72 @@
+{
+  "tables": [
+    {
+      "arrays": {
+        "above_threshold": [
+          "tenderer"
+        ],
+        "below_threshold": [
+          "parties/0/roles"
+        ],
+        "count": 2,
+        "threshold": 5
+      },
+      "available_data": {
+        "columns": {
+          "additional": [
+            "parties/0/identifier/Name"
+          ],
+          "available": 18,
+          "total": 22
+        }
+      },
+      "name": "parties",
+      "rows": 5
+    },
+    {
+      "arrays": {
+        "above_threshold": [
+          "tender/items"
+        ],
+        "count": 7,
+        "threshold": 5
+      },
+      "available_data": {
+        "columns": {
+          "available": 34,
+          "total": 35
+        }
+      },
+      "name": "tenders",
+      "rows": 11
+    },
+    {
+      "arrays": {
+        "above_threshold": [
+          "awards/0/items",
+          "awards/0/suppliers"
+        ],
+        "count": 2,
+        "threshold": 5
+      },
+      "available_data": {
+        "available": 9,
+        "total": 16
+      },
+      "name": "awards",
+      "rows": 4
+    },
+    {
+      "available_data": {
+        "additional": [
+          "documents/0/datePublished",
+          "documents/0/..."
+        ],
+        "available": 10,
+        "total": 10
+      },
+      "name": "documents",
+      "rows": 5
+    }
+  ]
+}

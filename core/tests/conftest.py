@@ -10,14 +10,23 @@ from core.models import Upload, Url, Validation
 
 from .utils import Response, Task
 
+DATA_DIR = os.path.dirname(__file__) + "/data"
+
 
 @pytest.fixture
 def dataset():
-    path = os.path.dirname(__file__) + "/data/don.json"
-    file_ = open(path)
+    file_ = open(f"{DATA_DIR}/don.json")
     yield file_
 
     file_.close()
+
+
+@pytest.fixture
+def analyzed():
+    file_ = open(f"{DATA_DIR}/analyzed.json")
+    yield file_
+
+    file_.close
 
 
 @pytest.fixture
@@ -64,9 +73,10 @@ def url_obj(validation_obj, dataset):
 
 
 @pytest.fixture
-def url_obj_w_files(url_obj, dataset):
+def url_obj_w_files(url_obj, dataset, analyzed):
     url_obj.file = File(dataset)
-    url_obj.analyzed_file = File(dataset)
+    url_obj.analyzed_file = File(analyzed)
+    url_obj.save(update_fields=["file", "analyzed_file"])
 
     yield url_obj
 

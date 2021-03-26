@@ -84,6 +84,10 @@ django==3.1.7
     #   django-timezone-field
     #   djangorestframework
 djangorestframework==3.12.2
+    # via
+    #   -r requirements.in
+    #   drf-extensions
+drf-extensions==0.7.0
     # via -r requirements.in
 greenlet==1.0.0
     # via sqlalchemy
