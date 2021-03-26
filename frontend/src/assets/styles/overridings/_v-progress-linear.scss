@@ -1,0 +1,5 @@
+.v-progress-linear {
+    .v-progress-linear__buffer {
+        background-color: map-get($colors, 'gray-light');
+    }
+}

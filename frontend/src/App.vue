@@ -32,9 +32,19 @@ export default {
         },
     },
 
-    data: () => ({
-        //
-    }),
+    async created() {
+        if (window.location.hash.includes('?id=')) {
+            const id = window.location.hash.split('=')[1];
+            if (id) {
+                await this.$store.dispatch('fetchUploadDetails', id);
+                if (typeof this.$store.state.uploadDetails?.validation?.is_valid !== 'boolean') {
+                    this.$store.dispatch('setupConnection', id);
+                }
+            }
+        } else {
+            this.$router.push('/select-data').catch(() => {});
+        }
+    },
 };
 </script>
 <style lang="scss">

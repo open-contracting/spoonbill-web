@@ -8,4 +8,7 @@
             color: map-get($colors, 'darkest');
         }
     }
+    &.v-btn--disabled.v-btn--has-bg {
+        opacity: 0.4;
+    }
 }

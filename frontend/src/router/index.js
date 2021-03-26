@@ -7,12 +7,12 @@ const routes = [
     {
         path: '/select-data',
         name: 'select data',
-        component: () => import('@/views/SelectData'),
+        component: () => import(/* webpackChunkName: "SelectData" */ '@/views/SelectData'),
     },
     {
-        path: '/select-data/select-file',
+        path: '/select-data/registry',
         name: 'select file',
-        component: () => import('@/views/SelectData/SelectFile'),
+        component: () => import(/* webpackChunkName: "SelectDataRegistry" */ '@/views/SelectData/SelectDataRegistry'),
     },
     {
         path: '/select-data/select-tables',

@@ -6,9 +6,7 @@
                 Skip customization and download the most commonly used fields, as recommended by data analyst at OCP.
             </p>
             <div class="d-flex justify-end">
-                <app-button disabled text color="darkest" accent @click="selectOption('AUTO')">
-                    Continue with OCDS Lite
-                </app-button>
+                <app-button text color="darkest" accent @click="selectOption('AUTO')">Continue with OCDS Lite</app-button>
             </div>
         </div>
 
