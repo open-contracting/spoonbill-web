@@ -36,7 +36,7 @@ def validate_data(object_id, model=None):
     serializer = getters[model]["serializer"]()
 
     datasource.status = "validation"
-    datasource.save(update_fields=["validation"])
+    datasource.save(update_fields=["status"])
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         f"validate_data_{datasource.id}",
