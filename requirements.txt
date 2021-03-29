@@ -85,15 +85,16 @@ django==3.1.7
     #   django-cors-headers
     #   django-timezone-field
     #   djangorestframework
+    #   drf-nested-routers
 djangorestframework==3.12.4
     # via
     #   -r requirements.in
-    #   drf-extensions
-drf-extensions==0.7.0
+    #   drf-nested-routers
+drf-nested-routers==0.93.3
     # via -r requirements.in
 greenlet==1.0.0
     # via sqlalchemy
-hiredis==1.1.0
+hiredis==2.0.0
     # via aioredis
 hyperlink==21.0.0
     # via
@@ -106,7 +107,7 @@ idna==2.10
     #   twisted
 ijson==3.1.4
     # via -r requirements.in
-importlib-metadata==3.7.3
+importlib-metadata==3.9.0
     # via
     #   kombu
     #   markdown

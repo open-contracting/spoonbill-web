@@ -1,22 +1,20 @@
 from datetime import timedelta
-from uuid import uuid4
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import mixins, permissions, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from core.models import DataSelection, Table, Upload, Url, Validation
 from core.serializers import DataSelectionSerializer, TablesSerializer, UploadSerializer, UrlSerializer
 from core.tasks import cleanup_upload, download_data_source, validate_data
 
 
-class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UploadViewSet(viewsets.GenericViewSet):
     permissions_classes = permissions.AllowAny
     lookup_field = "id"
     http_method_names = ["get", "post", "head", "options", "trace"]
@@ -51,7 +49,7 @@ class UploadViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class URLViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class URLViewSet(viewsets.GenericViewSet):
     """URL based datasource
 
     This endpoint allows providing URLs for the dataset file and analyzed dataset file which is placed in some cloud
@@ -145,25 +143,30 @@ class URLViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DataSelectionViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class DataSelectionViewSet(viewsets.ModelViewSet):
     serializer_class = DataSelectionSerializer
     queryset = DataSelection.objects.all()
+    lookup_field = "id"
     http_method_names = ["get", "post", "head", "options", "trace"]
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, upload_id=None, url_id=None):
         serializer = self.get_serializer_class()(data=request.data or request.POST)
-        parent_data = self.get_parents_query_dict()
-        parent_key = next(iter(parent_data))
         if serializer.is_valid():
             ds = DataSelection.objects.create()
             for table in request.data.get("tables", []):
                 tb = Table.objects.create(**table)
                 ds.tables.add(tb)
-            parent_set = getattr(ds, f"{parent_key}_set")
-            parent_set.add(parent_data[parent_key])
+            if upload_id:
+                ds.upload_set.add(upload_id)
+            elif url_id:
+                ds.url_set.add(url_id)
             return Response(self.get_serializer_class()(ds).data, status=status.HTTP_201_CREATED)
 
-
-class TableViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
-    serializer_class = TablesSerializer
-    queryset = Table.objects.all()
+    def list(self, request, *args, url_id=None, upload_id=None):
+        if url_id:
+            queryset = DataSelection.objects.filter(url=url_id)
+            serializer = DataSelectionSerializer(queryset, many=True)
+        elif upload_id:
+            queryset = DataSelection.objects.filter(upload=upload_id)
+            serializer = DataSelectionSerializer(queryset, many=True)
+        return Response(serializer.data)
