@@ -170,3 +170,15 @@ class DataSelectionViewSet(viewsets.ModelViewSet):
             queryset = DataSelection.objects.filter(upload=upload_id)
             serializer = DataSelectionSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class TableViewSet(viewsets.ModelViewSet):
+    serializer_class = TablesSerializer
+    queryset = Table.objects.all()
+    http_method_names = ["get", "patch", "delete", "head", "options", "trace"]
+    lookup_field = "id"
+
+    def list(self, request, *args, **kwargs):
+        queryset = Table.objects.filter(dataselection=kwargs.get("selection_id", ""))
+        serializer = self.get_serializer_class()(queryset, many=True)
+        return Response(serializer.data)

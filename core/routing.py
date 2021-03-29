@@ -14,6 +14,12 @@ upload_selection_router.register(r"selections", views.DataSelectionViewSet, base
 url_selection_router = routers.NestedSimpleRouter(router, r"urls", lookup="url")
 url_selection_router.register(r"selections", views.DataSelectionViewSet, basename="urls-selections")
 
+url_table_router = routers.NestedSimpleRouter(url_selection_router, r"selections", lookup="selection")
+url_table_router.register(r"tables", views.TableViewSet, basename="urls-selections-tables")
+
+upload_table_router = routers.NestedSimpleRouter(upload_selection_router, r"selections", lookup="selection")
+upload_table_router.register(r"tables", views.TableViewSet, basename="uploads-selections-tables")
+
 websocket_urlpatterns = [
     re_path(r"ws/api/(?P<upload_id>[0-9a-f-]+)/$", consumers.ValidationConsumer.as_asgi()),
 ]
