@@ -1,5 +1,6 @@
 name: push-front
 on:
+  workflow_dispatch:
   push:
     branches:
        - master
@@ -35,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           path: ./frontend
-          build_args: VUE_APP_API_URL=${{ secrets.API_URL }}
+          build_args: VUE_APP_API_URL=${{ secrets.API_URL }},VUE_APP_WEBSOCKET_URL=${{ secrets.WEBSOCKET_URL }}
           username: ${{ secrets.R_USER }}
           password: ${{ secrets.R_SECRET }}
           registry: docker.pkg.github.com
