@@ -49,6 +49,7 @@ export default {
                 .v-stepper__step__step {
                     background-color: map-get($colors, 'accent') !important;
                     position: relative;
+                    box-shadow: 0 0 0 2px white;
                     &::after {
                         content: '';
                         position: absolute;
@@ -60,12 +61,26 @@ export default {
                         border-radius: 50%;
                     }
                 }
+                & + .v-divider {
+                    position: relative;
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        border: 1px solid map-get($colors, 'accent');
+                        left: 0;
+                        top: -1px;
+                        width: 50%;
+                        z-index: 2;
+                    }
+                }
             }
             .v-stepper__step__step {
                 margin: 4px 4px 13px;
                 width: 25px;
                 height: 25px;
                 color: map-get($colors, 'primary');
+                position: relative;
+                z-index: 3;
             }
             .v-stepper__label {
                 margin-top: 8px;

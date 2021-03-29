@@ -2,7 +2,12 @@
     <v-app-bar app color="primary" height="120" elevation="0">
         <v-container>
             <router-link class="d-block" to="/select-data">
-                <v-img max-width="230" contain src="@/assets/images/ocp-logo.svg" @click="$store.dispatch('clearDetails')" />
+                <v-img
+                    max-width="230"
+                    contain
+                    src="@/assets/images/ocp-logo.svg"
+                    @click="$store.commit('setUploadDetails', null)"
+                />
             </router-link>
         </v-container>
     </v-app-bar>
