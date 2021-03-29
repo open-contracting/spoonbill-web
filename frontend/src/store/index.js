@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ApiService from '@/services/ApiService';
-import { UPLOAD_STATUSES } from '@/constants';
+import { TASK_TYPES, UPLOAD_TYPES } from '@/constants';
 import router from '@/router';
 
 Vue.use(Vuex);
@@ -16,6 +16,8 @@ export default new Vuex.Store({
         uploadDetails: null,
         /** @type { WebSocket }*/
         connection: null,
+        /** @type { number } */
+        downloadProgress: -1,
     },
     getters: {
         uploadStatus(state) {
@@ -40,31 +42,46 @@ export default new Vuex.Store({
         },
 
         setUploadDetails(state, payload) {
-            if (payload && [UPLOAD_STATUSES.VALIDATION, UPLOAD_STATUSES.QUEUED_VALIDATION].includes(payload.status)) {
-                router.push('/select-data?id=' + payload.id).catch(() => {});
-            }
             state.uploadDetails = payload;
+        },
+
+        setDownloadProgress(state, progress) {
+            state.downloadProgress = progress;
         },
     },
     actions: {
-        async fetchUploadDetails({ commit }, id) {
+        async fetchUploadDetails({ commit }, { id, type }) {
             try {
-                const { data } = await ApiService.getUploadInfo(id);
+                let data = null;
+                if (type === UPLOAD_TYPES.FILE) {
+                    const res = await ApiService.getUploadInfo(id);
+                    data = res.data;
+                } else {
+                    const res = await ApiService.getUploadInfoByUrl(id);
+                    data = res.data;
+                }
+                data.type = type;
                 commit('setUploadDetails', data);
             } catch (e) {
                 if (e.response.status === 404) {
-                    commit('openSnackbar', {});
                     router.push('/').catch(() => {});
                 }
             }
         },
 
-        setupConnection({ commit, dispatch }, id) {
+        setupConnection({ commit, dispatch }, { id, type }) {
             const connection = new WebSocket(`${process.env.VUE_APP_WEBSOCKET_URL}/${id}/`);
 
             connection.onmessage = (event) => {
-                if (event.data?.type === 'task.validate') {
-                    commit('setUploadDetails', event.data.datasource);
+                const data = JSON.parse(event.data);
+                if (data.progress) {
+                    commit('setDownloadProgress', data.progress);
+                }
+                if ([TASK_TYPES.VALIDATE, TASK_TYPES.DOWNLOAD_DATA_SOURCE].includes(data.type)) {
+                    commit('setUploadDetails', {
+                        ...data.datasource,
+                        type,
+                    });
                 }
             };
 
@@ -74,16 +91,15 @@ export default new Vuex.Store({
 
             connection.onopen = () => {
                 commit('setConnection', connection);
-                dispatch('fetchUploadDetails', id);
+                dispatch('fetchUploadDetails', { id, type });
             };
         },
 
-        clearDetails({ commit, state }) {
+        closeConnection({ state, commit }) {
             if (state.connection) {
                 state.connection.close();
                 commit('setConnection', null);
             }
-            commit('setUploadDetails', null);
         },
     },
     modules: {},

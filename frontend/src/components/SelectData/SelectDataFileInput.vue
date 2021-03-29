@@ -19,7 +19,7 @@
                 :cancelable="loading.cancelable"
                 :status="loading.status"
                 :file-name="loading.fileName"
-                :percent="loading.percent"
+                :percent="downloadProgress"
                 :color="loading.color"
                 @cancel="cancelRequest"
             />
@@ -59,7 +59,7 @@ import AppDropzone from '@/components/App/AppDropzone';
 import SelectDataUrlInput from '@/components/SelectData/SelectDataUrlInput';
 import axios from 'axios';
 import ApiService from '@/services/ApiService';
-import { UPLOAD_STATUSES } from '@/constants';
+import { UPLOAD_STATUSES, UPLOAD_TYPES } from '@/constants';
 import SelectDataLoadingProgress from '@/components/SelectData/SelectDataLoadingProgress';
 import SelectDataOptions from '@/components/SelectData/SelectDataOptions';
 
@@ -75,22 +75,21 @@ export default {
                 status: null,
                 fileName: null,
                 cancelable: false,
-                percent: 0,
             },
             updates: [],
             cancelTokenSource: null,
             options: [
                 {
                     title: 'Upload JSON file',
-                    value: 'FILE',
+                    value: UPLOAD_TYPES.FILE,
                 },
                 {
                     title: 'Supply a URL for JSON',
-                    value: 'URL',
+                    value: UPLOAD_TYPES.URL,
                 },
             ],
             /** @type { 'FILE' | 'URL' }*/
-            uploadType: 'FILE',
+            uploadType: UPLOAD_TYPES.FILE,
             fileName: null,
         };
     },
@@ -103,24 +102,46 @@ export default {
         uploadDetails() {
             return this.$store.state.uploadDetails;
         },
+
+        downloadProgress() {
+            return this.$store.state.downloadProgress;
+        },
     },
 
     watch: {
+        downloadProgress(v) {
+            if (v) {
+                this.loading.percent = v;
+            }
+        },
+
         uploadDetails: {
             handler(v) {
                 if (!v) {
                     this.updates = [];
+                    this.loading.value = false;
                     return;
                 }
-                if (v.status === UPLOAD_STATUSES.QUEUED_VALIDATION) {
+                const status = v.status;
+                if (status === UPLOAD_STATUSES.QUEUED_VALIDATION) {
                     this.loading = {
                         value: true,
                         status: 'File is queued for validation...',
                         fileName: this.fileName || this.$store.state.uploadDetails.id,
                     };
                 }
-                if (v.status === UPLOAD_STATUSES.VALIDATION) {
-                    this.processValidationStatus(v);
+                if (status === UPLOAD_STATUSES.QUEUED_DOWNLOAD) {
+                    this.loading = {
+                        value: true,
+                        status: 'File is queued for downloading...',
+                        fileName: this.fileName || this.$store.state.uploadDetails.id,
+                    };
+                }
+                if (status === UPLOAD_STATUSES.VALIDATION) {
+                    this.processValidationStatus();
+                }
+                if (status === UPLOAD_STATUSES.DOWNLOADING) {
+                    this.showLoading(this.fileName || this.$store.state.uploadDetails.id, false);
                 }
             },
             immediate: true,
@@ -133,11 +154,11 @@ export default {
          * If validation has failed - shows error message
          * If validation has finished successfully - shows success message and possibility to open next step
          * If validation still in progress - shows progressbar
-         * @param { Object } upload - upload details
          */
-        processValidationStatus(upload) {
+        processValidationStatus() {
+            const upload = this.$store.state.uploadDetails;
             if (upload.validation.is_valid === false) {
-                this.uploadType = 'FILE';
+                this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
                 this.updates.push({
                     type: 'error',
@@ -148,7 +169,7 @@ export default {
                 return;
             }
             if (upload.validation.is_valid === true) {
-                this.uploadType = 'FILE';
+                this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
                 this.updates.push({
                     type: 'success',
@@ -156,21 +177,21 @@ export default {
                 });
                 this.loading = {
                     value: true,
-                    percent: 100,
                     status: 'Analysis has been completed',
-                    fileName: this.fileName || this.$store.state.uploadDetails.id,
+                    fileName: this.fileName || this.uploadDetails.id,
                     color: '#6C75E1',
                 };
+                this.$store.commit('setDownloadProgress', 100);
                 this.valid = true;
                 return;
             }
             this.loading = {
                 value: true,
-                percent: 0,
                 status: 'File analysis in progress...',
-                fileName: this.fileName || this.$store.state.uploadDetails.id,
+                fileName: this.fileName || this.uploadDetails.id,
                 color: '#6C75E1',
             };
+            this.$store.commit('setDownloadProgress', 0);
         },
 
         /**
@@ -179,6 +200,8 @@ export default {
          */
         async sendFile(file) {
             try {
+                await this.$store.dispatch('closeConnection');
+                this.$store.commit('setUploadDetails', null);
                 this.showLoading(file.name, true);
                 this.cancelTokenSource = axios.CancelToken.source();
                 const formData = new FormData();
@@ -186,7 +209,12 @@ export default {
                 const { data } = await ApiService.sendFile(formData, this.cancelTokenSource.token, (ev) => {
                     this.loading.percent = Math.floor((ev.loaded * 100) / ev.total);
                 });
-                this.$store.dispatch('setupConnection', data.id);
+                this.$store.commit('setDownloadProgress', 0);
+                this.$store.commit('setUploadDetails', {
+                    ...data,
+                    type: UPLOAD_TYPES.FILE,
+                });
+                this.$router.push(`/select-data?file=${data.id}`).catch(() => {});
             } catch (e) {
                 console.error(e);
             } finally {
@@ -212,7 +240,6 @@ export default {
         showLoading(fileName, cancelable) {
             this.loading = {
                 value: true,
-                percent: 0,
                 status: 'Upload in progress',
                 fileName,
                 cancelable,
@@ -227,9 +254,16 @@ export default {
          */
         async sendUrl(url) {
             try {
+                await this.$store.dispatch('closeConnection');
+                this.$store.commit('setUploadDetails', null);
                 this.showLoading(url, false);
                 const { data } = await ApiService.sendUrl(url);
-                this.$store.dispatch('setupConnection', data.id);
+                this.$store.commit('setDownloadProgress', 0);
+                this.$store.commit('setUploadDetails', {
+                    ...data,
+                    type: UPLOAD_TYPES.URL,
+                });
+                this.$router.push(`/select-data?url=${data.id}`).catch(() => {});
             } catch (e) {
                 console.error(e);
             } finally {
@@ -251,7 +285,7 @@ export default {
          */
         onOptionSelect(option) {
             if (option === 'MANUAL') {
-                this.$router.push('/select-data/select-tables/?id=' + this.$store.state.uploadDetails.id);
+                this.$router.push('/select-data/select-tables/?id=' + this.uploadDetails.id);
             }
         },
     },

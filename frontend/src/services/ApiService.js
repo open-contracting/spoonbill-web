@@ -17,4 +17,8 @@ export default {
     getUploadInfo(id) {
         return axios.get('uploads/' + id);
     },
+
+    getUploadInfoByUrl(id) {
+        return axios.get('urls/' + id);
+    },
 };

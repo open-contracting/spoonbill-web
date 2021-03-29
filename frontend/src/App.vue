@@ -20,6 +20,8 @@
 
 <script>
 import LayoutHeader from './components/Layout/LayoutHeader';
+import getQueryParam from '@/utils/getQueryParam';
+import { UPLOAD_TYPES } from '@/constants';
 
 export default {
     name: 'App',
@@ -30,17 +32,37 @@ export default {
         snackbar() {
             return this.$store.state.snackbar;
         },
+
+        uploadDetails() {
+            return this.$store.state.uploadDetails;
+        },
+    },
+
+    watch: {
+        uploadDetails: {
+            handler(v) {
+                if (v && typeof v.validation?.is_valid !== 'boolean') {
+                    !this.$store.state.connection &&
+                        this.$store.dispatch('setupConnection', {
+                            id: v.id,
+                            type: v.type,
+                        });
+                } else {
+                    this.$store.dispatch('closeConnection');
+                }
+            },
+            immediate: true,
+        },
     },
 
     async created() {
-        if (window.location.hash.includes('?id=')) {
-            const id = window.location.hash.split('=')[1];
-            if (id) {
-                await this.$store.dispatch('fetchUploadDetails', id);
-                if (typeof this.$store.state.uploadDetails?.validation?.is_valid !== 'boolean') {
-                    this.$store.dispatch('setupConnection', id);
-                }
-            }
+        const urlId = getQueryParam('url');
+        const fileId = getQueryParam('file');
+        if (urlId || fileId) {
+            await this.$store.dispatch('fetchUploadDetails', {
+                id: urlId || fileId,
+                type: urlId ? UPLOAD_TYPES.URL : UPLOAD_TYPES.FILE,
+            });
         } else {
             this.$router.push('/select-data').catch(() => {});
         }
