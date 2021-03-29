@@ -109,7 +109,7 @@ def validate_data(object_id, model=None):
             },
         ]
         datasource.save(update_fields=["available_tables"])
-    elif hasattr(datasource, "analyzed_file"):
+    elif hasattr(datasource, "analyzed_file") and datasource.analyzed_file:
         with open(datasource.analyzed_file.path) as f:
             data = json.loads(f.read())
             datasource.available_tables = data["tables"]
@@ -204,17 +204,18 @@ def download_data_source(object_id, model=None):
         with TemporaryFile() as temp:
             for chunk in r.iter_content(chunk_size=chunk_size):
                 temp.write(chunk)
-            downloaded += chunk_size
-            progress = (downloaded / size) * 100
-            progress = progress if progress < 100 else 100
-            async_to_sync(channel_layer.group_send)(
-                f"validate_data_{object_id}",
-                {
-                    "type": "task.download_data_source",
-                    "datasource": serializer.to_representation(instance=datasource),
-                    "progress": int(progress),
-                },
-            )
+                downloaded += chunk_size
+                progress = (downloaded / size) * 100
+                progress = progress if progress < 100 else 100
+                async_to_sync(channel_layer.group_send)(
+                    f"validate_data_{object_id}",
+                    {
+                        "type": "task.download_data_source",
+                        "datasource": serializer.to_representation(instance=datasource),
+                        "progress": int(progress),
+                    },
+                )
+
             temp.seek(0)
             datasource.file = File(temp)
             datasource.save(update_fields=["file"])
@@ -248,17 +249,17 @@ def download_data_source(object_id, model=None):
             with TemporaryFile() as temp:
                 for chunk in r.iter_content(chunk_size=chunk_size):
                     temp.write(chunk)
-                downloaded += chunk_size
-                progress = (downloaded / size) * 100
-                progress = progress if progress < 100 else 100
-                async_to_sync(channel_layer.group_send)(
-                    f"validate_data_{object_id}",
-                    {
-                        "type": "task.download_data_source",
-                        "datasource": serializer.to_representation(instance=datasource),
-                        "progress": int(progress),
-                    },
-                )
+                    downloaded += chunk_size
+                    progress = (downloaded / size) * 100
+                    progress = progress if progress < 100 else 100
+                    async_to_sync(channel_layer.group_send)(
+                        f"validate_data_{object_id}",
+                        {
+                            "type": "task.download_data_source",
+                            "datasource": serializer.to_representation(instance=datasource),
+                            "progress": int(progress),
+                        },
+                    )
                 temp.seek(0)
                 datasource.analyzed_file = File(temp)
                 datasource.save(update_fields=["analyzed_file"])
