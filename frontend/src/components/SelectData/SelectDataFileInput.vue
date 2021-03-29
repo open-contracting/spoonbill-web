@@ -160,21 +160,25 @@ export default {
             if (upload.validation.is_valid === false) {
                 this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
-                this.updates.push({
-                    type: 'error',
-                    content:
-                        'This file is not compliant with the OCDS schema so cannot be flattened.\n' +
-                        'Check your data using the Data Review Tool and resolve the issues before flattening. ',
-                });
+                this.updates = [
+                    {
+                        type: 'error',
+                        content:
+                            'This file is not compliant with the OCDS schema so cannot be flattened.\n' +
+                            'Check your data using the Data Review Tool and resolve the issues before flattening. ',
+                    },
+                ];
                 return;
             }
             if (upload.validation.is_valid === true) {
                 this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
-                this.updates.push({
-                    type: 'success',
-                    content: 'Now your file is analyzed and ready to use.',
-                });
+                this.updates.push = [
+                    {
+                        type: 'success',
+                        content: 'Now your file is analyzed and ready to use.',
+                    },
+                ];
                 this.loading = {
                     value: true,
                     status: 'Analysis has been completed',
@@ -191,7 +195,13 @@ export default {
                 fileName: this.fileName || this.uploadDetails.id,
                 color: '#6C75E1',
             };
-            this.$store.commit('setDownloadProgress', 0);
+        },
+
+        /**
+         * Creates axios cancel token which allows to cancel file uploading
+         */
+        createCancelToken() {
+            this.cancelTokenSource = axios.CancelToken.source();
         },
 
         /**
@@ -203,7 +213,7 @@ export default {
                 await this.$store.dispatch('closeConnection');
                 this.$store.commit('setUploadDetails', null);
                 this.showLoading(file.name, true);
-                this.cancelTokenSource = axios.CancelToken.source();
+                this.createCancelToken();
                 const formData = new FormData();
                 formData.append('file', file);
                 const { data } = await ApiService.sendFile(formData, this.cancelTokenSource.token, (ev) => {

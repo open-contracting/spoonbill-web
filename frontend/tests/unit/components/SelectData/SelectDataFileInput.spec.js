@@ -3,6 +3,7 @@ import SelectDataFileInput from '@/components/SelectData/SelectDataFileInput';
 import Vuetify from 'vuetify';
 import ApiService from '@/services/ApiService';
 import store from '@/store';
+import router from '@/router';
 
 const mockCancelTokenSource = {
     token: 'mocked',
@@ -28,8 +29,9 @@ describe('SelectDataFileInput.vue', () => {
                 localVue,
                 store,
                 vuetify,
+                router,
             });
-            await wrapper.vm.sendFile({ size: 101 });
+            await wrapper.vm.sendFile({ size: 101, name: 'test' });
             expect(ApiService.sendFile).toBeCalledTimes(1);
         });
 
@@ -38,6 +40,7 @@ describe('SelectDataFileInput.vue', () => {
                 localVue,
                 store,
                 vuetify,
+                router,
             });
 
             await wrapper.vm.sendUrl('http://mocked-url.com');
@@ -51,7 +54,7 @@ describe('SelectDataFileInput.vue', () => {
                 vuetify,
             });
 
-            wrapper.vm.sendFile({ size: 101 });
+            wrapper.vm.createCancelToken();
             wrapper.vm.cancelRequest();
             expect(mockCancelTokenSource.cancel).toBeCalledTimes(1);
         });
