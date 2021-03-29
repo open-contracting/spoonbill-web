@@ -173,7 +173,7 @@ export default {
             if (upload.validation.is_valid === true) {
                 this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
-                this.updates.push = [
+                this.updates = [
                     {
                         type: 'success',
                         content: 'Now your file is analyzed and ready to use.',
