@@ -1,0 +1,63 @@
+<template>
+    <div class="px-1 table-info" :class="{ 'table-info--selected': selected }" v-on="$listeners">
+        <v-icon color="error" v-if="unavailable">mdi-close</v-icon>
+        <span class="table-info__name">
+            {{ table.name }}
+        </span>
+        -
+        <span class="table-info__details">{{ details }}</span>
+    </div>
+</template>
+
+<script>
+export default {
+    name: 'SelectDataTableInfo',
+
+    props: {
+        table: {
+            type: Object,
+            required: true,
+        },
+        unavailable: {
+            type: Boolean,
+            default: false,
+        },
+        selected: {
+            type: Boolean,
+            default: false,
+        },
+    },
+
+    computed: {
+        details() {
+            if (this.unavailable) {
+                return 'no-data';
+            } else {
+                const { rows, arrays } = this.table;
+                let result = 'total row count: ' + rows;
+                if (arrays) {
+                    result += `, ${arrays.count} array${arrays.count > 1 ? 's' : ''}`;
+                }
+                return result;
+            }
+        },
+    },
+};
+</script>
+
+<style scoped lang="scss">
+.table-info {
+    padding: 2px;
+    cursor: pointer;
+    font-size: 14px;
+    &__name {
+        text-transform: capitalize;
+    }
+    &__details {
+        font-weight: 300;
+    }
+    &--selected {
+        background-color: map-get($colors, 'accent');
+    }
+}
+</style>

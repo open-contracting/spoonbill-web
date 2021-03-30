@@ -14,10 +14,12 @@ export default new Vuex.Store({
             color: null,
         },
         uploadDetails: null,
+
         /** @type { WebSocket }*/
         connection: null,
-        /** @type { number } */
+
         downloadProgress: -1,
+        numberOfUploads: 0,
     },
     getters: {
         uploadStatus(state) {
@@ -47,6 +49,10 @@ export default new Vuex.Store({
 
         setDownloadProgress(state, progress) {
             state.downloadProgress = progress;
+        },
+
+        increaseNumberOfUploads(state) {
+            state.numberOfUploads++;
         },
     },
     actions: {

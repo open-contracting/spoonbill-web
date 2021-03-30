@@ -1,47 +1,88 @@
 <template>
-    <v-stepper>
-        <v-stepper alt-labels>
-            <v-stepper-header>
-                <v-stepper-step step="1">Select data</v-stepper-step>
+    <v-stepper alt-labels class="app-stepper" :value="value">
+        <v-stepper-header>
+            <v-stepper-step :complete="value > 1" complete-icon="mdi-check" step="1">
+                <span class="text-link" @click="onUploadFileStepClick" v-if="value > 1 || $store.state.numberOfUploads">
+                    Re-upload file
+                </span>
+                <template v-else>Upload file</template>
+            </v-stepper-step>
 
-                <v-divider></v-divider>
+            <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
 
-                <v-stepper-step step="2">Customize table</v-stepper-step>
+            <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2">
+                <span :class="{ 'text-link': value > 2 }" @click="navigateTo('/select-data')">Select data</span>
+            </v-stepper-step>
 
-                <v-divider></v-divider>
+            <v-divider :class="{ active: value > 2, complete: value > 3 }"></v-divider>
 
-                <v-stepper-step step="3">Edit headings</v-stepper-step>
+            <v-stepper-step :complete="value > 3" complete-icon="mdi-check" step="3">Customize tables</v-stepper-step>
 
-                <v-divider></v-divider>
+            <v-divider :class="{ active: value > 3, complete: value > 4 }"></v-divider>
 
-                <v-stepper-step step="4">Download</v-stepper-step>
-            </v-stepper-header>
-        </v-stepper>
+            <v-stepper-step :complete="value > 4" complete-icon="mdi-check" step="4">Edit headings</v-stepper-step>
+
+            <v-divider :class="{ active: value > 4, complete: value > 5 }"></v-divider>
+
+            <v-stepper-step step="5">Download</v-stepper-step>
+        </v-stepper-header>
     </v-stepper>
 </template>
 
 <script>
 export default {
     name: 'AppStepper',
+
+    computed: {
+        value() {
+            const route = this.$route.name;
+            switch (route) {
+                case 'select data':
+                    return 2;
+                case 'customize tables':
+                    return 3;
+                default:
+                    return 1;
+            }
+        },
+    },
+
+    methods: {
+        /**
+         * Handle click on first step
+         */
+        onUploadFileStepClick() {
+            this.$store.commit('setUploadDetails', null);
+            this.$router.push('/upload-file').catch(() => {});
+        },
+
+        /**
+         * Navigate to path saving current route query
+         * @param { string } path
+         */
+        navigateTo(path) {
+            this.$router.push({ path, query: this.$route.query });
+        },
+    },
 };
 </script>
 
 <style scoped lang="scss">
-::v-deep .v-stepper {
-    box-shadow: none !important;
-    background-color: map-get($colors, 'super-light') !important;
-    .v-stepper__header {
+.app-stepper.v-stepper {
+    box-shadow: none;
+    background-color: map-get($colors, 'super-light');
+    ::v-deep .v-stepper__header {
         .v-divider {
-            margin: 40px -100px 0;
+            margin: 49px -80px 0;
             border: 1px solid map-get($colors, 'gray-light');
+            &.active {
+                border-color: map-get($colors, 'accent');
+            }
+            &.complete {
+                border-color: map-get($colors, 'primary');
+            }
         }
         .v-stepper__step {
-            &:first-child {
-                padding-left: 0;
-            }
-            &:last-child {
-                padding-right: 0;
-            }
             &--inactive .v-stepper__step__step {
                 background-color: map-get($colors, 'gray-light') !important;
             }
@@ -49,15 +90,14 @@ export default {
                 .v-stepper__step__step {
                     background-color: map-get($colors, 'accent') !important;
                     position: relative;
-                    box-shadow: 0 0 0 2px white;
                     &::after {
                         content: '';
                         position: absolute;
-                        left: -4px;
-                        top: -4px;
-                        width: 33px;
-                        height: 33px;
-                        border: 2px solid map-get($colors, 'accent');
+                        left: 3px;
+                        top: 3px;
+                        width: 38px;
+                        height: 38px;
+                        border: 2px solid white;
                         border-radius: 50%;
                     }
                 }
@@ -74,10 +114,27 @@ export default {
                     }
                 }
             }
+            &:not(.v-stepper__step--active):not(.v-stepper__step--inactive) {
+                .v-stepper__step__step {
+                    background-color: map-get($colors, 'primary');
+                }
+                & + .v-divider {
+                    position: relative;
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        border: 1px solid map-get($colors, 'primary');
+                        left: 0;
+                        top: -1px;
+                        width: 50%;
+                        z-index: 2;
+                    }
+                }
+            }
             .v-stepper__step__step {
                 margin: 4px 4px 13px;
-                width: 25px;
-                height: 25px;
+                width: 44px !important;
+                height: 44px;
                 color: map-get($colors, 'primary');
                 position: relative;
                 z-index: 3;

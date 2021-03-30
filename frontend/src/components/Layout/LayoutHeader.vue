@@ -1,7 +1,7 @@
 <template>
     <v-app-bar app color="primary" height="120" elevation="0">
         <v-container>
-            <router-link class="d-block" to="/select-data">
+            <router-link class="d-block" to="/">
                 <v-img
                     max-width="230"
                     contain

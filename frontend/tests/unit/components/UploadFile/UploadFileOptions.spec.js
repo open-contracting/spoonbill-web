@@ -1,14 +1,14 @@
 import { mount, createLocalVue } from '@vue/test-utils';
-import SelectDataOptions from '@/components/SelectData/SelectDataOptions';
+import UploadFileOptions from '@/components/UploadFile/UploadFileOptions';
 import AppButton from '@/components/App/AppButton';
 import Vuetify from 'vuetify';
 
-describe('SelectDataOptions.vue', () => {
+describe('UploadFileOptions.vue', () => {
     const localVue = createLocalVue();
     const vuetify = new Vuetify();
 
     it("emits 'select' event with selected option", () => {
-        const wrapper = mount(SelectDataOptions, {
+        const wrapper = mount(UploadFileOptions, {
             localVue,
             vuetify,
         });

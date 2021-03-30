@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h1>OCDS Flatten Tool</h1>
-        <p class="mb-15">Convert your OCDS JSON data into Excel</p>
-        <app-stepper class="mb-8" />
+        <h1 class="mb-2">OCDS Flatten Tool</h1>
+        <p class="mb-5">Convert your OCDS JSON data into Excel</p>
+        <app-stepper class="mb-6" />
     </div>
 </template>
 

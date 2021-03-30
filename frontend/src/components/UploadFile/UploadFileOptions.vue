@@ -28,7 +28,7 @@
 import AppButton from '@/components/App/AppButton';
 
 export default {
-    name: 'SelectDataOptions',
+    name: 'UploadFileOptions',
 
     components: { AppButton },
 
