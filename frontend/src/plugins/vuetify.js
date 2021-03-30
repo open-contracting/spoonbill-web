@@ -18,6 +18,7 @@ export default new Vuetify({
                 'success-light': '#F0F8E5',
                 'success-notification': '#25B2A7',
                 'error-notification': '#F44336',
+                'moody-blue': '#6C75E1',
             },
         },
     },

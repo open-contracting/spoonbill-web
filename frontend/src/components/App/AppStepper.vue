@@ -49,19 +49,25 @@ export default {
 
     methods: {
         /**
-         * Handle click on first step
+         * Goes to the first step and clears upload details after confirmation
          */
-        onUploadFileStepClick() {
-            this.$store.commit('setUploadDetails', null);
-            this.$router.push('/upload-file').catch(() => {});
+        async onUploadFileStepClick() {
+            const confirmed = await this.$root.openConfirmGoBackDialog();
+            if (confirmed) {
+                this.$store.commit('setUploadDetails', null);
+                this.$router.push('/upload-file').catch(() => {});
+            }
         },
 
         /**
-         * Navigate to path saving current route query
+         * Goes to specified path saving current route query after confirmation
          * @param { string } path
          */
-        navigateTo(path) {
-            this.$router.push({ path, query: this.$route.query });
+        async navigateTo(path) {
+            const confirmed = await this.$root.openConfirmGoBackDialog();
+            if (confirmed) {
+                this.$router.push({ path, query: this.$route.query });
+            }
         },
     },
 };

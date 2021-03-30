@@ -8,12 +8,12 @@
             </v-container>
         </v-main>
 
-        <v-snackbar v-model="snackbar.opened" :timeout="10000" :color="snackbar.color" right top>
+        <v-snackbar v-model="snackbar.opened" :timeout="5000" :color="snackbar.color" right top>
             <v-icon class="mr-2">
                 {{ snackbar.color === 'error' ? 'mdi-alert-circle-outline' : 'mdi-check-circle-outline' }}
             </v-icon>
 
-            <span class="text-light-14">{{ snackbar.text }}</span>
+            <span class="text-light-14 pt-1">{{ snackbar.text }}</span>
 
             <template v-slot:action="{ attrs }">
                 <v-btn icon v-bind="attrs" @click="$store.commit('closeSnackbar')">
@@ -21,6 +21,8 @@
                 </v-btn>
             </template>
         </v-snackbar>
+
+        <app-go-back-confirm-dialog />
     </v-app>
 </template>
 
@@ -28,11 +30,12 @@
 import LayoutHeader from './components/Layout/LayoutHeader';
 import getQueryParam from '@/utils/getQueryParam';
 import { UPLOAD_TYPES, UPLOAD_STATUSES } from '@/constants';
+import AppGoBackConfirmDialog from '@/components/App/AppGoBackConfirmDialog';
 
 export default {
     name: 'App',
 
-    components: { LayoutHeader },
+    components: { AppGoBackConfirmDialog, LayoutHeader },
 
     computed: {
         snackbar() {

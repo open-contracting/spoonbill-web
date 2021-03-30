@@ -155,14 +155,14 @@ export default {
                 this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
                 this.$store.commit('openSnackbar', {
-                    color: 'success',
+                    color: 'moody-blue',
                     text: 'Now your file is analyzed and ready to use.',
                 });
                 this.loading = {
                     value: true,
                     status: 'Analysis has been completed',
                     fileName: this.fileName || this.uploadDetails.id,
-                    color: '#6C75E1',
+                    color: 'moody-blue',
                 };
                 this.$store.commit('setDownloadProgress', 100);
                 this.valid = true;
@@ -172,7 +172,7 @@ export default {
                 value: true,
                 status: 'File analysis in progress...',
                 fileName: this.fileName || this.uploadDetails.id,
-                color: '#6C75E1',
+                color: 'moody-blue',
             };
         },
 
@@ -229,6 +229,7 @@ export default {
         showLoading(fileName, cancelable) {
             this.loading = {
                 value: true,
+                color: '#23B2A7',
                 status: 'Upload in progress',
                 fileName,
                 cancelable,

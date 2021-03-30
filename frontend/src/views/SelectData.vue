@@ -81,6 +81,22 @@
                 </v-btn>
             </div>
         </v-col>
+        <v-col cols="12" md="4" xl="3" offset-xl="1">
+            <app-f-a-q>
+                <span slot="title">FAQ</span>
+
+                <v-expansion-panels :value="panelsValue" accordion multiple>
+                    <v-expansion-panel v-for="item in faqItems" :key="item.title">
+                        <v-expansion-panel-header class="d-flex">
+                            {{ item.title }}
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            {{ item.content }}
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </app-f-a-q>
+        </v-col>
     </v-row>
 </template>
 
@@ -88,11 +104,12 @@
 import LayoutInfo from '@/components/Layout/LayoutInfo';
 import draggable from 'vuedraggable';
 import SelectDataTableInfo from '@/components/SelectData/SelectDataTableInfo';
+import AppFAQ from '@/components/App/AppFAQ';
 
 export default {
     name: 'SelectData',
 
-    components: { SelectDataTableInfo, LayoutInfo, draggable },
+    components: { AppFAQ, SelectDataTableInfo, LayoutInfo, draggable },
 
     data() {
         return {
@@ -102,6 +119,22 @@ export default {
             availableTables: [],
             selectedTables: [],
             unavailableTables: [],
+            panelsValue: [0],
+            faqItems: [
+                {
+                    title: 'What is an array?',
+                    content:
+                        'An array is a sort of list that is nested inside a field. When converting from JSON to CSV it ' +
+                        'is usually helpful to split out arrays into separate tables to make the data to work with. ' +
+                        'Some tables in OCDS have more than one array.',
+                },
+                {
+                    title: 'Why are some table unavailable?',
+                    content:
+                        'If a table is unavailable it means that the organisation publishing the data has no information ' +
+                        'for those tables.',
+                },
+            ],
         };
     },
 
