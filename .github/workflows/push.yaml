@@ -82,7 +82,9 @@ jobs:
               docker-compose -f docker-compose.test.yaml build
               docker-compose -f docker-compose.test.yaml pull
               docker-compose -f docker-compose.test.yaml up -d
-              sleep 5
+              sleep 7
+              docker-compose -f docker-compose.test.yaml logs app
+              docker ps
               cd ./test
               DOMAIN_URL=http://127.0.0.1:8000 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot -s queue tests/integration
       - uses: actions/upload-artifact@v2
