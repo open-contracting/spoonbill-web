@@ -56,6 +56,42 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Check out tests repository
+        uses: actions/checkout@v2
+        with:
+          repository: open-contracting/spoonbill-test
+          token: ${{ secrets.CHECKOUT_PAT }}
+          path: 'test'
+      - name: Install requirements
+        run: pip install -r test/requirements.txt
+      - uses: nanasess/setup-chromedriver@v1.0.5
+      - name: create env file
+        run: |
+              echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+              echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+              echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+              echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+              echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000" >> .env
+              echo "CELERY_BACKEND=db+postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres/${{ secrets.POSTGRES_DB }}" >> .env
+      - name: Run tests docker-compose
+        run: |
+              docker-compose -f docker-compose.test.yaml build
+              docker-compose -f docker-compose.test.yaml pull
+              docker-compose -f docker-compose.test.yaml up -d
+              sleep 5
+              cd ./test
+              DOMAIN_URL=http://127.0.0.1:8000 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot -s queue tests/integration
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Tests result
+          path: |
+            test/output.xml
+            test/log.html
+            test/report.html
       - name: Build container image
         uses: docker/build-push-action@v1
         with:
