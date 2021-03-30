@@ -98,12 +98,6 @@ export default {
     },
 
     watch: {
-        downloadProgress(v) {
-            if (v) {
-                this.loading.percent = v;
-            }
-        },
-
         uploadDetails: {
             handler(v) {
                 if (!v) {
@@ -202,7 +196,7 @@ export default {
                 const formData = new FormData();
                 formData.append('file', file);
                 const { data } = await ApiService.sendFile(formData, this.cancelTokenSource.token, (ev) => {
-                    this.loading.percent = Math.floor((ev.loaded * 100) / ev.total);
+                    this.$store.commit('setDownloadProgress', Math.floor((ev.loaded * 100) / ev.total));
                 });
                 this.$store.commit('setDownloadProgress', 0);
                 this.$store.commit('setUploadDetails', {
