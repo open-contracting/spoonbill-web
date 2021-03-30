@@ -11,7 +11,7 @@ services:
       - postgres
       - redis
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     hostname: app
     env_file:
       - .env
@@ -28,6 +28,8 @@ services:
     restart: on-failure
   postgres:
     container_name: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
     hostname: postgres
     image: postgres:latest
     env_file:
