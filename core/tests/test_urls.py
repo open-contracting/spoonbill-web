@@ -55,3 +55,32 @@ class TestUrl:
 
     def test_get_selections_successful(self, client, url_obj):
         get_data_selections(client, url_obj, "urls")
+
+    def test_delete_table(self, client, url_obj):
+        create_data_selection(client, url_obj, "urls")
+        response = client.get(f"/urls/{url_obj.id}/selections/")
+        assert len(response.json()[0]["tables"]) == 2
+
+        selection_id = response.json()[0]["id"]
+        deleted_table_data = response.json()[0]["tables"][0]
+        response = client.delete(f"/urls/{url_obj.id}/selections/{selection_id}/tables/{deleted_table_data['id']}/")
+
+        response = client.get(f"/urls/{url_obj.id}/selections/{selection_id}/")
+        assert len(response.json()["tables"]) == 1
+        table_data = response.json()["tables"][0]
+
+        assert table_data != deleted_table_data
+
+    def test_list_tables(self, client, url_obj):
+        selection = create_data_selection(client, url_obj, "urls")
+        response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/")
+        assert len(response.json()) == 2
+
+    def test_table_preview(self, client, url_obj):
+        selection = create_data_selection(client, url_obj, "urls")
+        tables = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/").json()
+
+        response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/")
+        assert len(response.json()) == 1
+        data = response.json()[0]
+        assert set(data.keys()) == {"name", "preview"}

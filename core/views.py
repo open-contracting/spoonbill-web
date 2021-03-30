@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 
 from django.conf import settings
@@ -182,3 +183,43 @@ class TableViewSet(viewsets.ModelViewSet):
         queryset = Table.objects.filter(dataselection=kwargs.get("selection_id", ""))
         serializer = self.get_serializer_class()(queryset, many=True)
         return Response(serializer.data)
+
+
+class TablePreviewViewSet(viewsets.GenericViewSet):
+    queryset = Table.objects.all()
+    http_method_names = ["get", "head", "options", "trace"]
+
+    def list(self, request, url_id=None, upload_id=None, selection_id=None, table_id=None):
+        table = Table.objects.get(id=table_id)
+        # if url_id:
+        #     datasource = Url.objects.get(id=url_id)
+        # elif upload_id:
+        #     datasource = Upload.objects.get(id=upload_id)
+        # datasource_dir = f"{settings.MEDIA_ROOT}{datasource.id}"
+        data = []
+        # table_name_lower = table.name.lower()
+        try:
+            if hasattr(table, "splitted") and table.splitted:
+                for letter in ("a", "b", "c"):
+                    data.append(
+                        {
+                            "name": f"{table.name.title()}_{letter}.csv",
+                            "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
+                        }
+                    )
+            #     for filename in os.listdir(datasource_dir):
+            #         if filename.startswith(table_name_lower):
+            #             with open(f"{datasource_dir}/{filename}") as f:
+            #                 data.append({"name": filename.title(), "preview": f.read()})
+            else:
+                # with open(f"{datasource_dir}/{table_name_lower}.csv") as f:
+                #     data.append({"name": table.name.title(), "preivew": f.read()})
+                data.append(
+                    {
+                        "name": f"{table.name.title()}.csv",
+                        "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
+                    }
+                )
+        except FileNotFoundError:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(data)
