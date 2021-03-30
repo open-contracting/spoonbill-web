@@ -7,7 +7,7 @@ django-celery-beat
 django-celery-results
 django-cors-headers
 djangorestframework
-drf-extensions
+drf-nested-routers
 ijson
 markdown
 psycopg2
