@@ -7,7 +7,7 @@
 
 <script>
 export default {
-    name: 'SelectDataUrlInput',
+    name: 'UploadFileUrlInput',
 
     data() {
         return {

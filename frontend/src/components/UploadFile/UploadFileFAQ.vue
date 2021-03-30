@@ -22,9 +22,9 @@
         <v-card-text>
             <v-expansion-panels accordion>
                 <v-expansion-panel v-for="item in items" :key="item.title">
-                    <v-expansion-panel-header hide-actions class="d-flex" v-slot="{ open }">
-                        <v-icon v-show="open" color="accent">mdi-minus-circle</v-icon>
-                        <v-icon v-show="!open">mdi-plus-circle</v-icon>
+                    <v-expansion-panel-header class="d-flex">
+                        <!--                        <v-icon v-show="open" color="accent">mdi-minus-circle</v-icon>
+                        <v-icon v-show="!open">mdi-plus-circle</v-icon>-->
                         {{ item.title }}
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
@@ -38,7 +38,7 @@
 
 <script>
 export default {
-    name: 'SelectDataFAQ',
+    name: 'UploadFileFAQ',
 
     props: {
         accent: {
@@ -82,7 +82,7 @@ export default {
     position: sticky;
     top: 130px;
     width: 100%;
-    border: 4px solid map-get($colors, 'primary');
+    border: 4px solid map-get($colors, 'accent');
     border-radius: 32px 4px 4px 4px !important;
     min-height: 580px;
     box-shadow: none !important;
@@ -95,7 +95,6 @@ export default {
         padding-right: 0;
     }
     &.faq-block--accent {
-        border-color: map-get($colors, 'accent');
         min-height: auto;
         .v-card__title {
             border: none;
@@ -115,10 +114,13 @@ export default {
     &::before {
         box-shadow: none;
     }
-    &-header > *:not(.v-expansion-panel-header__icon) {
-        flex: 0 0 auto;
-        margin-left: -3px;
-        margin-right: 8px;
+    &-header {
+        .v-icon {
+            color: map-get($colors, 'darkest') !important;
+        }
+        &--active .v-icon {
+            color: map-get($colors, 'accent') !important;
+        }
     }
 }
 </style>

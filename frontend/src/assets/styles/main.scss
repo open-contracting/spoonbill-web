@@ -20,6 +20,11 @@ h1, h2, h3 {
     color: map-get($colors, 'darkest');
     text-decoration: none;
     border-bottom: 2px solid map-get($colors, 'accent');
+    transition: background-color .3s;
+    cursor: pointer;
+    &:hover {
+        background-color: map-get($colors, 'accent');
+    }
 }
 
 .text-light-14 {

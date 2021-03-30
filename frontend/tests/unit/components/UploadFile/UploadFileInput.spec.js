@@ -1,5 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils';
-import SelectDataFileInput from '@/components/SelectData/SelectDataFileInput';
+import UploadFileInput from '@/components/UploadFile/UploadFileInput';
 import Vuetify from 'vuetify';
 import ApiService from '@/services/ApiService';
 import store from '@/store';
@@ -19,13 +19,13 @@ jest.mock('axios', () => {
     };
 });
 
-describe('SelectDataFileInput.vue', () => {
+describe('UploadFileInput.vue', () => {
     const localVue = createLocalVue();
     const vuetify = new Vuetify();
 
     describe('methods', () => {
         test("'sendFile' method makes API call", async () => {
-            const wrapper = mount(SelectDataFileInput, {
+            const wrapper = mount(UploadFileInput, {
                 localVue,
                 store,
                 vuetify,
@@ -36,7 +36,7 @@ describe('SelectDataFileInput.vue', () => {
         });
 
         test("'sendUrl' method makes API call with entered URL", async () => {
-            const wrapper = mount(SelectDataFileInput, {
+            const wrapper = mount(UploadFileInput, {
                 localVue,
                 store,
                 vuetify,
@@ -48,7 +48,7 @@ describe('SelectDataFileInput.vue', () => {
         });
 
         test("'cancelRequest' cancels 'sendFile' request", () => {
-            const wrapper = mount(SelectDataFileInput, {
+            const wrapper = mount(UploadFileInput, {
                 localVue,
                 store,
                 vuetify,

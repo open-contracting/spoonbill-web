@@ -5,23 +5,28 @@ Vue.use(VueRouter);
 
 const routes = [
     {
+        path: '/upload-file',
+        name: 'upload file',
+        component: () => import('@/views/UploadFile'),
+    },
+    {
+        path: '/upload-file/registry',
+        name: 'upload file from registry',
+        component: () => import('@/views/UploadFile/UploadFileRegistry'),
+    },
+    {
         path: '/select-data',
         name: 'select data',
-        component: () => import(/* webpackChunkName: "SelectData" */ '@/views/SelectData'),
+        component: () => import('@/views/SelectData'),
     },
     {
-        path: '/select-data/registry',
-        name: 'select file',
-        component: () => import(/* webpackChunkName: "SelectDataRegistry" */ '@/views/SelectData/SelectDataRegistry'),
-    },
-    {
-        path: '/select-data/select-tables',
-        name: 'select tables',
-        component: () => import('@/views/SelectData/SelectTables'),
+        path: '/customize-tables',
+        name: 'customize tables',
+        component: () => import('@/views/CustomizeTables'),
     },
     {
         path: '*',
-        redirect: '/select-data',
+        redirect: '/upload-file',
     },
 ];
 

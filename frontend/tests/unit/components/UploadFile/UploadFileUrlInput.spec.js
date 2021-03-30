@@ -1,13 +1,13 @@
 import { mount, createLocalVue } from '@vue/test-utils';
-import SelectDataUrlInput from '@/components/SelectData/SelectDataUrlInput';
+import UploadFileUrlInput from '@/components/UploadFile/UploadFileUrlInput';
 import Vuetify from 'vuetify';
 
-describe('SelectDataUrlInput.vue', () => {
+describe('UploadFileUrlInput.vue', () => {
     const localVue = createLocalVue();
     const vuetify = new Vuetify();
 
     it("emits 'submit' event once user clicks 'submit' button if url is valid", async () => {
-        const wrapper = mount(SelectDataUrlInput, {
+        const wrapper = mount(UploadFileUrlInput, {
             localVue,
             vuetify,
         });

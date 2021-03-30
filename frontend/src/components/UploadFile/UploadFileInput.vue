@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="mb-4 d-flex options">
+        <div class="mb-4 d-flex options" :class="{ 'options--disabled': uploadDetails }">
             <div
                 class="option"
                 :class="{ 'option--selected': option.value === uploadType }"
@@ -14,7 +14,7 @@
         </div>
 
         <div class="p-relative">
-            <select-data-loading-progress
+            <upload-file-loading-progress
                 v-if="loading.value"
                 :cancelable="loading.cancelable"
                 :status="loading.status"
@@ -27,46 +27,36 @@
             <template v-else>
                 <app-dropzone @input="sendFile" v-if="uploadType === 'FILE'" />
 
-                <select-data-url-input @submit="sendUrl" v-else />
+                <upload-file-url-input @submit="sendUrl" v-else />
             </template>
-
-            <div
-                class="d-flex justify-space-between align-center status-update"
-                v-for="(update, idx) in updates"
-                :style="{ top: idx === 0 ? '8px' : idx * 85 + 8 + 'px' }"
-                :class="update.type"
-                :key="idx"
-            >
-                <div class="text-light-14">
-                    {{ update.content }}
-                </div>
-                <v-btn class="ml-5" icon @click="updates.splice(idx, 1)">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </div>
         </div>
 
         <p v-if="!isValid" class="mt-4 text-light-14">
             Note that large files may take a while to process. Please be patient.
         </p>
 
-        <select-data-options class="mt-15" v-if="isValid" @select="onOptionSelect" />
+        <upload-file-options class="mt-15" v-if="isValid" @select="onOptionSelect" />
     </div>
 </template>
 
 <script>
 import AppDropzone from '@/components/App/AppDropzone';
-import SelectDataUrlInput from '@/components/SelectData/SelectDataUrlInput';
+import UploadFileUrlInput from '@/components/UploadFile/UploadFileUrlInput';
 import axios from 'axios';
 import ApiService from '@/services/ApiService';
 import { UPLOAD_STATUSES, UPLOAD_TYPES } from '@/constants';
-import SelectDataLoadingProgress from '@/components/SelectData/SelectDataLoadingProgress';
-import SelectDataOptions from '@/components/SelectData/SelectDataOptions';
+import UploadFileLoadingProgress from '@/components/UploadFile/UploadFileLoadingProgress';
+import UploadFileOptions from '@/components/UploadFile/UploadFileOptions';
 
 export default {
-    name: 'SelectDataFileInput',
+    name: 'UploadFileInput',
 
-    components: { SelectDataOptions, SelectDataLoadingProgress, SelectDataUrlInput, AppDropzone },
+    components: {
+        UploadFileOptions,
+        UploadFileLoadingProgress,
+        UploadFileUrlInput,
+        AppDropzone,
+    },
 
     data() {
         return {
@@ -76,7 +66,6 @@ export default {
                 fileName: null,
                 cancelable: false,
             },
-            updates: [],
             cancelTokenSource: null,
             options: [
                 {
@@ -118,7 +107,6 @@ export default {
         uploadDetails: {
             handler(v) {
                 if (!v) {
-                    this.updates = [];
                     this.loading.value = false;
                     return;
                 }
@@ -160,25 +148,22 @@ export default {
             if (upload.validation.is_valid === false) {
                 this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
-                this.updates = [
-                    {
-                        type: 'error',
-                        content:
-                            'This file is not compliant with the OCDS schema so cannot be flattened.\n' +
-                            'Check your data using the Data Review Tool and resolve the issues before flattening. ',
-                    },
-                ];
+                this.$store.commit('openSnackbar', {
+                    color: 'error',
+                    text:
+                        'This file is not compliant with the OCDS schema so cannot be flattened.\n' +
+                        'Check your data using the Data Review Tool and resolve the issues before flattening. ',
+                });
+                this.$store.commit('setUploadDetails', null);
                 return;
             }
             if (upload.validation.is_valid === true) {
                 this.uploadType = UPLOAD_TYPES.FILE;
                 this.loading.value = false;
-                this.updates = [
-                    {
-                        type: 'success',
-                        content: 'Now your file is analyzed and ready to use.',
-                    },
-                ];
+                this.$store.commit('openSnackbar', {
+                    color: 'success',
+                    text: 'Now your file is analyzed and ready to use.',
+                });
                 this.loading = {
                     value: true,
                     status: 'Analysis has been completed',
@@ -224,7 +209,8 @@ export default {
                     ...data,
                     type: UPLOAD_TYPES.FILE,
                 });
-                this.$router.push(`/select-data?file=${data.id}`).catch(() => {});
+                this.$store.commit('increaseNumberOfUploads');
+                this.$router.push(`/upload-file?file=${data.id}`).catch(() => {});
             } catch (e) {
                 console.error(e);
             } finally {
@@ -238,7 +224,6 @@ export default {
          * @param { 'FILE' | 'URL' } type
          */
         selectUploadType(type) {
-            this.updates = [];
             this.uploadType = type;
         },
 
@@ -255,7 +240,6 @@ export default {
                 cancelable,
             };
             this.fileName = fileName;
-            this.updates = [];
         },
 
         /**
@@ -273,7 +257,8 @@ export default {
                     ...data,
                     type: UPLOAD_TYPES.URL,
                 });
-                this.$router.push(`/select-data?url=${data.id}`).catch(() => {});
+                this.$store.commit('increaseNumberOfUploads');
+                this.$router.push(`/upload-file?url=${data.id}`).catch(() => {});
             } catch (e) {
                 console.error(e);
             } finally {
@@ -295,7 +280,7 @@ export default {
          */
         onOptionSelect(option) {
             if (option === 'MANUAL') {
-                this.$router.push('/select-data/select-tables/?id=' + this.uploadDetails.id);
+                this.$router.push(`/select-data/?${this.uploadDetails.type.toLowerCase()}=${this.uploadDetails.id}`);
             }
         },
     },
@@ -319,23 +304,11 @@ export default {
             border-radius: 0 8px 8px 0;
         }
     }
-}
-
-.status-update {
-    padding: 0 21px;
-    position: absolute;
-    left: 8px;
-    right: 8px;
-    z-index: 3;
-    height: 80px;
-    border-radius: 2px;
-    &.success {
-        background: #f0f8e5 !important;
-        border-left: 8px solid #71b604;
-    }
-    &.error {
-        background: #ffe8e8 !important;
-        border-left: 8px solid #ff9393;
+    &--disabled {
+        pointer-events: none;
+        .option:not(.option--selected) {
+            color: map-get($colors, 'gray-dark');
+        }
     }
 }
 </style>

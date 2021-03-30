@@ -22,7 +22,7 @@
 
 <script>
 export default {
-    name: 'SelectDataLoadingProgress',
+    name: 'UploadFileLoadingProgress',
 
     props: {
         cancelable: {
