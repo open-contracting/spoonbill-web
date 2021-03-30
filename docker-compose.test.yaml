@@ -1,0 +1,94 @@
+version: '3.7'
+
+services:
+  app:
+    build: .
+    image: app
+    pull_policy: if_not_present
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
+    container_name: app
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+    hostname: app
+    env_file:
+      - .env
+    environment:
+      - DEBUG=1
+      - DJANGO_ALLOWED_HOSTS=*
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - CELERY_BROKER=redis://redis:6379/0
+    networks:
+      - main
+    volumes:
+      - temporary-data:/tmp
+    restart: on-failure
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres:latest
+    env_file:
+      - .env
+    networks:
+      - main
+    restart: on-failure
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis:latest
+    networks:
+      - main
+    restart: on-failure
+  celery_worker:
+    build: .
+    image: app
+    command: celery -A spoonbill_web worker -l INFO --concurrency=4
+    container_name: celery_worker
+    env_file:
+      - .env
+    environment:
+      - DEBUG=1
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - CELERY_BROKER=redis://redis:6379/0
+    depends_on:
+      - app
+      - postgres
+      - redis
+    volumes:
+      - temporary-data:/tmp
+    hostname: celery_worker
+    networks:
+      - main
+    restart: on-failure
+  celery_beat:
+    build: .
+    image: app
+    command: celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    container_name: celery_beat
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - CELERY_BROKER=redis://redis:6379/0
+    depends_on:
+      - app
+      - postgres
+      - redis
+    hostname: celery_beat
+    networks:
+      - main
+    restart: on-failure
+
+networks:
+  main:
+
+volumes:
+  postgresql-data:
+  temporary-data:
