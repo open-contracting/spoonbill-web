@@ -57,19 +57,23 @@ class TestUrl:
         get_data_selections(client, url_obj, "urls")
 
     def test_delete_table(self, client, url_obj):
-        create_data_selection(client, url_obj, "urls")
-        response = client.get(f"/urls/{url_obj.id}/selections/")
-        assert len(response.json()[0]["tables"]) == 2
+        selection = create_data_selection(client, url_obj, "urls")
+        response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/")
+        assert len(response.json()) == 2
 
-        selection_id = response.json()[0]["id"]
-        deleted_table_data = response.json()[0]["tables"][0]
-        response = client.delete(f"/urls/{url_obj.id}/selections/{selection_id}/tables/{deleted_table_data['id']}/")
+        table_data = response.json()[0]
+        assert table_data["included"]
 
-        response = client.get(f"/urls/{url_obj.id}/selections/{selection_id}/")
-        assert len(response.json()["tables"]) == 1
-        table_data = response.json()["tables"][0]
+        response = client.patch(
+            f"/urls/{url_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/",
+            content_type="application/json",
+            data={"included": False},
+        )
+        assert response.status_code == 200
+        assert not response.json()["included"]
 
-        assert table_data != deleted_table_data
+        response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/")
+        assert not response.json()["included"]
 
     def test_list_tables(self, client, url_obj):
         selection = create_data_selection(client, url_obj, "urls")

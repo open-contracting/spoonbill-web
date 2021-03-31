@@ -105,3 +105,4 @@ class Table(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=120)
     splitted = models.BooleanField(default=False)
+    included = models.BooleanField(default=True)
