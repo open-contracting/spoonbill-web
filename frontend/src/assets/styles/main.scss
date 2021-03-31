@@ -22,6 +22,7 @@ h1, h2, h3 {
     border-bottom: 2px solid map-get($colors, 'accent');
     transition: background-color .3s;
     cursor: pointer;
+    font-weight: 500;
     &:hover {
         background-color: map-get($colors, 'accent');
     }

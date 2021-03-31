@@ -6,7 +6,9 @@
                 Skip customization and download the most commonly used fields, as recommended by data analyst at OCP.
             </p>
             <div class="d-flex justify-end">
-                <app-button text color="darkest" accent @click="selectOption('AUTO')">Continue with OCDS Lite</app-button>
+                <app-button text color="darkest" accent @click="selectOption('AUTO')">
+                    <span>Continue with OCDS Lite</span>
+                </app-button>
             </div>
         </div>
 
@@ -17,7 +19,7 @@
             </p>
             <div class="d-flex justify-end">
                 <app-button text color="gray-light" accent @click="selectOption('MANUAL')">
-                    Continue to select tables
+                    <span>Continue to select tables</span>
                 </app-button>
             </div>
         </div>

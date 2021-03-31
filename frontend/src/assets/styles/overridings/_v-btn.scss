@@ -1,14 +1,43 @@
 .v-btn {
     box-shadow: none;
-    &__content {
+    .v-btn__content {
         text-transform: none;
+        font-size: 16px;
+        font-weight: 400;
+        padding-top: 4px;
+        .v-image {
+            margin-top: -4px;
+        }
     }
+    &.v-btn--disabled {
+        opacity: 0.4;
+    }
+}
+.v-btn.v-btn--text {
+    padding: 0 !important;
+    .v-btn__content {
+        span {
+            border-bottom: 2px solid map-get($colors, 'accent');
+        }
+        &:hover {
+            span {
+                background-color: map-get($colors, 'accent');
+                color: map-get($colors, 'darkest');
+            }
+        }
+    }
+    &::before {
+        content: none;
+    }
+}
+.v-btn.v-btn--has-bg {
+    padding: 0 12px !important;
     &.accent {
         .v-btn__content {
             color: map-get($colors, 'darkest');
         }
     }
-    &.v-btn--disabled.v-btn--has-bg {
-        opacity: 0.4;
+    &.gray-light {
+        border: 1px solid map-get($colors, 'gray-dark') !important;
     }
 }

@@ -34,20 +34,62 @@
             <upload-file-options class="mt-9" />
         </v-col>
         <v-col cols="12" md="4" xl="3" offset-xl="1">
-            <upload-file-f-a-q class="mt-5" />
+            <app-f-a-q>
+                <span slot="title">FAQ</span>
+
+                <v-expansion-panels :value="panelsValue" accordion multiple>
+                    <v-expansion-panel v-for="item in faqItems" :key="item.title">
+                        <v-expansion-panel-header class="d-flex">
+                            {{ item.title }}
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            {{ item.content }}
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </app-f-a-q>
         </v-col>
     </v-row>
 </template>
 
 <script>
 import LayoutInfo from '@/components/Layout/LayoutInfo';
-import UploadFileFAQ from '@/components/UploadFile/UploadFileFAQ';
 import UploadFileOptions from '@/components/UploadFile/UploadFileOptions';
+import AppFAQ from '@/components/App/AppFAQ';
 
 export default {
     name: 'UploadFileRegistry',
 
-    components: { UploadFileOptions, UploadFileFAQ, LayoutInfo },
+    components: { AppFAQ, UploadFileOptions, LayoutInfo },
+
+    data() {
+        return {
+            panelsValue: [0],
+            faqItems: [
+                {
+                    title: 'What is OCDS Lite?',
+                    content:
+                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ' +
+                        'do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, ' +
+                        'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                },
+                {
+                    title: 'What is OCDS schema version 1.1?',
+                    content:
+                        'Lorem ipsum dolor sit amet, adipiscing elit, sed ' +
+                        'do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, ' +
+                        'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                },
+                {
+                    title: 'What is the data review tool?',
+                    content:
+                        'Lorem ipsum dolor sit amet, adipiscing elit, sed ' +
+                        'do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, ' +
+                        'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                },
+            ],
+        };
+    },
 };
 </script>
 

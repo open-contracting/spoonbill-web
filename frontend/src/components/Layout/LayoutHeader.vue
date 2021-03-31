@@ -1,14 +1,7 @@
 <template>
-    <v-app-bar app color="primary" height="120" elevation="0">
+    <v-app-bar app color="darkest" height="100" elevation="0">
         <v-container>
-            <router-link class="d-block" to="/">
-                <v-img
-                    max-width="230"
-                    contain
-                    src="@/assets/images/ocp-logo.svg"
-                    @click="$store.commit('setUploadDetails', null)"
-                />
-            </router-link>
+            <v-img max-width="175" contain src="@/assets/images/ocp-logo.svg" />
         </v-container>
     </v-app-bar>
 </template>
