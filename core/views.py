@@ -176,7 +176,7 @@ class DataSelectionViewSet(viewsets.ModelViewSet):
 class TableViewSet(viewsets.ModelViewSet):
     serializer_class = TablesSerializer
     queryset = Table.objects.all()
-    http_method_names = ["get", "patch", "delete", "head", "options", "trace"]
+    http_method_names = ["get", "patch", "head", "options", "trace"]
     lookup_field = "id"
 
     def list(self, request, *args, **kwargs):
