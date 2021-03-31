@@ -77,6 +77,8 @@ jobs:
               echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
               echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000" >> .env
               echo "CELERY_BACKEND=db+postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres/${{ secrets.POSTGRES_DB }}" >> .env
+              echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
+              echo "SENTRY_ENVIRONMENT=tests" >> .env
       - name: Run tests docker-compose
         run: |
               docker-compose -f docker-compose.test.yaml build
@@ -127,6 +129,8 @@ jobs:
               echo "CELERY_BACKEND=db+postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres/${{ secrets.POSTGRES_DB }}" >> .env
               echo "IMAGE=docker.pkg.github.com/${{ github.repository }}/${{ secrets.IMAGE_NAME }}:sha-${{ steps.short-sha.outputs.sha }}" >> .env
               echo "FRONT_IMAGE=docker.pkg.github.com/${{ github.repository }}/${{ secrets.FRONT_IMAGE_NAME }}:latest" >> .env
+              echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
+              echo "SENTRY_ENVIRONMENT=${{ secrets.SENTRY_ENVIRONMENT }}" >> .env
       - name: Copy .env
         uses: garygrossgarten/github-action-scp@release
         with:
