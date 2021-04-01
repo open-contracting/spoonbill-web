@@ -66,11 +66,11 @@ export default {
 
     async created() {
         const urlId = getQueryParam('url');
-        const fileId = getQueryParam('file');
-        if (urlId || fileId) {
-            const type = urlId ? UPLOAD_TYPES.URL : UPLOAD_TYPES.FILE;
+        const uploadId = getQueryParam('upload');
+        if (urlId || uploadId) {
+            const type = urlId ? UPLOAD_TYPES.URL : UPLOAD_TYPES.UPLOAD;
             await this.$store.dispatch('fetchUploadDetails', {
-                id: urlId || fileId,
+                id: urlId || uploadId,
                 type,
             });
             const uploadDetails = this.$store.state.uploadDetails;

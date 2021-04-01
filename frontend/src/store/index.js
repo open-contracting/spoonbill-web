@@ -14,6 +14,7 @@ export default new Vuex.Store({
             color: null,
         },
         uploadDetails: null,
+        selections: null,
 
         /** @type { WebSocket }*/
         connection: null,
@@ -39,6 +40,10 @@ export default new Vuex.Store({
             state.snackbar.opened = false;
         },
 
+        setSelections(state, selections) {
+            state.selections = selections;
+        },
+
         setConnection(state, connection) {
             state.connection = connection;
         },
@@ -59,7 +64,7 @@ export default new Vuex.Store({
         async fetchUploadDetails({ commit }, { id, type }) {
             try {
                 let data = null;
-                if (type === UPLOAD_TYPES.FILE) {
+                if (type === UPLOAD_TYPES.UPLOAD) {
                     const res = await ApiService.getUploadInfo(id);
                     data = res.data;
                 } else {

@@ -3,11 +3,12 @@ export const UPLOAD_STATUSES = {
     QUEUED_DOWNLOAD: 'queued.download',
     VALIDATION: 'validation',
     DOWNLOADING: 'downloading',
+    FAILED: 'failed',
 };
 
 export const UPLOAD_TYPES = {
-    FILE: 'FILE',
-    URL: 'URL',
+    UPLOAD: 'upload',
+    URL: 'url',
 };
 
 export const TASK_TYPES = {
