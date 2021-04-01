@@ -87,6 +87,22 @@ services:
     networks:
       - main
     restart: on-failure
+  front:
+    build:
+      context: ./frontend
+      args:
+        VUE_APP_API_URL: http://127.0.0.1:8000
+        VUE_APP_WEBSOCKET_URL: ws://127.0.0.1:8000/ws/api
+    image: front
+    container_name: front
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    hostname: front
+    networks:
+      - main
+    restart: on-failure
 
 networks:
   main:

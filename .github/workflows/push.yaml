@@ -75,7 +75,7 @@ jobs:
               echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
               echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
               echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-              echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000" >> .env
+              echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
               echo "CELERY_BACKEND=db+postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres/${{ secrets.POSTGRES_DB }}" >> .env
               echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
               echo "SENTRY_ENVIRONMENT=tests" >> .env
@@ -84,11 +84,11 @@ jobs:
               docker-compose -f docker-compose.test.yaml build
               docker-compose -f docker-compose.test.yaml pull
               docker-compose -f docker-compose.test.yaml up -d
-              sleep 7
+              sleep 10
               docker-compose -f docker-compose.test.yaml logs app
               docker ps
               cd ./test
-              DOMAIN_URL=http://127.0.0.1:8000 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot -s queue tests/integration
+              DOMAIN_URL=http://127.0.0.1:8000 SITE_URL=http://127.0.0.1 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot -s queue tests/integration
       - uses: actions/upload-artifact@v2
         with:
           name: Tests result
