@@ -52,9 +52,10 @@ export default {
          * Goes to the first step and clears upload details after confirmation
          */
         async onUploadFileStepClick() {
-            const confirmed = await this.$root.openConfirmGoBackDialog();
+            const confirmed = await this.openConfirmDialog();
             if (confirmed) {
                 this.$store.commit('setUploadDetails', null);
+                this.$store.commit('setSelections', null);
                 this.$router.push('/upload-file').catch(() => {});
             }
         },
@@ -64,10 +65,19 @@ export default {
          * @param { string } path
          */
         async navigateTo(path) {
-            const confirmed = await this.$root.openConfirmGoBackDialog();
+            const confirmed = await this.openConfirmDialog();
             if (confirmed) {
                 this.$router.push({ path, query: this.$route.query });
             }
+        },
+
+        async openConfirmDialog() {
+            return await this.$root.openConfirmDialog({
+                title: 'Are you sure to go back?',
+                content: 'When going to the previous step, all current changes will be reversed',
+                submitBtnText: 'Yes, go back',
+                icon: require('@/assets/icons/back.svg'),
+            });
         },
     },
 };
