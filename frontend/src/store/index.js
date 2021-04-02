@@ -14,6 +14,7 @@ export default new Vuex.Store({
             color: null,
         },
         uploadDetails: null,
+        selections: null,
 
         /** @type { WebSocket }*/
         connection: null,
@@ -39,6 +40,10 @@ export default new Vuex.Store({
             state.snackbar.opened = false;
         },
 
+        setSelections(state, selections) {
+            state.selections = selections;
+        },
+
         setConnection(state, connection) {
             state.connection = connection;
         },
@@ -54,12 +59,67 @@ export default new Vuex.Store({
         increaseNumberOfUploads(state) {
             state.numberOfUploads++;
         },
+
+        setSplitStatus(state, { tableId, value }) {
+            const table = state.selections.tables.find((table) => table.id === tableId);
+            table.splitted = value;
+        },
+
+        setIncludeStatus(state, { tableId, value }) {
+            const table = state.selections.tables.find((table) => table.id === tableId);
+            table.included = value;
+        },
     },
     actions: {
+        async fetchSelections({ state, commit }, id) {
+            try {
+                const res = await ApiService.getSelections(state.uploadDetails.type + 's', state.uploadDetails.id, id);
+                commit('setSelections', res.data);
+            } catch (e) {
+                console.error(e);
+            }
+        },
+
+        async updateSplitStatus({ state, commit }, { tableId, value }) {
+            try {
+                const { data } = await ApiService.changeSplitStatus(
+                    state.uploadDetails.type + 's',
+                    state.uploadDetails.id,
+                    state.selections.id,
+                    tableId,
+                    value,
+                );
+                commit('setSplitStatus', {
+                    tableId,
+                    value: data.splitted,
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        },
+
+        async updateIncludeStatus({ state, commit }, { tableId, value }) {
+            try {
+                const { data } = await ApiService.changeIncludeStatus(
+                    state.uploadDetails.type + 's',
+                    state.uploadDetails.id,
+                    state.selections.id,
+                    tableId,
+                    value,
+                );
+                commit('setIncludeStatus', {
+                    tableId,
+                    value: data.included,
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        },
+
         async fetchUploadDetails({ commit }, { id, type }) {
             try {
                 let data = null;
-                if (type === UPLOAD_TYPES.FILE) {
+                if (type === UPLOAD_TYPES.UPLOAD) {
                     const res = await ApiService.getUploadInfo(id);
                     data = res.data;
                 } else {

@@ -21,4 +21,67 @@ export default {
     getUploadInfoByUrl(id) {
         return axios.get('urls/' + id);
     },
+
+    /**
+     * Sends POST request to create selections
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } id - id of upload or URL
+     * @param { string[] } selectedTables - array of tables names
+     */
+    createSelections(type, id, selectedTables) {
+        return axios.post(`${type}/${id}/selections/`, {
+            tables: selectedTables.map((tableName) => {
+                return { name: tableName };
+            }),
+        });
+    },
+
+    /**
+     * Get selections
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     */
+    getSelections(type, uploadId, selectionsId) {
+        return axios.get(`${type}/${uploadId}/selections/${selectionsId}/`);
+    },
+
+    /**
+     * Get table's preview
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     * @param { string } tableId - id of table
+     */
+    getTablePreview(type, uploadId, selectionsId, tableId) {
+        return axios.get(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/preview`);
+    },
+
+    /**
+     * Changes split status of table
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     * @param { string } tableId - id of table
+     * @param { boolean } value
+     */
+    changeSplitStatus(type, uploadId, selectionsId, tableId, value) {
+        return axios.patch(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/`, {
+            splitted: value,
+        });
+    },
+
+    /**
+     * Changes include status of table
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     * @param { string } tableId - id of table
+     * @param { boolean } value
+     */
+    changeIncludeStatus(type, uploadId, selectionsId, tableId, value) {
+        return axios.patch(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/`, {
+            included: value,
+        });
+    },
 };

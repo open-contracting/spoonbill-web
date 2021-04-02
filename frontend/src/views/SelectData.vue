@@ -75,7 +75,7 @@
                 <select-data-table-info v-for="table in unavailableTables" :key="table.name" :table="table" unavailable />
             </div>
             <div class="mt-15 d-flex justify-end">
-                <v-btn @click="onContinueClick" :disabled="!selectedTables.length" color="accent" height="56" width="152">
+                <v-btn @click="createSelections" :disabled="!selectedTables.length" color="accent" height="56" width="152">
                     <v-img max-width="24" class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
                     Continue
                 </v-btn>
@@ -105,6 +105,7 @@ import LayoutInfo from '@/components/Layout/LayoutInfo';
 import draggable from 'vuedraggable';
 import SelectDataTableInfo from '@/components/SelectData/SelectDataTableInfo';
 import AppFAQ from '@/components/App/AppFAQ';
+import ApiService from '@/services/ApiService';
 
 export default {
     name: 'SelectData',
@@ -224,10 +225,26 @@ export default {
         },
 
         /**
-         * Go to the 'customize tables' step
+         * Creates new selections and redirects to the 'customize tables' step
          */
-        onContinueClick() {
-            this.$router.push({ path: '/customize-tables', query: this.$route.query });
+        async createSelections() {
+            try {
+                const { data: selections } = await ApiService.createSelections(
+                    this.$store.state.uploadDetails.type === 'url' ? 'urls' : 'uploads',
+                    this.$store.state.uploadDetails.id,
+                    this.selectedTables.map((table) => table.name),
+                );
+                this.$store.commit('setSelections', selections);
+                this.$router.push({
+                    path: '/customize-tables',
+                    query: {
+                        ...this.$route.query,
+                        selections: selections.id,
+                    },
+                });
+            } catch (e) {
+                console.error(e);
+            }
         },
     },
 };

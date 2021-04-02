@@ -25,7 +25,7 @@
             />
 
             <template v-else>
-                <app-dropzone @input="sendFile" v-if="uploadType === 'FILE'" />
+                <app-dropzone @input="sendFile" v-if="uploadType === 'upload'" />
 
                 <upload-file-url-input @submit="sendUrl" v-else />
             </template>
@@ -70,15 +70,15 @@ export default {
             options: [
                 {
                     title: 'Upload JSON file',
-                    value: UPLOAD_TYPES.FILE,
+                    value: UPLOAD_TYPES.UPLOAD,
                 },
                 {
                     title: 'Supply a URL for JSON',
                     value: UPLOAD_TYPES.URL,
                 },
             ],
-            /** @type { 'FILE' | 'URL' }*/
-            uploadType: UPLOAD_TYPES.FILE,
+            /** @type { 'upload' | 'url' }*/
+            uploadType: UPLOAD_TYPES.UPLOAD,
             fileName: null,
         };
     },
@@ -125,12 +125,27 @@ export default {
                 if (status === UPLOAD_STATUSES.DOWNLOADING) {
                     this.showLoading(this.fileName || this.$store.state.uploadDetails.id, false);
                 }
+                if (status === UPLOAD_STATUSES.FAILED) {
+                    this.onUploadFail();
+                }
             },
             immediate: true,
         },
     },
 
     methods: {
+        /**
+         * Shows error message, clears upload details
+         */
+        onUploadFail() {
+            this.loading.value = false;
+            this.$store.commit('openSnackbar', {
+                color: 'error',
+                text: this.$store.state.uploadDetails.error,
+            });
+            this.$store.commit('setUploadDetails', null);
+        },
+
         /**
          * Shows status of validation
          * If validation has failed - shows error message
@@ -140,7 +155,7 @@ export default {
         processValidationStatus() {
             const upload = this.$store.state.uploadDetails;
             if (upload.validation.is_valid === false) {
-                this.uploadType = UPLOAD_TYPES.FILE;
+                this.uploadType = UPLOAD_TYPES.UPLOAD;
                 this.loading.value = false;
                 this.$store.commit('openSnackbar', {
                     color: 'error',
@@ -152,7 +167,7 @@ export default {
                 return;
             }
             if (upload.validation.is_valid === true) {
-                this.uploadType = UPLOAD_TYPES.FILE;
+                this.uploadType = UPLOAD_TYPES.UPLOAD;
                 this.loading.value = false;
                 this.$store.commit('openSnackbar', {
                     color: 'moody-blue',
@@ -201,10 +216,10 @@ export default {
                 this.$store.commit('setDownloadProgress', 0);
                 this.$store.commit('setUploadDetails', {
                     ...data,
-                    type: UPLOAD_TYPES.FILE,
+                    type: UPLOAD_TYPES.UPLOAD,
                 });
                 this.$store.commit('increaseNumberOfUploads');
-                this.$router.push(`/upload-file?file=${data.id}`).catch(() => {});
+                this.$router.push(`/upload-file?upload=${data.id}`).catch(() => {});
             } catch (e) {
                 console.error(e);
             } finally {
@@ -215,7 +230,7 @@ export default {
 
         /**
          * Changes selected upload type; Clears messages
-         * @param { 'FILE' | 'URL' } type
+         * @param { 'upload' | 'url' } type
          */
         selectUploadType(type) {
             this.uploadType = type;

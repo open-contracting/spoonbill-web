@@ -4,11 +4,11 @@
             <v-card-text class="pa-0">
                 <v-row no-gutters>
                     <v-col cols="1">
-                        <v-img height="24" width="24" src="@/assets/icons/back.svg" />
+                        <v-img height="24" width="24" :src="options.icon" />
                     </v-col>
                     <v-col cols="11">
-                        <h3 class="pt-1 mb-6 card-title">Are you sure to go back?</h3>
-                        <p class="card-content">When going to the previous step, all current changes will be reversed</p>
+                        <h3 class="pt-1 mb-6 card-title">{{ options.title }}</h3>
+                        <p class="card-content">{{ options.content }}</p>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -18,7 +18,7 @@
                 <v-btn color="gray-light" large @click="cancel">Cancel</v-btn>
                 <v-btn class="ml-4" color="accent" large @click="confirm">
                     <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
-                    Yes, go back
+                    {{ options.submitBtnText }}
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -27,17 +27,23 @@
 
 <script>
 export default {
-    name: 'AppGoBackConfirmDialog',
+    name: 'AppConfirmDialog',
 
     data() {
         return {
             dialog: false,
             resolve: null,
+            options: {
+                title: '',
+                content: '',
+                submitBtnText: '',
+                icon: '',
+            },
         };
     },
 
     created() {
-        this.$root.openConfirmGoBackDialog = this.open;
+        this.$root.openConfirmDialog = this.open;
     },
 
     methods: {
@@ -45,7 +51,11 @@ export default {
          * Opens dialog. Returns promise which allows to handle result of dialog closing
          * @return { Promise }
          */
-        open() {
+        open({ title, content, submitBtnText, icon }) {
+            this.options.title = title;
+            this.options.content = content;
+            this.options.submitBtnText = submitBtnText;
+            this.options.icon = icon;
             this.dialog = true;
 
             return new Promise((resolve) => {

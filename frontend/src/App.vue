@@ -4,7 +4,11 @@
 
         <v-main>
             <v-container class="pt-15 pb-5">
-                <router-view />
+                <v-overlay v-if="loading" class="d-flex align-center justify-center" :value="true">
+                    <v-progress-circular size="48" color="accent" indeterminate />
+                </v-overlay>
+
+                <router-view v-else />
             </v-container>
         </v-main>
 
@@ -22,7 +26,7 @@
             </template>
         </v-snackbar>
 
-        <app-go-back-confirm-dialog />
+        <app-confirm-dialog />
     </v-app>
 </template>
 
@@ -30,12 +34,18 @@
 import LayoutHeader from './components/Layout/LayoutHeader';
 import getQueryParam from '@/utils/getQueryParam';
 import { UPLOAD_TYPES, UPLOAD_STATUSES } from '@/constants';
-import AppGoBackConfirmDialog from '@/components/App/AppGoBackConfirmDialog';
+import AppConfirmDialog from '@/components/App/AppConfirmDialog';
 
 export default {
     name: 'App',
 
-    components: { AppGoBackConfirmDialog, LayoutHeader },
+    components: { AppConfirmDialog, LayoutHeader },
+
+    data() {
+        return {
+            loading: false,
+        };
+    },
 
     computed: {
         snackbar() {
@@ -66,19 +76,29 @@ export default {
 
     async created() {
         const urlId = getQueryParam('url');
-        const fileId = getQueryParam('file');
-        if (urlId || fileId) {
-            const type = urlId ? UPLOAD_TYPES.URL : UPLOAD_TYPES.FILE;
+        const uploadId = getQueryParam('upload');
+        const selectionsId = getQueryParam('selections');
+        if (urlId || uploadId) {
+            this.loading = true;
+            const type = urlId ? UPLOAD_TYPES.URL : UPLOAD_TYPES.UPLOAD;
             await this.$store.dispatch('fetchUploadDetails', {
-                id: urlId || fileId,
+                id: urlId || uploadId,
                 type,
             });
             const uploadDetails = this.$store.state.uploadDetails;
             if (!uploadDetails) {
                 this.$router.push('/upload-file').catch(() => {});
+                this.loading = false;
                 return;
             }
             this.$store.commit('increaseNumberOfUploads');
+            if (selectionsId) {
+                this.$router
+                    .push(`/customize-tables?${type.toLowerCase()}=${uploadDetails.id}&selections=${selectionsId}`)
+                    .catch(() => {});
+                this.loading = false;
+                return;
+            }
             if (
                 [
                     UPLOAD_STATUSES.QUEUED_DOWNLOAD,
@@ -89,6 +109,7 @@ export default {
             ) {
                 this.$router.push(`/upload-file?${type.toLowerCase()}=${uploadDetails.id}`).catch(() => {});
             }
+            this.loading = false;
         } else {
             this.$router.push('/upload-file').catch(() => {});
         }
