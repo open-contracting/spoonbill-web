@@ -71,6 +71,9 @@ export default {
     },
 
     methods: {
+        /**
+         * Set true value for table's 'include' status and opens next table
+         */
         async onContinueClick() {
             await this.$store.dispatch('updateIncludeStatus', {
                 tableId: this.currentTable.id,
@@ -80,6 +83,9 @@ export default {
             this.currentTable = this.selections.tables[this.currentTableIndex];
         },
 
+        /**
+         * Set false value for table's 'include' status and opens next table
+         */
         async onRemoveClick() {
             const confirmed = await this.$root.openConfirmDialog({
                 title: 'Are you sure?',

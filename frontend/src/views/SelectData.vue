@@ -105,7 +105,6 @@ import LayoutInfo from '@/components/Layout/LayoutInfo';
 import draggable from 'vuedraggable';
 import SelectDataTableInfo from '@/components/SelectData/SelectDataTableInfo';
 import AppFAQ from '@/components/App/AppFAQ';
-// eslint-disable-next-line no-unused-vars
 import ApiService from '@/services/ApiService';
 
 export default {
@@ -226,11 +225,10 @@ export default {
         },
 
         /**
-         * Go to the 'customize tables' step
+         * Creates new selections and redirects to the 'customize tables' step
          */
         async createSelections() {
             try {
-                console.log(this.$route);
                 const { data: selections } = await ApiService.createSelections(
                     this.$store.state.uploadDetails.type === 'url' ? 'urls' : 'uploads',
                     this.$store.state.uploadDetails.id,
