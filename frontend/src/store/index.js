@@ -41,6 +41,17 @@ export default new Vuex.Store({
         },
 
         setSelections(state, selections) {
+            if (selections.tables) {
+                selections.tables.sort((a, b) => {
+                    if (a.name < b.name) {
+                        return -1;
+                    }
+                    if (a.name > b.name) {
+                        return -1;
+                    }
+                    return 0;
+                });
+            }
             state.selections = selections;
         },
 
@@ -62,12 +73,12 @@ export default new Vuex.Store({
 
         setSplitStatus(state, { tableId, value }) {
             const table = state.selections.tables.find((table) => table.id === tableId);
-            table.splitted = value;
+            table.split = value;
         },
 
         setIncludeStatus(state, { tableId, value }) {
             const table = state.selections.tables.find((table) => table.id === tableId);
-            table.included = value;
+            table.include = value;
         },
     },
     actions: {
@@ -91,7 +102,7 @@ export default new Vuex.Store({
                 );
                 commit('setSplitStatus', {
                     tableId,
-                    value: data.splitted,
+                    value: data.split,
                 });
             } catch (e) {
                 console.error(e);
@@ -109,7 +120,7 @@ export default new Vuex.Store({
                 );
                 commit('setIncludeStatus', {
                     tableId,
-                    value: data.included,
+                    value: data.include,
                 });
             } catch (e) {
                 console.error(e);

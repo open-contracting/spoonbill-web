@@ -74,7 +74,7 @@
                 <p class="mb-4 column-name">Unavailable tables</p>
                 <select-data-table-info v-for="table in unavailableTables" :key="table.name" :table="table" unavailable />
             </div>
-            <div class="mt-15 d-flex justify-end">
+            <div class="mt-15">
                 <v-btn @click="createSelections" :disabled="!selectedTables.length" color="accent" height="56" width="152">
                     <v-img max-width="24" class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
                     Continue

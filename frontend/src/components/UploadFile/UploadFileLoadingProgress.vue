@@ -11,7 +11,7 @@
             {{ status }}
         </span>
 
-        <div class="d-flex align-center justify-center progress">
+        <div class="d-flex align-center justify-center progress" style="height: 24px">
             <v-progress-linear height="9" :indeterminate="percent === -1" :value="percent" :color="color" />
             <div v-if="percent > -1" class="ml-2">{{ percent }}%</div>
         </div>

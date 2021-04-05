@@ -1,7 +1,7 @@
 <template>
     <v-stepper alt-labels class="app-stepper" :value="value">
         <v-stepper-header>
-            <v-stepper-step :complete="value > 1" complete-icon="mdi-check" step="1">
+            <v-stepper-step :complete="value > 1" complete-icon="mdi-check" step="1" @click="onUploadFileStepClick">
                 <span class="text-link" @click="onUploadFileStepClick" v-if="value > 1 || $store.state.numberOfUploads">
                     Re-upload file
                 </span>
@@ -10,7 +10,7 @@
 
             <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
 
-            <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2">
+            <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2" @click="navigateTo('/select-data')">
                 <span :class="{ 'text-link': value > 2 }" @click="navigateTo('/select-data')">Select data</span>
             </v-stepper-step>
 
@@ -106,6 +106,7 @@ export default {
                 .v-stepper__step__step {
                     background-color: map-get($colors, 'accent') !important;
                     position: relative;
+                    cursor: pointer;
                     &::after {
                         content: '';
                         position: absolute;
@@ -154,6 +155,7 @@ export default {
                 color: map-get($colors, 'primary');
                 position: relative;
                 z-index: 3;
+                font-size: 16px;
             }
             .v-stepper__label {
                 margin-top: 8px;

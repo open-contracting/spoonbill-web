@@ -16,4 +16,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.mb-5 {
+    font-size: 18px;
+}
+</style>
