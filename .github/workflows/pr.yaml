@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -37,11 +39,13 @@ jobs:
         run: pip install -r requirements_dev.txt
       - name: Run pre-commit
         run: |
-            pip install --upgrade pre-commit
+            pip install --upgrade pre-commit diff-cover
             pre-commit autoupdate
             pre-commit run --all-files
       - name: Run tests
         run: |
             sed -i 1d .envrc
             source .envrc
-            pytest
+            pytest  --cov-report xml
+            git fetch --all
+            diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=95
