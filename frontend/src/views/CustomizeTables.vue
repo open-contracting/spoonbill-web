@@ -6,7 +6,7 @@
         </v-col>
         <v-col cols="12">
             <customize-tables-table v-if="currentTable" :table="currentTable" />
-            <div class="mt-15 d-flex justify-end">
+            <div class="mt-15 d-flex">
                 <v-btn
                     class="mr-6"
                     :disabled="selections && selections.tables.length - 1 === currentTableIndex"

@@ -139,9 +139,11 @@ export default {
          */
         onUploadFail() {
             this.loading.value = false;
+            const details = this.$store.state.uploadDetails;
             this.$store.commit('openSnackbar', {
                 color: 'error',
-                text: this.$store.state.uploadDetails.error,
+                text:
+                    details.type === UPLOAD_TYPES.URL ? 'This link is not valid. please check and try again' : details.error,
             });
             this.$store.commit('setUploadDetails', null);
         },
@@ -301,17 +303,17 @@ export default {
 .options {
     .option {
         cursor: pointer;
-        padding: 12px 34px;
+        padding: 8px 16px;
         background-color: map-get($colors, 'gray-light');
         &--selected {
             background-color: map-get($colors, 'primary');
             color: map-get($colors, 'gray-light');
         }
         &:first-child {
-            border-radius: 8px 0 0 8px;
+            border-radius: 4px 0 0 4px;
         }
         &:last-child {
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 4px 4px 0;
         }
     }
     &--disabled {

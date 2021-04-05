@@ -2,7 +2,7 @@
     <div class="table">
         <h3 class="mb-4 table__name">{{ table.name }}</h3>
         <v-row>
-            <v-col cols="6">
+            <v-col cols="12" md="8" lg="6">
                 <div class="table-info">
                     <div v-if="availableData.length">
                         <p class="mb-2">Available data</p>
@@ -17,11 +17,21 @@
                             <li v-for="(item, idx) of arrays" :key="idx">{{ item }}</li>
                         </ul>
                     </div>
+
+                    <v-switch
+                        v-model="isSplit"
+                        inset
+                        hide-details
+                        class="mt-6"
+                        color="darkest"
+                        slot="actions"
+                        :label="isSplit ? 'Keep arrays in main table' : 'Split arrays into separate tables'"
+                    ></v-switch>
                 </div>
             </v-col>
         </v-row>
         <v-skeleton-loader class="mt-8" v-if="loading" type="table-tbody"></v-skeleton-loader>
-        <div class="mt-8 p-relative tables">
+        <div class="mt-8 tables">
             <app-table
                 v-for="table in tables"
                 :key="table.name"
@@ -29,17 +39,6 @@
                 :name="'Table: ' + table.name"
                 :data="table.data"
             />
-
-            <v-switch
-                v-model="isSplit"
-                inset
-                hide-details
-                class="mt-0"
-                color="darkest"
-                slot="actions"
-                :label="isSplit ? 'Keep arrays in main table' : 'Split arrays into separate tables'"
-                @change="onSplitSwitchChange"
-            ></v-switch>
         </div>
     </div>
 </template>
@@ -75,7 +74,7 @@ export default {
 
         isSplit: {
             get() {
-                return this.$store.state.selections.tables.find((table) => table.id === this.table.id).splitted;
+                return this.$store.state.selections.tables.find((table) => table.id === this.table.id).split;
             },
             async set() {
                 await this.onSplitSwitchChange();

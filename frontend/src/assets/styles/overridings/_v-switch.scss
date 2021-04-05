@@ -1,13 +1,5 @@
 .v-input--switch.v-input--switch--inset {
-    .v-input__slot {
-        flex-direction: row-reverse;
-    }
-    .v-input--selection-controls__input {
-        margin-right: 0;
-    }
-    .v-label {
-        left: -10px !important;
-    }
+    padding-left: 4px;
     &.darkest--text {
         .v-input--switch__thumb {
             background-color: white;

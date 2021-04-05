@@ -19,6 +19,7 @@ export default new Vuetify({
                 'success-notification': '#25B2A7',
                 'error-notification': '#F44336',
                 'moody-blue': '#6C75E1',
+                'green-dirty': '#90A600',
             },
         },
     },

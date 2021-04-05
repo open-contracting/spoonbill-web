@@ -1,0 +1,20 @@
+@media only screen and (max-width: 700px) {
+    .v-stepper .v-stepper__step--active .v-stepper__label {
+        display: flex !important;
+    }
+}
+@media only screen and (max-width: 959px) and (min-width: 700px) {
+    .v-stepper .v-stepper__label {
+        display: flex !important;
+    }
+}
+
+@media only screen and (max-width: 1264px) and (min-width: 960px) {
+    .v-stepper {
+        .v-stepper__step--inactive, .v-stepper__step--complete {
+            .v-stepper__label {
+                display: none;
+            }
+        }
+    }
+}

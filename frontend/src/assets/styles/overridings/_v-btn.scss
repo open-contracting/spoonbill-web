@@ -33,8 +33,12 @@
 .v-btn.v-btn--has-bg {
     padding: 0 12px !important;
     &.accent {
+        transition: background-color .3s;
         .v-btn__content {
             color: map-get($colors, 'darkest');
+        }
+        &:hover {
+            background-color: map-get($colors, 'green-dirty') !important;
         }
     }
     &.gray-light {

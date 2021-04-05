@@ -67,7 +67,7 @@ export default {
      */
     changeSplitStatus(type, uploadId, selectionsId, tableId, value) {
         return axios.patch(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/`, {
-            splitted: value,
+            split: value,
         });
     },
 
@@ -81,7 +81,7 @@ export default {
      */
     changeIncludeStatus(type, uploadId, selectionsId, tableId, value) {
         return axios.patch(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/`, {
-            included: value,
+            include: value,
         });
     },
 };
