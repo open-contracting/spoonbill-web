@@ -199,11 +199,12 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
         data = []
         # table_name_lower = table.name.lower()
         try:
-            if hasattr(table, "splitted") and table.splitted:
+            if hasattr(table, "split") and table.split:
                 for letter in ("a", "b", "c"):
                     data.append(
                         {
                             "name": f"{table.name.title()}_{letter}.csv",
+                            "id": str(table.id),
                             "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
                         }
                     )
@@ -217,6 +218,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                 data.append(
                     {
                         "name": f"{table.name.title()}.csv",
+                        "id": str(table.id),
                         "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
                     }
                 )

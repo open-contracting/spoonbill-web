@@ -87,4 +87,4 @@ class TestUrl:
         response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/")
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"name", "preview"}
+        assert set(data.keys()) == {"id", "name", "preview"}
