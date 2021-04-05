@@ -63,18 +63,18 @@ class TestUpload:
         assert len(response.json()) == 2
 
         table_data = response.json()[0]
-        assert table_data["included"]
+        assert table_data["include"]
 
         response = client.patch(
             f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/",
             content_type="application/json",
-            data={"included": False},
+            data={"include": False},
         )
         assert response.status_code == 200
-        assert not response.json()["included"]
+        assert not response.json()["include"]
 
         response = client.get(f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/")
-        assert not response.json()["included"]
+        assert not response.json()["include"]
 
     def test_list_tables(self, client, upload_obj):
         selection = create_data_selection(client, upload_obj, "uploads")
