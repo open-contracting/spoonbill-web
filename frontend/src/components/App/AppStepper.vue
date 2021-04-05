@@ -106,7 +106,6 @@ export default {
                 .v-stepper__step__step {
                     background-color: map-get($colors, 'accent') !important;
                     position: relative;
-                    cursor: pointer;
                     &::after {
                         content: '';
                         position: absolute;
@@ -134,6 +133,7 @@ export default {
             &:not(.v-stepper__step--active):not(.v-stepper__step--inactive) {
                 .v-stepper__step__step {
                     background-color: map-get($colors, 'primary');
+                    cursor: pointer;
                 }
                 & + .v-divider {
                     position: relative;
