@@ -16,7 +16,7 @@ module.exports = {
         semi: ['error', 'always'],
         'object-curly-spacing': ['error', 'always'],
         quotes: ['error', 'single', { avoidEscape: true }],
-        'comma-dangle': ['error', 'always-multiline'],
+        'comma-dangle': ['error', 'only-multiline'],
     },
     overrides: [
         {
@@ -24,7 +24,7 @@ module.exports = {
                 'jest.setup.js',
                 '**/__mocks__/*.{j,t}s?(x)',
                 '**/__tests__/*.{j,t}s?(x)',
-                '**/tests/unit/**/*.spec.{j,t}s?(x)'
+                '**/tests/unit/**/*.spec.{j,t}s?(x)',
             ],
             env: {
                 jest: true,

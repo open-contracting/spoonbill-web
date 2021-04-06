@@ -27,3 +27,15 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## gettext
+
+### Extracts all strings from *.vue files
+```
+npm run gettext-extract
+```
+
+### Compiles *.po files
+```
+npm run gettext-compile <filenames>
+```

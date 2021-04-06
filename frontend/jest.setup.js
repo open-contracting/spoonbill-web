@@ -1,8 +1,20 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import GetTextPlugin from 'vue-gettext';
+import translations from '@/translations/translations.json';
 
 Vue.use(Vuetify);
 Vue.config.productionTip = false;
+
+Vue.use(GetTextPlugin, {
+    availableLanguages: {
+        en: 'British English',
+        es: 'Español',
+    },
+    defaultLanguage: 'en',
+    translations,
+    silent: true,
+});
 
 jest.mock('@/services/ApiService', () => {
     return {

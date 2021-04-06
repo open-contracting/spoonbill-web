@@ -98,7 +98,7 @@ export default new Vuex.Store({
                     state.uploadDetails.id,
                     state.selections.id,
                     tableId,
-                    value,
+                    value
                 );
                 commit('setSplitStatus', {
                     tableId,
@@ -116,7 +116,7 @@ export default new Vuex.Store({
                     state.uploadDetails.id,
                     state.selections.id,
                     tableId,
-                    value,
+                    value
                 );
                 commit('setIncludeStatus', {
                     tableId,

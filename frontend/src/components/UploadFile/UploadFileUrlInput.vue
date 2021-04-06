@@ -1,7 +1,9 @@
 <template>
     <v-form class="d-flex" ref="urlForm">
         <v-textarea v-model="url" :rules="urlRules" outlined rows="3" auto-grow hide-details></v-textarea>
-        <v-btn class="ml-4" large color="accent" @click="sendUrl">Submit</v-btn>
+        <v-btn class="ml-4" large color="accent" @click="sendUrl">
+            <translate>Submit</translate>
+        </v-btn>
     </v-form>
 </template>
 

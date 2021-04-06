@@ -1,25 +1,25 @@
 <template>
     <div class="select-data-options">
         <div class="rounded-box select-data-option">
-            <h3 class="select-data-option__title">Download OCDS Lite Data</h3>
-            <p class="select-data-option__description">
+            <translate tag="h3" class="select-data-option__title">Download OCDS Lite Data</translate>
+            <translate tag="p" class="select-data-option__description">
                 Skip customization and download the most commonly used fields, as recommended by data analyst at OCP.
-            </p>
+            </translate>
             <div class="d-flex justify-end">
                 <app-button text color="darkest" accent @click="selectOption('AUTO')">
-                    <span>Continue with OCDS Lite</span>
+                    <translate>Continue with OCDS Lite</translate>
                 </app-button>
             </div>
         </div>
 
         <div class="rounded-box select-data-option select-data-option--dark">
-            <h3 class="select-data-option__title">Select fields manually</h3>
-            <p class="select-data-option__description">
+            <translate tag="h3" class="select-data-option__title">Select fields manually</translate>
+            <translate tag="p" class="select-data-option__description">
                 Explore the dataset to see what fields are available. Download tables to fit your requirements.
-            </p>
+            </translate>
             <div class="d-flex justify-end">
                 <app-button text color="gray-light" accent @click="selectOption('MANUAL')">
-                    <span>Continue to select tables</span>
+                    <translate>Continue to select tables</translate>
                 </app-button>
             </div>
         </div>

@@ -2,30 +2,30 @@
     <v-row>
         <v-col cols="12" md="8" xl="8">
             <layout-info />
-            <h2 class="page-title">Select data to flatten to Excel/CSV</h2>
+            <translate tag="h2" class="page-title">Select data to flatten to Excel/CSV</translate>
 
-            <p class="page-description">
+            <translate tag="p" class="page-description">
                 Data you selected needs to be converted into an Excel/CSV file. The Flatten tool converts JSON OCDS data to
                 Excel Excel (.xlsx) and helps users to understand what data is contained in the file.
-            </p>
+            </translate>
 
-            <p class="page-description">
+            <translate tag="p" class="page-description">
                 The file size is very large and has multiple tables. It is recommended that you only flatten data that you
                 actually want to use.
-            </p>
+            </translate>
 
             <v-container>
                 <v-row class="mt-7 rounded-box defaults">
                     <v-col cols="4">
-                        <span class="defaults__title">Data for country:</span>
+                        <translate class="defaults__title">Data for country:</translate>
                         <span class="defaults__value">United Kingdom</span>
                     </v-col>
                     <v-col cols="4">
-                        <span class="defaults__title">Data for range:</span>
+                        <translate class="defaults__title">Data for range:</translate>
                         <span class="defaults__value">Last 6 month</span>
                     </v-col>
                     <v-col cols="4">
-                        <span class="defaults__title">Data from:</span>
+                        <translate class="defaults__title">Data from:</translate>
                         <span class="defaults__value">OCP Kingfisher database</span>
                     </v-col>
                 </v-row>
@@ -35,7 +35,7 @@
         </v-col>
         <v-col cols="12" md="4" xl="3" offset-xl="1">
             <app-f-a-q>
-                <span slot="title">FAQ</span>
+                <translate slot="title">FAQ</translate>
 
                 <v-expansion-panels :value="panelsValue" accordion multiple>
                     <v-expansion-panel v-for="item in faqItems" :key="item.title">
@@ -65,30 +65,35 @@ export default {
     data() {
         return {
             panelsValue: [0],
-            faqItems: [
+        };
+    },
+
+    computed: {
+        faqItems() {
+            return [
                 {
-                    title: 'What is OCDS Lite?',
+                    title: this.$gettext('What is OCDS Lite?'),
                     content:
                         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ' +
                         'do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, ' +
                         'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 },
                 {
-                    title: 'What is OCDS schema version 1.1?',
+                    title: this.$gettext('What is OCDS schema version 1.1?'),
                     content:
                         'Lorem ipsum dolor sit amet, adipiscing elit, sed ' +
                         'do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, ' +
                         'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 },
                 {
-                    title: 'What is the data review tool?',
+                    title: this.$gettext('What is the data review tool?'),
                     content:
                         'Lorem ipsum dolor sit amet, adipiscing elit, sed ' +
                         'do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, ' +
                         'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 },
-            ],
-        };
+            ];
+        },
     },
 };
 </script>

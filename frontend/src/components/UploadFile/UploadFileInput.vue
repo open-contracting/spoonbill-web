@@ -31,9 +31,9 @@
             </template>
         </div>
 
-        <p v-if="!isValid" class="mt-4 text-light-14">
+        <translate tag="p" v-if="!isValid" class="mt-4 text-light-14">
             Note that large files may take a while to process. Please be patient.
-        </p>
+        </translate>
 
         <upload-file-options class="mt-15" v-if="isValid" @select="onOptionSelect" />
     </div>
@@ -67,16 +67,6 @@ export default {
                 cancelable: false,
             },
             cancelTokenSource: null,
-            options: [
-                {
-                    title: 'Upload JSON file',
-                    value: UPLOAD_TYPES.UPLOAD,
-                },
-                {
-                    title: 'Supply a URL for JSON',
-                    value: UPLOAD_TYPES.URL,
-                },
-            ],
             /** @type { 'upload' | 'url' }*/
             uploadType: UPLOAD_TYPES.UPLOAD,
             fileName: null,
@@ -84,6 +74,19 @@ export default {
     },
 
     computed: {
+        options() {
+            return [
+                {
+                    title: this.$gettext('Upload JSON file'),
+                    value: UPLOAD_TYPES.UPLOAD,
+                },
+                {
+                    title: this.$gettext('Supply a URL for JSON'),
+                    value: UPLOAD_TYPES.URL,
+                },
+            ];
+        },
+
         isValid() {
             return this.$store.state.uploadDetails?.validation?.is_valid;
         },
@@ -143,7 +146,9 @@ export default {
             this.$store.commit('openSnackbar', {
                 color: 'error',
                 text:
-                    details.type === UPLOAD_TYPES.URL ? 'This link is not valid. please check and try again' : details.error,
+                    details.type === UPLOAD_TYPES.URL
+                        ? this.$gettext('This link is not valid. please check and try again')
+                        : details.error,
             });
             this.$store.commit('setUploadDetails', null);
         },
@@ -161,9 +166,10 @@ export default {
                 this.loading.value = false;
                 this.$store.commit('openSnackbar', {
                     color: 'error',
-                    text:
-                        'This file is not compliant with the OCDS schema so cannot be flattened.\n' +
-                        'Check your data using the Data Review Tool and resolve the issues before flattening. ',
+                    text: this.$gettext(
+                        'This file is not compliant with the OCDS schema so cannot be flattened. Check your ' +
+                            'data using the Data Review Tool and resolve the issues before flattening'
+                    ),
                 });
                 this.$store.commit('setUploadDetails', null);
                 return;
@@ -173,11 +179,11 @@ export default {
                 this.loading.value = false;
                 this.$store.commit('openSnackbar', {
                     color: 'moody-blue',
-                    text: 'Now your file is analyzed and ready to use.',
+                    text: this.$gettext('Now your file is analyzed and ready to use.'),
                 });
                 this.loading = {
                     value: true,
-                    status: 'Analysis has been completed',
+                    status: this.$gettext('Analysis has been completed'),
                     fileName: this.fileName || this.uploadDetails.id,
                     color: 'moody-blue',
                 };
@@ -187,7 +193,7 @@ export default {
             }
             this.loading = {
                 value: true,
-                status: 'File analysis in progress...',
+                status: this.$gettext('File analysis in progress...'),
                 fileName: this.fileName || this.uploadDetails.id,
                 color: 'moody-blue',
             };
@@ -247,7 +253,7 @@ export default {
             this.loading = {
                 value: true,
                 color: '#23B2A7',
-                status: 'Upload in progress',
+                status: this.$gettext('Upload in progress'),
                 fileName,
                 cancelable,
             };
