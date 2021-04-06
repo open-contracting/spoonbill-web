@@ -113,6 +113,7 @@ jobs:
             test/log.html
             test/report.html
       - name: "Download translate files from transifex"
+        uses: docker://sergioisidoro/github-transifex-action:v0.2.0
         with:
             TX_TOKEN: ${{ secrets.TX_TOKEN }}
             git_flow: false
