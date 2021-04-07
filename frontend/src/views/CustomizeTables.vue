@@ -2,7 +2,7 @@
     <v-row>
         <v-col cols="12" md="8" xl="8">
             <layout-info />
-            <h2 class="page-title">Customize Tables</h2>
+            <translate tag="h2" class="page-title">Customize Tables</translate>
         </v-col>
         <v-col cols="12">
             <customize-tables-table v-if="currentTable" :table="currentTable" />
@@ -15,7 +15,7 @@
                     @click="onRemoveClick"
                 >
                     <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
-                    Remove table
+                    <translate>Remove table</translate>
                 </v-btn>
 
                 <v-btn
@@ -25,7 +25,7 @@
                     @click="onContinueClick"
                 >
                     <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
-                    Save and Continue
+                    <translate>Save and Continue</translate>
                 </v-btn>
             </div>
         </v-col>
@@ -88,9 +88,9 @@ export default {
          */
         async onRemoveClick() {
             const confirmed = await this.$root.openConfirmDialog({
-                title: 'Are you sure?',
-                content: 'Removing this table will mean it will not be included in flattened Excel file',
-                submitBtnText: 'Yes, remove table and continue',
+                title: this.$gettext('Are you sure?'),
+                content: this.$gettext('Removing this table will mean it will not be included in flattened Excel file'),
+                submitBtnText: this.$gettext('Yes, remove table and continue'),
                 icon: require('@/assets/icons/remove.svg'),
             });
             if (confirmed) {

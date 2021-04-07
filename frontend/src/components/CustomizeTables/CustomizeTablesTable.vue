@@ -5,14 +5,14 @@
             <v-col cols="12" md="8" lg="6">
                 <div class="table-info">
                     <div v-if="availableData.length">
-                        <p class="mb-2">Available data</p>
+                        <translate tag="p" class="mb-2">Available data</translate>
                         <ul class="app-list">
                             <li v-for="(item, idx) of availableData" :key="idx">{{ item }}</li>
                         </ul>
                     </div>
 
                     <div class="mt-4" v-if="arrays.length">
-                        <p class="mb-2">Arrays</p>
+                        <translate tag="p" class="mb-2">Arrays</translate>
                         <ul class="app-list">
                             <li v-for="(item, idx) of arrays" :key="idx">{{ item }}</li>
                         </ul>
@@ -25,7 +25,9 @@
                         class="mt-6"
                         color="darkest"
                         slot="actions"
-                        :label="isSplit ? 'Keep arrays in main table' : 'Split arrays into separate tables'"
+                        :label="
+                            isSplit ? $gettext('Keep arrays in main table') : $gettext('Split arrays into separate tables')
+                        "
                     ></v-switch>
                 </div>
             </v-col>
@@ -85,16 +87,35 @@ export default {
             const res = [];
             const belowThreshold = this.additionalInfo.arrays?.below_threshold;
             if (belowThreshold) {
-                const single = belowThreshold.length === 1;
-                res.push(`There ${single ? 'is' : 'are'} ${belowThreshold.length} ${single ? 'array' : 'arrays'} with
-                ${this.additionalInfo.arrays.threshold} items or fewer (${belowThreshold.join(', ')})`);
+                let translated = this.$ngettext(
+                    'There is %{ n } array with',
+                    'There are %{ n } arrays with',
+                    belowThreshold.length
+                );
+                let belowThresholdString = this.$gettextInterpolate(translated, { n: belowThreshold.length }) + ' ';
+                translated = this.$ngettext(
+                    '%{ n } item or fewer',
+                    '%{ n } items or fewer',
+                    this.additionalInfo.arrays.threshold
+                );
+                belowThresholdString += this.$gettextInterpolate(translated, { n: this.additionalInfo.arrays.threshold });
+                res.push(belowThresholdString + ` (${belowThreshold.join(', ')})`);
             }
             const aboveThreshold = this.additionalInfo.arrays?.above_threshold;
             if (aboveThreshold) {
-                const single = aboveThreshold.length === 1;
-                res.push(`There ${single ? 'is' : 'are'} ${aboveThreshold.length} ${single ? 'array' : 'arrays'} with
-                more than ${this.additionalInfo.arrays.threshold} items (${aboveThreshold.join(', ')}). This can be
-                split into a separate table to make the data easier to work with`);
+                let translated = this.$ngettext(
+                    'There is %{ n } array with more than',
+                    'There are %{ n } arrays with more than',
+                    aboveThreshold.length
+                );
+                let aboveThresholdString = this.$gettextInterpolate(translated, { n: aboveThreshold.length }) + ' ';
+                translated = this.$ngettext('%{ n } item ', '%{ n } items ', this.additionalInfo.arrays.threshold);
+                aboveThresholdString += this.$gettextInterpolate(translated, { n: this.additionalInfo.arrays.threshold });
+                res.push(
+                    aboveThresholdString +
+                        ` (${aboveThreshold.join(', ')}). ` +
+                        this.$gettext('This can be split into a separate table to make the data easier to work with')
+                );
             }
             return res;
         },
@@ -103,16 +124,26 @@ export default {
             const res = [];
             const availableColumns = this.additionalInfo.available_data?.columns?.available;
             if (availableColumns) {
-                const single = availableColumns.length === 1;
-                res.push(`There ${single ? 'is' : 'are'} data for ${availableColumns} of columns`);
+                let translated = this.$ngettext(
+                    'There is data for %{ n } column',
+                    'There are data for %{ n } of columns',
+                    availableColumns
+                );
+                res.push(this.$gettextInterpolate(translated, { n: availableColumns }));
             }
             const additionalColumns = this.additionalInfo.available_data?.additional;
             if (additionalColumns) {
-                const single = additionalColumns.length === 1;
-                res.push(`There ${single ? 'is' : 'are'} ${additionalColumns.length} ${single ? 'column' : 'columns'}
-                with additional data not part of OCDS`);
-                res.push(`${single ? 'This' : 'These'} ${single ? 'column' : 'columns'} ${single ? 'is' : 'are'}
-                highlighted in violet`);
+                let translated = this.$ngettext(
+                    'There is %{ n } column with additional data not part of OCDS',
+                    'There are %{ n } columns with additional data not part of OCDS',
+                    additionalColumns
+                );
+                res.push(this.$gettextInterpolate(translated, { n: additionalColumns }));
+                res.push(
+                    additionalColumns.length === 1
+                        ? this.$gettext('This column is highlighted in violet')
+                        : this.$gettext('These columns are highlighted in violet')
+                );
             }
             return res;
         },
@@ -147,7 +178,7 @@ export default {
                 uploadDetails.type + 's',
                 uploadDetails.id,
                 selections.id,
-                tableId,
+                tableId
             );
             this.tables = await Promise.all(
                 data.map(async (preview) => {
@@ -157,7 +188,7 @@ export default {
                         headers: parsed.data[0],
                         data: parsed.data.slice(1),
                     };
-                }),
+                })
             );
             this.loading = false;
         },

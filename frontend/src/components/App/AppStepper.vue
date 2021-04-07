@@ -2,29 +2,35 @@
     <v-stepper alt-labels class="app-stepper" :value="value">
         <v-stepper-header>
             <v-stepper-step :complete="value > 1" complete-icon="mdi-check" step="1" @click="onUploadFileStepClick">
-                <span class="text-link" @click="onUploadFileStepClick" v-if="value > 1 || $store.state.numberOfUploads">
+                <translate class="text-link" @click="onUploadFileStepClick" v-if="value > 1 || $store.state.numberOfUploads">
                     Re-upload file
-                </span>
-                <template v-else>Upload file</template>
+                </translate>
+                <translate translate-context="Upload file" v-else>Upload file</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
 
             <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2" @click="navigateTo('/select-data')">
-                <span :class="{ 'text-link': value > 2 }" @click="navigateTo('/select-data')">Select data</span>
+                <translate :class="{ 'text-link': value > 2 }" @click="navigateTo('/select-data')">Select data</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 2, complete: value > 3 }"></v-divider>
 
-            <v-stepper-step :complete="value > 3" complete-icon="mdi-check" step="3">Customize tables</v-stepper-step>
+            <v-stepper-step :complete="value > 3" complete-icon="mdi-check" step="3">
+                <translate>Customize tables</translate>
+            </v-stepper-step>
 
             <v-divider :class="{ active: value > 3, complete: value > 4 }"></v-divider>
 
-            <v-stepper-step :complete="value > 4" complete-icon="mdi-check" step="4">Edit headings</v-stepper-step>
+            <v-stepper-step :complete="value > 4" complete-icon="mdi-check" step="4">
+                <translate>Edit headings</translate>
+            </v-stepper-step>
 
             <v-divider :class="{ active: value > 4, complete: value > 5 }"></v-divider>
 
-            <v-stepper-step step="5">Download</v-stepper-step>
+            <v-stepper-step step="5">
+                <translate>Download</translate>
+            </v-stepper-step>
         </v-stepper-header>
     </v-stepper>
 </template>
@@ -73,9 +79,9 @@ export default {
 
         async openConfirmDialog() {
             return await this.$root.openConfirmDialog({
-                title: 'Are you sure to go back?',
-                content: 'When going to the previous step, all current changes will be reversed',
-                submitBtnText: 'Yes, go back',
+                title: this.$gettext('Are you sure to go back?'),
+                content: this.$gettext('When going to the previous step, all current changes will be reversed'),
+                submitBtnText: this.$gettext('Yes, go back'),
                 icon: require('@/assets/icons/back.svg'),
             });
         },

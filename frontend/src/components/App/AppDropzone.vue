@@ -2,12 +2,12 @@
     <div class="d-flex flex-column justify-center align-center app-dropzone" @drop="dropHandler" @dragover.prevent>
         <v-img height="86" src="@/assets/icons/drag-n-drop.svg" />
 
-        <span class="my-7">Drag and drop or click here</span>
+        <translate class="my-7">Drag and drop or click here</translate>
 
         <input type="file" class="d-none" ref="fileInput" @change="onFileSelect" />
 
         <app-button class="app-btn" large show-icon @click="$refs.fileInput.click()" color="gray-light">
-            Browse files
+            <translate>Browse files</translate>
         </app-button>
     </div>
 </template>
