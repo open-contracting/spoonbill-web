@@ -26,9 +26,10 @@ jest.mock('@/services/ApiService', () => {
                             id: 'mocked_id',
                         },
                     });
-                }, 100);
+                }, 10);
             });
         }),
+
         sendUrl: jest.fn(() => {
             return new Promise((resolve) => {
                 setTimeout(() => {
@@ -37,7 +38,70 @@ jest.mock('@/services/ApiService', () => {
                             id: 'mocked_id',
                         },
                     });
-                }, 100);
+                }, 10);
+            });
+        }),
+
+        getSelections: jest.fn(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            id: 'test id',
+                            tables: [],
+                        },
+                    });
+                }, 10);
+            });
+        }),
+
+        changeSplitStatus: jest.fn((type, uploadId, selectionsId, tableId, value) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            tableId,
+                            split: value,
+                        },
+                    });
+                }, 10);
+            });
+        }),
+
+        changeIncludeStatus: jest.fn((type, uploadId, selectionsId, tableId, value) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            tableId,
+                            include: value,
+                        },
+                    });
+                }, 10);
+            });
+        }),
+
+        getUploadInfo: jest.fn((id) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            id: id,
+                        },
+                    });
+                }, 10);
+            });
+        }),
+
+        getUploadInfoByUrl: jest.fn((id) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            id: id,
+                        },
+                    });
+                }, 10);
             });
         }),
     };

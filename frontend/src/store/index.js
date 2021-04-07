@@ -87,6 +87,7 @@ export default new Vuex.Store({
                 const res = await ApiService.getSelections(state.uploadDetails.type + 's', state.uploadDetails.id, id);
                 commit('setSelections', res.data);
             } catch (e) {
+                /* istanbul ignore next */
                 console.error(e);
             }
         },
@@ -105,6 +106,7 @@ export default new Vuex.Store({
                     value: data.split,
                 });
             } catch (e) {
+                /* istanbul ignore next */
                 console.error(e);
             }
         },
@@ -123,6 +125,7 @@ export default new Vuex.Store({
                     value: data.include,
                 });
             } catch (e) {
+                /* istanbul ignore next */
                 console.error(e);
             }
         },
@@ -140,6 +143,7 @@ export default new Vuex.Store({
                 data.type = type;
                 commit('setUploadDetails', data);
             } catch (e) {
+                /* istanbul ignore next */
                 if (e.response.status === 404) {
                     router.push('/').catch(() => {});
                 }
@@ -163,6 +167,7 @@ export default new Vuex.Store({
             };
 
             connection.onerror = (e) => {
+                /* istanbul ignore next */
                 console.error(e);
             };
 
