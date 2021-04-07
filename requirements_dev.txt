@@ -4,15 +4,19 @@
 #
 #    pip-compile requirements_dev.in
 #
+-e git+https://github.com/open-contracting/standard_theme.git@open_contracting#egg=standard_theme
+    # via -r requirements.in
 aioredis==1.3.1
     # via channels-redis
-amqp==5.0.5
+alabaster==0.7.12
+    # via sphinx
+amqp==5.0.6
     # via kombu
 appdirs==1.4.4
     # via
     #   black
     #   virtualenv
-asgiref==3.3.1
+asgiref==3.3.4
     # via
     #   channels
     #   channels-redis
@@ -30,7 +34,9 @@ autobahn==21.3.1
     # via daphne
 automat==20.2.0
     # via twisted
-billiard==3.6.3.0
+babel==2.9.0
+    # via sphinx
+billiard==3.6.4.0
     # via celery
 black==20.8b1
     # via -r requirements_dev.in
@@ -96,7 +102,7 @@ django-cors-headers==3.7.0
     # via -r requirements.in
 django-timezone-field==4.1.2
     # via django-celery-beat
-django==3.1.7
+django==3.2
     # via
     #   -r requirements.in
     #   channels
@@ -111,13 +117,15 @@ djangorestframework==3.12.4
     #   drf-nested-routers
 docopt==0.6.2
     # via coveralls
+docutils==0.17
+    # via sphinx
 drf-nested-routers==0.93.3
     # via -r requirements.in
 filelock==3.0.12
     # via virtualenv
 flake8==3.9.0
     # via -r requirements_dev.in
-gitdb==4.0.6
+gitdb==4.0.7
     # via gitpython
 gitpython==3.1.14
     # via transifex-client
@@ -138,7 +146,9 @@ idna==2.10
     #   twisted
 ijson==3.1.4
     # via -r requirements.in
-importlib-metadata==3.9.0
+imagesize==1.2.0
+    # via sphinx
+importlib-metadata==3.10.0
     # via
     #   flake8
     #   kombu
@@ -155,10 +165,14 @@ iniconfig==1.1.1
     # via pytest
 isort==5.8.0
     # via -r requirements_dev.in
+jinja2==2.11.3
+    # via sphinx
 kombu==5.0.2
     # via celery
 markdown==3.3.4
     # via -r requirements.in
+markupsafe==1.1.1
+    # via jinja2
 mccabe==0.6.1
     # via flake8
 msgpack==1.0.2
@@ -168,7 +182,9 @@ mypy-extensions==0.4.3
 nodeenv==1.5.0
     # via pre-commit
 packaging==20.9
-    # via pytest
+    # via
+    #   pytest
+    #   sphinx
 pathspec==0.8.1
     # via black
 pep517==0.10.0
@@ -177,7 +193,7 @@ pip-tools==6.0.1
     # via -r requirements_dev.in
 pluggy==0.13.1
     # via pytest
-pre-commit==2.11.1
+pre-commit==2.12.0
     # via -r requirements_dev.in
 prompt-toolkit==3.0.18
     # via click-repl
@@ -197,6 +213,8 @@ pycparser==2.20
     # via cffi
 pyflakes==2.3.1
     # via flake8
+pygments==2.8.1
+    # via sphinx
 pyopenssl==20.0.1
     # via twisted
 pyparsing==2.4.7
@@ -211,7 +229,7 @@ pytest-env==0.6.2
     # via -r requirements_dev.in
 pytest-mock==3.5.1
     # via -r requirements_dev.in
-pytest==6.2.2
+pytest==6.2.3
     # via
     #   -r requirements_dev.in
     #   pytest-asyncio
@@ -227,6 +245,7 @@ python-slugify==4.0.1
     # via transifex-client
 pytz==2021.1
     # via
+    #   babel
     #   celery
     #   django
     #   django-timezone-field
@@ -236,15 +255,16 @@ pyyaml==5.4.1
     #   pre-commit
 redis==3.5.3
     # via -r requirements.in
-regex==2021.3.17
+regex==2021.4.4
     # via black
 requests==2.25.1
     # via
     #   -r requirements.in
     #   coveralls
+    #   sphinx
+    #   transifex-client
 sentry-sdk==1.0.0
     # via -r requirements.in
-    #   transifex-client
 service-identity==18.1.0
     # via twisted
 six==1.15.0
@@ -255,9 +275,25 @@ six==1.15.0
     #   python-dateutil
     #   transifex-client
     #   virtualenv
-smmap==3.0.5
+smmap==4.0.0
     # via gitdb
-sqlalchemy==1.4.3
+snowballstemmer==2.1.0
+    # via sphinx
+sphinx==3.5.3
+    # via -r requirements.in
+sphinxcontrib-applehelp==1.0.2
+    # via sphinx
+sphinxcontrib-devhelp==1.0.2
+    # via sphinx
+sphinxcontrib-htmlhelp==1.0.3
+    # via sphinx
+sphinxcontrib-jsmath==1.0.1
+    # via sphinx
+sphinxcontrib-qthelp==1.0.3
+    # via sphinx
+sphinxcontrib-serializinghtml==1.1.4
+    # via sphinx
+sqlalchemy==1.4.6
     # via -r requirements.in
 sqlparse==0.4.1
     # via django
@@ -279,6 +315,7 @@ typed-ast==1.4.2
     # via black
 typing-extensions==3.7.4.3
     # via
+    #   asgiref
     #   black
     #   importlib-metadata
 urllib3==1.26.4

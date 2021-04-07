@@ -15,5 +15,7 @@ pyyaml
 redis
 requests
 sentry-sdk
+sphinx
 sqlalchemy
 transifex-client
+-e git+https://github.com/open-contracting/standard_theme.git@open_contracting#egg=standard_theme
