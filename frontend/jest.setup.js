@@ -104,5 +104,17 @@ jest.mock('@/services/ApiService', () => {
                 }, 10);
             });
         }),
+
+        createSelections: jest.fn((id) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            id: id,
+                        },
+                    });
+                }, 10);
+            });
+        }),
     };
 });
