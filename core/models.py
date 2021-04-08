@@ -93,8 +93,22 @@ class Url(models.Model):
 
 
 class DataSelection(models.Model):
+
+    OCDS = "ocds"
+    EN_USER_FRIENDLY = "en_user_friendly"
+    EN_R_FRIENDLY = "en_r_friendly"
+    ES_USER_FRIENDLY = "es_user_friendly"
+    ES_R_FRIENDLY = "es_r_friendly"
+    HEADING_TYPES = [
+        (OCDS, _("Apply OCDS headings only")),
+        (EN_USER_FRIENDLY, _("Apply English user friendly headings to all tables")),
+        (EN_R_FRIENDLY, _("Apply English R friendly headings to all tables")),
+        (ES_USER_FRIENDLY, _("Apply Spanish user friendly headings to all tables")),
+        (ES_R_FRIENDLY, _("Apply Spanish R friendly headings to all tables")),
+    ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     tables = models.ManyToManyField("Table", blank=True)
+    column_headings = models.CharField(max_length=30, choices=HEADING_TYPES, default=OCDS)
 
     class Meta:
         db_table = "data_selections"
@@ -107,3 +121,6 @@ class Table(models.Model):
     name = models.CharField(max_length=120)
     split = models.BooleanField(default=False)
     include = models.BooleanField(default=True)
+    flatten_name = models.CharField(max_length=120, blank=True, null=True)
+    array_tables = models.ManyToManyField("self", blank=True, null=True)
+    columns = ArrayField(models.JSONField(default=dict), blank=True, null=True)

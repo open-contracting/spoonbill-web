@@ -54,9 +54,7 @@ def validate_data(object_id, model=None):
 
     is_valid = False
     with open(f"{DATA_DIR}/schema.json") as schema_rd:
-        spec = DataPreprocessor(
-            json.loads(schema_rd.read()), ROOT_TABLES, combined_tables=COMBINED_TABLES, propagate_cols=["/ocid"]
-        )
+        spec = DataPreprocessor(json.loads(schema_rd.read()), ROOT_TABLES, combined_tables=COMBINED_TABLES)
         try:
             resource = "records"
             with open(datasource.file.path, "rb") as f:

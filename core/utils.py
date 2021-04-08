@@ -1,6 +1,7 @@
+import csv
 import uuid
 
-from spoonbill.flatten import ROOT_TABLES
+from spoonbill.common import ROOT_TABLES
 
 
 def instance_directory_path(instance, filename):
@@ -34,3 +35,13 @@ def retrieve_available_tables(analyzed_data):
         available_table["available_data"]["columns"]["available"] = available_cols
         available_tables.append(available_table)
     return available_tables
+
+
+def store_preview_csv(columns_key, rows_key, table_data, preview_path):
+    headers = list(table_data[columns_key].keys())
+    if "parentTable" not in headers:
+        headers.append("parentTable")
+    with open(preview_path, "w", newline="\n") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(table_data[rows_key])

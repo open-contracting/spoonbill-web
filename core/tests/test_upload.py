@@ -21,6 +21,7 @@ class TestUpload:
         upload = response.json()
         assert set(upload.keys()) == {
             "available_tables",
+            "analyzed_file",
             "expired_at",
             "id",
             "deleted",
@@ -57,23 +58,25 @@ class TestUpload:
     def test_get_selections_successful(self, client, upload_obj):
         get_data_selections(client, upload_obj, "uploads")
 
-    def test_delete_table(self, client, upload_obj):
-        selection = create_data_selection(client, upload_obj, "uploads")
-        response = client.get(f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/")
+    def test_delete_table(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, "uploads")
+        response = client.get(f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/")
         assert len(response.json()) == 2
 
         table_data = response.json()[0]
         assert table_data["include"]
 
         response = client.patch(
-            f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/",
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{table_data['id']}/",
             content_type="application/json",
             data={"include": False},
         )
         assert response.status_code == 200
         assert not response.json()["include"]
 
-        response = client.get(f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/")
+        response = client.get(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{table_data['id']}/"
+        )
         assert not response.json()["include"]
 
     def test_list_tables(self, client, upload_obj):
@@ -81,12 +84,12 @@ class TestUpload:
         response = client.get(f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/")
         assert len(response.json()) == 2
 
-    def test_table_preview(self, client, upload_obj):
-        selection = create_data_selection(client, upload_obj, "uploads")
-        tables = client.get(f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/").json()
+    def test_table_preview(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, "uploads")
+        tables = client.get(f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/").json()
 
         response = client.get(
-            f"/uploads/{upload_obj.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 1
         data = response.json()[0]

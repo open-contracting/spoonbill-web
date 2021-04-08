@@ -56,23 +56,23 @@ class TestUrl:
     def test_get_selections_successful(self, client, url_obj):
         get_data_selections(client, url_obj, "urls")
 
-    def test_delete_table(self, client, url_obj):
-        selection = create_data_selection(client, url_obj, "urls")
-        response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/")
+    def test_delete_table(self, client, url_obj_w_files):
+        selection = create_data_selection(client, url_obj_w_files, "urls")
+        response = client.get(f"/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/")
         assert len(response.json()) == 2
 
         table_data = response.json()[0]
         assert table_data["include"]
 
         response = client.patch(
-            f"/urls/{url_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/",
+            f"/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{table_data['id']}/",
             content_type="application/json",
             data={"include": False},
         )
         assert response.status_code == 200
         assert not response.json()["include"]
 
-        response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/{table_data['id']}/")
+        response = client.get(f"/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{table_data['id']}/")
         assert not response.json()["include"]
 
     def test_list_tables(self, client, url_obj):
@@ -80,11 +80,13 @@ class TestUrl:
         response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/")
         assert len(response.json()) == 2
 
-    def test_table_preview(self, client, url_obj):
-        selection = create_data_selection(client, url_obj, "urls")
-        tables = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/").json()
+    def test_table_preview(self, client, url_obj_w_files):
+        selection = create_data_selection(client, url_obj_w_files, "urls")
+        tables = client.get(f"/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
 
-        response = client.get(f"/urls/{url_obj.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/")
+        response = client.get(
+            f"/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+        )
         assert len(response.json()) == 1
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview"}

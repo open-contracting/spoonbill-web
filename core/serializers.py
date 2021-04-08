@@ -3,9 +3,18 @@ from rest_framework import serializers
 from core.models import DataSelection, Table, Upload, Url, Validation
 
 
-class TablesSerializer(serializers.ModelSerializer):
+class ArrayTablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
+        fields = ("id", "name", "include", "flatten_name")
+
+
+class TablesSerializer(serializers.ModelSerializer):
+    array_tables = ArrayTablesSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Table
+        read_only_fields = ("array_tables",)
         fields = "__all__"
 
 
@@ -14,6 +23,7 @@ class DataSelectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DataSelection
+        read_only_fields = ("column_headings",)
         fields = "__all__"
 
 

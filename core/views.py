@@ -1,4 +1,3 @@
-import csv
 import json
 import os
 from datetime import timedelta
@@ -15,6 +14,12 @@ from rest_framework.response import Response
 from core.models import DataSelection, Table, Upload, Url, Validation
 from core.serializers import DataSelectionSerializer, TablesSerializer, UploadSerializer, UrlSerializer
 from core.tasks import cleanup_upload, download_data_source, validate_data
+from core.utils import store_preview_csv
+
+COLUMNS = "columns"
+COMBINED_COLUMNS = "combined_columns"
+COMBINED_PREVIEW_ROWS = "preview_rows_combined"
+PREVIEW_ROWS = "preview_rows"
 
 
 class UploadViewSet(viewsets.GenericViewSet):
@@ -154,6 +159,7 @@ class DataSelectionViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, upload_id=None, url_id=None):
         serializer = self.get_serializer_class()(data=request.data or request.POST)
+        # import pdb; pdb.set_trace()
         if serializer.is_valid():
             ds = DataSelection.objects.create()
             for table in request.data.get("tables", []):
@@ -197,13 +203,22 @@ class TableViewSet(viewsets.ModelViewSet):
         datasource_dir = os.path.dirname(datasource.file.path)
         tables = data["tables"]
         root_table = tables.get(table.name, {})
-        for table_key in root_table.get("child_tables", []):
-            headers = [h for h in tables[table_key]["combined_columns"] if "1" not in h]
-            preview_path = f"{datasource_dir}/{table_key}.csv"
-            with open(preview_path, "w", newline="\n") as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=headers)
-                writer.writeheader()
-                writer.writerows(tables[table.name]["preview_rows_combined"])
+        update_fields = []
+        for key in ("split", "include"):
+            if key in request.data:
+                setattr(table, key, request.data[key])
+                update_fields.append(key)
+        if update_fields:
+            table.save(update_fields=update_fields)
+        is_array_tables = len(table.array_tables.all())
+        if "split" in request.data and request.data["split"] and not is_array_tables:
+            for table_key in root_table.get("child_tables", []):
+                child_table = Table.objects.create(name=table_key)
+                table.array_tables.add(child_table)
+                preview_path = f"{datasource_dir}/{table_key}_combined.csv"
+                store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
+        serializer = self.get_serializer_class()(table)
+        return Response(serializer.data)
 
 
 class TablePreviewViewSet(viewsets.GenericViewSet):
@@ -221,28 +236,35 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
             analyzed_data = json.loads(fd.read())
         tables = analyzed_data["tables"]
         data = []
-        # table_name_lower = table.name.lower()
         try:
             if table.split:
-                for letter in ("a", "b", "c"):
+                preview_path = f"{datasource_dir}/{table.name}.csv"
+                if not os.path.exists(preview_path):
+                    store_preview_csv(COLUMNS, PREVIEW_ROWS, tables[table.name], preview_path)
+                with open(preview_path) as csvfile:
                     data.append(
                         {
-                            "name": f"{table.name.title()}_{letter}.csv",
+                            "name": f"{tables[table.name]['name']}.csv",
                             "id": str(table.id),
-                            "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
+                            "preview": csvfile.read(),
                         }
                     )
-            #     for filename in os.listdir(datasource_dir):
-            #         if filename.startswith(table_name_lower):
-            #             with open(f"{datasource_dir}/{filename}") as f:
-            #                 data.append({"name": filename.title(), "preview": f.read()})
+                for child_table in table.array_tables.all():
+                    if not child_table.include:
+                        continue
+                    preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
+                    with open(preview_path) as csvfile:
+                        data.append(
+                            {
+                                "name": f"{tables[child_table.name]['name']}.csv",
+                                "id": str(child_table.id),
+                                "preview": csvfile.read(),
+                            }
+                        )
             else:
-                headers = [h for h in tables[table.name]["combined_columns"] if "1" not in h]
-                preview_path = f"{datasource_dir}/{table.name}.csv"
-                with open(preview_path, "w", newline="\n") as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=headers)
-                    writer.writeheader()
-                    writer.writerows(tables[table.name]["preview_rows_combined"])
+                preview_path = f"{datasource_dir}/{table.name}_combined.csv"
+                if not os.path.exists(preview_path):
+                    store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
                 with open(preview_path) as csvfile:
                     data.append(
                         {
