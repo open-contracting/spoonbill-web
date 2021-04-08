@@ -23,6 +23,18 @@ jobs:
               cd ./frontend
               npm install
               npm run test:unit
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Upload to transifex"
+        run: |
+              sudo apt-get install gettext
+              npm run gettext-extract
+              pip install transifex-client
+              cd ./frontend
+              export TX_TOKEN=${{ secrets.TX_TOKEN }}
+              tx push -s
 
   build:
     runs-on: ubuntu-latest
@@ -32,6 +44,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: "Download from transifex"
+        run: |
+              pip install transifex-client
+              cd ./frontend
+              export TX_TOKEN=${{ secrets.TX_TOKEN }}
+              tx pull -l es
       - name: Build container image
         uses: docker/build-push-action@v1
         with:

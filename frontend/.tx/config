@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[spoonbill.dictionary-pot]
+file_filter = ./locale/<lang>/lang.po
+minimum_perc = 0
+source_file = dictionary.pot
+source_lang = en
+type = PO
