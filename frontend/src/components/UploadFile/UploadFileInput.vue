@@ -147,7 +147,7 @@ export default {
                 color: 'error',
                 text:
                     details.type === UPLOAD_TYPES.URL
-                        ? this.$gettext('This link is not valid. please check and try again')
+                        ? this.$gettext('This link is not valid. Please check and try again')
                         : details.error,
             });
             this.$store.commit('setUploadDetails', null);

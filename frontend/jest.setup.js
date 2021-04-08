@@ -50,6 +50,7 @@ jest.mock('@/services/ApiService', () => {
                             id: 'test id',
                             tables: [
                                 {
+                                    id: 'parties table',
                                     name: 'parties',
                                     rows: 5,
                                     arrays: {
@@ -63,12 +64,14 @@ jest.mock('@/services/ApiService', () => {
                                     },
                                 },
                                 {
+                                    id: 'tenders table',
                                     name: 'tenders',
                                     rows: 11,
                                     arrays: { count: 7, threshold: 5, above_threshold: ['tender/items'] },
                                     available_data: { columns: { total: 35, available: 34 } },
                                 },
                                 {
+                                    id: 'awards table',
                                     name: 'awards',
                                     rows: 4,
                                     arrays: {
@@ -79,6 +82,7 @@ jest.mock('@/services/ApiService', () => {
                                     available_data: { total: 16, available: 9 },
                                 },
                                 {
+                                    id: 'documents table',
                                     name: 'documents',
                                     rows: 5,
                                 },
@@ -146,6 +150,27 @@ jest.mock('@/services/ApiService', () => {
                         data: {
                             id: id,
                         },
+                    });
+                }, 10);
+            });
+        }),
+
+        getTablePreview: jest.fn((type, uploadId, selectionsId, tableId) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: [
+                            {
+                                id: tableId,
+                                name: 'Awards_a.csv',
+                                preview: 'col1,col2,col3↵cell11,cell12,cell13↵cell21,cell22,cell23',
+                            },
+                            {
+                                id: tableId,
+                                name: 'Awards_b.csv',
+                                preview: 'col1,col2,col3↵cell11,cell12,cell13↵cell21,cell22,cell23',
+                            },
+                        ],
                     });
                 }, 10);
             });
