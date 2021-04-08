@@ -95,6 +95,22 @@ jobs:
               echo "CELERY_BACKEND=db+postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres/${{ secrets.POSTGRES_DB }}" >> .env
               echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
               echo "SENTRY_ENVIRONMENT=tests" >> .env
+      - name: "Download translate files from transifex for front"
+        run: |
+              pip install transifex-client
+              cd ./frontend
+              export TX_TOKEN=${{ secrets.TX_TOKEN }}
+              tx pull -l es
+      - name: "Download translate files from transifex"
+        uses: docker://sergioisidoro/github-transifex-action:v0.2.0
+        with:
+            TX_TOKEN: ${{ secrets.TX_TOKEN }}
+            git_flow: false
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            pull_translations: true
+            pull_sources: false
+            push_translations: false
+            push_sources: false
       - name: Run tests docker-compose
         run: |
               docker-compose -f docker-compose.test.yaml build
@@ -112,16 +128,6 @@ jobs:
             test/output.xml
             test/log.html
             test/report.html
-      - name: "Download translate files from transifex"
-        uses: docker://sergioisidoro/github-transifex-action:v0.2.0
-        with:
-            TX_TOKEN: ${{ secrets.TX_TOKEN }}
-            git_flow: false
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            pull_translations: true
-            pull_sources: false
-            push_translations: false
-            push_sources: false
       - name: Build container image
         uses: docker/build-push-action@v1
         with:
