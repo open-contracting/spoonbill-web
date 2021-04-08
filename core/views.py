@@ -1,3 +1,5 @@
+import csv
+import json
 import os
 from datetime import timedelta
 
@@ -184,6 +186,25 @@ class TableViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer_class()(queryset, many=True)
         return Response(serializer.data)
 
+    def update(self, request, *args, **kwargs):
+        if "url_id" in kwargs:
+            datasource = Url.objects.get(id=kwargs["url_id"])
+        elif "upload_id" in kwargs:
+            datasource = Upload.objects.get(id=kwargs["upload_id"])
+        table = Table.objects.get(id=kwargs["id"])
+        with open(datasource.analyzed_file.path) as fd:
+            data = json.loads(fd.read())
+        datasource_dir = os.path.dirname(datasource.file.path)
+        tables = data["tables"]
+        root_table = tables.get(table.name, {})
+        for table_key in root_table.get("child_tables", []):
+            headers = [h for h in tables[table_key]["combined_columns"] if "1" not in h]
+            preview_path = f"{datasource_dir}/{table_key}.csv"
+            with open(preview_path, "w", newline="\n") as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=headers)
+                writer.writeheader()
+                writer.writerows(tables[table.name]["preview_rows_combined"])
+
 
 class TablePreviewViewSet(viewsets.GenericViewSet):
     queryset = Table.objects.all()
@@ -191,15 +212,18 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
 
     def list(self, request, url_id=None, upload_id=None, selection_id=None, table_id=None):
         table = Table.objects.get(id=table_id)
-        # if url_id:
-        #     datasource = Url.objects.get(id=url_id)
-        # elif upload_id:
-        #     datasource = Upload.objects.get(id=upload_id)
-        # datasource_dir = f"{settings.MEDIA_ROOT}{datasource.id}"
+        if url_id:
+            datasource = Url.objects.get(id=url_id)
+        elif upload_id:
+            datasource = Upload.objects.get(id=upload_id)
+        datasource_dir = os.path.dirname(datasource.file.path)
+        with open(datasource.analyzed_file.path) as fd:
+            analyzed_data = json.loads(fd.read())
+        tables = analyzed_data["tables"]
         data = []
         # table_name_lower = table.name.lower()
         try:
-            if hasattr(table, "split") and table.split:
+            if table.split:
                 for letter in ("a", "b", "c"):
                     data.append(
                         {
@@ -213,15 +237,20 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
             #             with open(f"{datasource_dir}/{filename}") as f:
             #                 data.append({"name": filename.title(), "preview": f.read()})
             else:
-                # with open(f"{datasource_dir}/{table_name_lower}.csv") as f:
-                #     data.append({"name": table.name.title(), "preivew": f.read()})
-                data.append(
-                    {
-                        "name": f"{table.name.title()}.csv",
-                        "id": str(table.id),
-                        "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
-                    }
-                )
+                headers = [h for h in tables[table.name]["combined_columns"] if "1" not in h]
+                preview_path = f"{datasource_dir}/{table.name}.csv"
+                with open(preview_path, "w", newline="\n") as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=headers)
+                    writer.writeheader()
+                    writer.writerows(tables[table.name]["preview_rows_combined"])
+                with open(preview_path) as csvfile:
+                    data.append(
+                        {
+                            "name": f"{tables[table.name]['name']}.csv",
+                            "id": str(table.id),
+                            "preview": csvfile.read(),
+                        }
+                    )
         except FileNotFoundError:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(data)

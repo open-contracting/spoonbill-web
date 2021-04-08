@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import shutil
 from datetime import timedelta
 from tempfile import TemporaryFile
@@ -12,9 +13,13 @@ from django.conf import settings
 from django.core.files import File
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
+from spoonbill.stats import DataPreprocessor
+from spoonbill.utils import iter_file
 
 from core.models import Upload, Url
 from core.serializers import UploadSerializer, UrlSerializer
+from core.utils import retrieve_available_tables
 from spoonbill_web.celery import app as celery_app
 
 logger = logging.getLogger(__name__)
@@ -23,6 +28,7 @@ getters = {
     "Upload": {"model": Upload, "serializer": UploadSerializer},
     "Url": {"model": Url, "serializer": UrlSerializer},
 }
+DATA_DIR = os.path.dirname(__file__) + "/data"
 
 
 @celery_app.task
@@ -47,72 +53,49 @@ def validate_data(object_id, model=None):
     logger.debug("Start validation for %s file" % object_id)
 
     is_valid = False
-    try:
-        with open(datasource.file.path, "rb") as f:
-            items = ijson.items(f, "records.item")
-            for item in items:
-                if item:
-                    is_valid = True
-                    break
-        if not is_valid:
+    with open(f"{DATA_DIR}/schema.json") as schema_rd:
+        spec = DataPreprocessor(
+            json.loads(schema_rd.read()), ROOT_TABLES, combined_tables=COMBINED_TABLES, propagate_cols=["/ocid"]
+        )
+        try:
+            resource = "records"
             with open(datasource.file.path, "rb") as f:
-                items = ijson.items(f, "releases.item")
+                items = ijson.items(f, f"{resource}.item")
                 for item in items:
                     if item:
                         is_valid = True
                         break
-    except (ijson.JSONError, ijson.IncompleteJSONError) as e:
-        logger.info(
-            "Error while validating data %s" % object_id,
-            extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
-        )
+            if not is_valid:
+                resource = "releases"
+                with open(datasource.file.path, "rb") as f:
+                    items = ijson.items(f, f"{resource}.item")
+                    for item in items:
+                        if item:
+                            is_valid = True
+                            break
+            if is_valid:
+                spec.process_items(iter_file(datasource.file.path, resource))
+                analyzed_data = spec.dump()
+        except (ijson.JSONError, ijson.IncompleteJSONError) as e:
+            logger.info(
+                "Error while validating data %s" % object_id,
+                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+            )
 
     datasource.validation.is_valid = is_valid
     datasource.validation.save(update_fields=["is_valid"])
 
-    # TODO: Replace dummy available tables to data from analyzed_data
-    if is_valid and not datasource.available_tables and not hasattr(datasource, "analyzed_file"):
-        datasource.available_tables = [
-            {
-                "arrays": {
-                    "count": 2,
-                    "threshold": 5,
-                    "below_threshold": ["parties/0/roles"],
-                    "above_threshold": ["tenderer"],
-                },
-                "name": "parties",
-                "rows": 5,
-                "available_data": {
-                    "columns": {"total": 22, "available": 18, "additional": ["parties/0/identifier/Name"]}
-                },
-            },
-            {
-                "arrays": {"count": 7, "threshold": 5, "above_threshold": ["tender/items"]},
-                "name": "tenders",
-                "rows": 11,
-                "available_data": {"columns": {"total": 35, "available": 34}},
-            },
-            {
-                "arrays": {"count": 2, "threshold": 5, "above_threshold": ["awards/0/suppliers", "awards/0/items"]},
-                "available_data": {"total": 16, "available": 9},
-                "name": "awards",
-                "rows": 4,
-            },
-            {
-                "available_data": {
-                    "total": 10,
-                    "available": 10,
-                    "additional": ["documents/0/datePublished", "documents/0/..."],
-                },
-                "name": "documents",
-                "rows": 5,
-            },
-        ]
-        datasource.save(update_fields=["available_tables"])
-    elif hasattr(datasource, "analyzed_file") and datasource.analyzed_file:
+    if is_valid and not datasource.available_tables and not datasource.analyzed_file:
+        with TemporaryFile() as temp:
+            temp.write(json.dumps(analyzed_data).encode("utf-8"))
+            temp.seek(0)
+            datasource.analyzed_file = File(temp)
+            datasource.available_tables = retrieve_available_tables(analyzed_data)
+            datasource.save(update_fields=["analyzed_file", "available_tables"])
+    elif is_valid and datasource.analyzed_file:
         with open(datasource.analyzed_file.path) as f:
             data = json.loads(f.read())
-            datasource.available_tables = data["tables"]
+            datasource.available_tables = retrieve_available_tables(data)
             datasource.save(update_fields=["available_tables"])
 
     async_to_sync(channel_layer.group_send)(

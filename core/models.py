@@ -40,6 +40,7 @@ class Upload(models.Model):
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     file = models.FileField(upload_to=instance_directory_path, storage=fs)
+    analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_VALIDATION)
     created_at = models.DateTimeField(auto_now_add=True)

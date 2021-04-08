@@ -29,7 +29,16 @@ class UploadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Upload
-        read_only_fields = ("id", "created_at", "expired_at", "deleted", "status", "validation", "available_tables")
+        read_only_fields = (
+            "id",
+            "analyzed_file",
+            "created_at",
+            "expired_at",
+            "deleted",
+            "status",
+            "validation",
+            "available_tables",
+        )
         fields = "__all__"
 
 
