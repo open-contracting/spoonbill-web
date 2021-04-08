@@ -114,8 +114,6 @@ export default {
 
     data() {
         return {
-            /** @type { ?string } */
-            selectedTableName: null,
             checkedTables: [],
             availableTables: [],
             selectedTables: [],

@@ -167,6 +167,7 @@ export default {
                 });
                 await this.getTablePreview(this.table.id);
             } catch (e) {
+                /* istanbul ignore next */
                 console.error(e);
             }
         },

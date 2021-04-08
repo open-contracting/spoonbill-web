@@ -168,6 +168,7 @@ export default {
                 font-weight: 400;
                 color: map-get($colors, 'primary');
                 text-shadow: none;
+                text-align: center;
             }
         }
     }

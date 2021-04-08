@@ -11,6 +11,11 @@ describe('AppDropzone.vue', () => {
             localVue,
             vuetify,
         });
+        wrapper.vm.onFileSelect({
+            target: {},
+        });
+        expect(wrapper.emitted().input).toBeFalsy();
+
         wrapper.find('input').trigger('change');
 
         expect(wrapper.emitted().input).toBeTruthy();

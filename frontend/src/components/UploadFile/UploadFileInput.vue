@@ -147,7 +147,7 @@ export default {
                 color: 'error',
                 text:
                     details.type === UPLOAD_TYPES.URL
-                        ? this.$gettext('This link is not valid. please check and try again')
+                        ? this.$gettext('This link is not valid. Please check and try again')
                         : details.error,
             });
             this.$store.commit('setUploadDetails', null);
@@ -176,7 +176,6 @@ export default {
             }
             if (upload.validation.is_valid === true) {
                 this.uploadType = UPLOAD_TYPES.UPLOAD;
-                this.loading.value = false;
                 this.$store.commit('openSnackbar', {
                     color: 'moody-blue',
                     text: this.$gettext('Now your file is analyzed and ready to use.'),
@@ -229,6 +228,7 @@ export default {
                 this.$store.commit('increaseNumberOfUploads');
                 this.$router.push(`/upload-file?upload=${data.id}`).catch(() => {});
             } catch (e) {
+                /* istanbul ignore next */
                 console.error(e);
             } finally {
                 this.loading.value = false;
@@ -278,6 +278,7 @@ export default {
                 this.$store.commit('increaseNumberOfUploads');
                 this.$router.push(`/upload-file?url=${data.id}`).catch(() => {});
             } catch (e) {
+                /* istanbul ignore next */
                 console.error(e);
             } finally {
                 this.loading.value = false;
