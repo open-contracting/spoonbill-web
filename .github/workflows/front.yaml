@@ -30,9 +30,9 @@ jobs:
       - name: "Upload to transifex"
         run: |
               sudo apt-get install gettext
+              cd ./frontend
               npm run gettext-extract
               pip install transifex-client
-              cd ./frontend
               export TX_TOKEN=${{ secrets.TX_TOKEN }}
               tx push -s
 
