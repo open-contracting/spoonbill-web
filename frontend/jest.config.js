@@ -7,11 +7,9 @@ module.exports = {
         '!**/node_modules/**',
         '!src/views/UploadFile/UploadFileRegistry.vue',
     ],
-    /*coverageThreshold: {
+    coverageThreshold: {
         global: {
-            branches: 90,
-            functions: 90,
-            lines: 90,
+            lines: 80,
         },
-    },*/
+    },
 };
