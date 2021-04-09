@@ -15,7 +15,7 @@ DATA_DIR = os.path.dirname(__file__) + "/data"
 
 @pytest.fixture
 def dataset():
-    file_ = open(f"{DATA_DIR}/don.json")
+    file_ = open(f"{DATA_DIR}/sample-dataset.json")
     yield file_
 
     file_.close()
@@ -63,6 +63,16 @@ def upload_obj(validation_obj, dataset):
 
 
 @pytest.fixture
+def upload_obj_validated(upload_obj, analyzed):
+    file_ = File(analyzed)
+    upload_obj.analyzed_file = file_
+    upload_obj.save(update_fields=["analyzed_file"])
+    yield upload_obj
+
+    shutil.rmtree(f"{settings.MEDIA_ROOT}{upload_obj.id}", ignore_errors=True)
+
+
+@pytest.fixture
 def url_obj(validation_obj, dataset):
     return Url.objects.create(
         url="https://example.org/dataset.json",
@@ -86,7 +96,7 @@ def url_obj_w_files(url_obj, dataset, analyzed):
 @pytest.fixture
 def mocked_request(mocker, url_obj):
     request = mocker.patch("core.tasks.requests")
-    path = os.path.dirname(__file__) + "/data/don.json"
+    path = os.path.dirname(__file__) + "/data/sample-dataset.json"
     with open(path) as f:
         data = f.read()
     response = Response(body=data)

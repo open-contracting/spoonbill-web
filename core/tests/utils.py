@@ -38,7 +38,7 @@ class Response:
         return self.reasons.get(str(self.status_code))
 
 
-data_selection = {"tables": [{"name": "tenders"}, {"name": "contracts"}]}
+data_selection = {"tables": [{"name": "parties"}, {"name": "awards"}]}
 
 
 def create_data_selection(client, parent, prefix=None):
@@ -46,7 +46,7 @@ def create_data_selection(client, parent, prefix=None):
     response = client.post(url, content_type="application/json", data=data_selection)
     assert response.status_code == 201
     json_data = response.json()
-    assert set(json_data.keys()) == {"id", "tables"}
+    assert set(json_data.keys()) == {"id", "tables", "headings_type"}
     for i, table in enumerate(json_data["tables"]):
         assert "id" in table
         assert table["name"] == data_selection["tables"][i]["name"]

@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.postgres.fields import ArrayField
 from django.core.files.storage import FileSystemStorage
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -40,6 +41,7 @@ class Upload(models.Model):
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     file = models.FileField(upload_to=instance_directory_path, storage=fs)
+    analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_VALIDATION)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -92,8 +94,22 @@ class Url(models.Model):
 
 
 class DataSelection(models.Model):
+
+    OCDS = "ocds"
+    EN_USER_FRIENDLY = "en_user_friendly"
+    EN_R_FRIENDLY = "en_r_friendly"
+    ES_USER_FRIENDLY = "es_user_friendly"
+    ES_R_FRIENDLY = "es_r_friendly"
+    HEADING_TYPES = [
+        (OCDS, _("Apply OCDS headings only")),
+        (EN_USER_FRIENDLY, _("Apply English user friendly headings to all tables")),
+        (EN_R_FRIENDLY, _("Apply English R friendly headings to all tables")),
+        (ES_USER_FRIENDLY, _("Apply Spanish user friendly headings to all tables")),
+        (ES_R_FRIENDLY, _("Apply Spanish R friendly headings to all tables")),
+    ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     tables = models.ManyToManyField("Table", blank=True)
+    headings_type = models.CharField(max_length=30, choices=HEADING_TYPES, default=OCDS)
 
     class Meta:
         db_table = "data_selections"
@@ -106,3 +122,6 @@ class Table(models.Model):
     name = models.CharField(max_length=120)
     split = models.BooleanField(default=False)
     include = models.BooleanField(default=True)
+    heading = models.CharField(max_length=120, blank=True, null=True)
+    array_tables = models.ManyToManyField("self", blank=True)
+    column_headings = ArrayField(models.JSONField(default=dict, encoder=DjangoJSONEncoder), blank=True, null=True)

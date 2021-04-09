@@ -14,6 +14,7 @@ import logging.config
 import os
 from pathlib import Path
 
+from django.utils.translation import ugettext_lazy as _
 from yaml import safe_load as load
 
 # Sentry
@@ -82,6 +83,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "spoonbill_web.urls"
@@ -143,6 +145,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
+
+LANGUAGE = [(LANGUAGE_CODE, _("English")), ("es", _("Spanish"))]
 
 TIME_ZONE = "UTC"
 

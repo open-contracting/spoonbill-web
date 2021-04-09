@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import timedelta
 
@@ -13,6 +14,12 @@ from rest_framework.response import Response
 from core.models import DataSelection, Table, Upload, Url, Validation
 from core.serializers import DataSelectionSerializer, TablesSerializer, UploadSerializer, UrlSerializer
 from core.tasks import cleanup_upload, download_data_source, validate_data
+from core.utils import set_column_headings, store_preview_csv
+
+COLUMNS = "columns"
+COMBINED_COLUMNS = "combined_columns"
+COMBINED_PREVIEW_ROWS = "preview_rows_combined"
+PREVIEW_ROWS = "preview_rows"
 
 
 class UploadViewSet(viewsets.GenericViewSet):
@@ -148,7 +155,7 @@ class DataSelectionViewSet(viewsets.ModelViewSet):
     serializer_class = DataSelectionSerializer
     queryset = DataSelection.objects.all()
     lookup_field = "id"
-    http_method_names = ["get", "post", "head", "options", "trace"]
+    http_method_names = ["get", "post", "patch", "head", "options", "trace"]
 
     def create(self, request, *args, upload_id=None, url_id=None):
         serializer = self.get_serializer_class()(data=request.data or request.POST)
@@ -172,6 +179,26 @@ class DataSelectionViewSet(viewsets.ModelViewSet):
             serializer = DataSelectionSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    def update(self, request, *args, **kwargs):
+        ds = DataSelection.objects.get(id=kwargs.get("id"))
+        if "headings_type" in request.data and ds.headings_type != request.data["headings_type"]:
+            types = [t[0] for t in ds.HEADING_TYPES]
+            headings_type = request.data["headings_type"]
+            if headings_type not in types:
+                return Response(
+                    {"detail": _("Please use for column_heading value one of %s") % types},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            ds.headings_type = request.data["headings_type"]
+            ds.save(update_fields=["headings_type"])
+            if "url_id" in kwargs:
+                source = Url.objects.get(id=kwargs["url_id"])
+            elif "upload_id" in kwargs:
+                source = Upload.objects.get(id=kwargs["upload_id"])
+            set_column_headings(ds, source.analyzed_file.path)
+        serializer = DataSelectionSerializer(ds)
+        return Response(serializer.data)
+
 
 class TableViewSet(viewsets.ModelViewSet):
     serializer_class = TablesSerializer
@@ -184,6 +211,34 @@ class TableViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer_class()(queryset, many=True)
         return Response(serializer.data)
 
+    def update(self, request, *args, **kwargs):
+        if "url_id" in kwargs:
+            datasource = Url.objects.get(id=kwargs["url_id"])
+        elif "upload_id" in kwargs:
+            datasource = Upload.objects.get(id=kwargs["upload_id"])
+        table = Table.objects.get(id=kwargs["id"])
+        with open(datasource.analyzed_file.path) as fd:
+            data = json.loads(fd.read())
+        datasource_dir = os.path.dirname(datasource.file.path)
+        tables = data["tables"]
+        root_table = tables.get(table.name, {})
+        update_fields = []
+        for key in ("split", "include", "heading"):
+            if key in request.data:
+                setattr(table, key, request.data[key])
+                update_fields.append(key)
+        if update_fields:
+            table.save(update_fields=update_fields)
+        is_array_tables = len(table.array_tables.all())
+        if "split" in request.data and request.data["split"] and not is_array_tables:
+            for table_key in root_table.get("child_tables", []):
+                child_table = Table.objects.create(name=table_key)
+                table.array_tables.add(child_table)
+                preview_path = f"{datasource_dir}/{table_key}_combined.csv"
+                store_preview_csv(COMBINED_COLUMNS, PREVIEW_ROWS, tables[table_key], preview_path)
+        serializer = self.get_serializer_class()(table)
+        return Response(serializer.data)
+
 
 class TablePreviewViewSet(viewsets.GenericViewSet):
     queryset = Table.objects.all()
@@ -191,37 +246,53 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
 
     def list(self, request, url_id=None, upload_id=None, selection_id=None, table_id=None):
         table = Table.objects.get(id=table_id)
-        # if url_id:
-        #     datasource = Url.objects.get(id=url_id)
-        # elif upload_id:
-        #     datasource = Upload.objects.get(id=upload_id)
-        # datasource_dir = f"{settings.MEDIA_ROOT}{datasource.id}"
+        if url_id:
+            datasource = Url.objects.get(id=url_id)
+        elif upload_id:
+            datasource = Upload.objects.get(id=upload_id)
+        datasource_dir = os.path.dirname(datasource.file.path)
+        selection = DataSelection.objects.get(id=selection_id)
+        with open(datasource.analyzed_file.path) as fd:
+            analyzed_data = json.loads(fd.read())
+        tables = analyzed_data["tables"]
         data = []
-        # table_name_lower = table.name.lower()
-        try:
-            if hasattr(table, "split") and table.split:
-                for letter in ("a", "b", "c"):
-                    data.append(
-                        {
-                            "name": f"{table.name.title()}_{letter}.csv",
-                            "id": str(table.id),
-                            "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
-                        }
-                    )
-            #     for filename in os.listdir(datasource_dir):
-            #         if filename.startswith(table_name_lower):
-            #             with open(f"{datasource_dir}/{filename}") as f:
-            #                 data.append({"name": filename.title(), "preview": f.read()})
-            else:
-                # with open(f"{datasource_dir}/{table_name_lower}.csv") as f:
-                #     data.append({"name": table.name.title(), "preivew": f.read()})
-                data.append(
-                    {
-                        "name": f"{table.name.title()}.csv",
-                        "id": str(table.id),
-                        "preview": "col1,col2,col3\ncell11,cell12,cell13\ncell21,cell22,cell23",
+        if table.split:
+            preview_path = f"{datasource_dir}/{table.name}.csv"
+            if not os.path.exists(preview_path):
+                store_preview_csv(COLUMNS, PREVIEW_ROWS, tables[table.name], preview_path)
+            with open(preview_path) as csvfile:
+                preview = {
+                    "name": f"{tables[table.name]['name']}.csv",
+                    "id": str(table.id),
+                    "preview": csvfile.read(),
+                }
+                if selection.headings_type != selection.OCDS:
+                    preview["headings"] = table.column_headings
+            data.append(preview)
+            for child_table in table.array_tables.all():
+                if not child_table.include:
+                    continue
+                preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
+                with open(preview_path) as csvfile:
+                    preview = {
+                        "name": f"{tables[child_table.name]['name']}.csv",
+                        "id": str(child_table.id),
+                        "preview": csvfile.read(),
                     }
-                )
-        except FileNotFoundError:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+                    if selection.headings_type != selection.OCDS:
+                        preview["headings"] = child_table.column_headings
+                data.append(preview)
+        else:
+            preview_path = f"{datasource_dir}/{table.name}_combined.csv"
+            if not os.path.exists(preview_path):
+                store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
+            with open(preview_path) as csvfile:
+                preview = {
+                    "name": f"{tables[table.name]['name']}.csv",
+                    "id": str(table.id),
+                    "preview": csvfile.read(),
+                }
+                if selection.headings_type != selection.OCDS:
+                    preview["headings"] = table.column_headings
+                data.append(preview)
         return Response(data)

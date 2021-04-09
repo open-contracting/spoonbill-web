@@ -27,7 +27,7 @@ loggers:
   core:
     handlers: [console]
     propagate: no
-    level: INFO
+    level: DEBUG
   "":
     handlers: [console]
     level: INFO
