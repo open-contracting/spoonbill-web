@@ -2,6 +2,7 @@ import csv
 import json
 import uuid
 
+import ijson
 from django.utils.translation import activate, get_language
 from spoonbill.common import ROOT_TABLES
 
@@ -85,3 +86,21 @@ def set_column_headings(datasource, analyzed_file_path):
                 a_table.column_headings = get_column_headings(datasource, tables, a_table)
                 a_table.save(update_fields=["column_headings"])
     activate(current_language_code)
+
+
+def is_release_package(filepath):
+    with open(filepath, "rb") as f:
+        items = ijson.items(f, "releases.item")
+        for item in items:
+            if item:
+                return True
+    return False
+
+
+def is_record_package(filepath):
+    with open(filepath, "rb") as f:
+        items = ijson.items(f, "records.item")
+        for item in items:
+            if item:
+                return True
+    return False

@@ -19,7 +19,7 @@ from spoonbill.utils import iter_file
 
 from core.models import Upload, Url
 from core.serializers import UploadSerializer, UrlSerializer
-from core.utils import retrieve_available_tables
+from core.utils import is_record_package, is_release_package, retrieve_available_tables
 from spoonbill_web.celery import app as celery_app
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
@@ -55,24 +55,15 @@ def validate_data(object_id, model=None):
     with open(f"{DATA_DIR}/schema.json") as schema_rd:
         spec = DataPreprocessor(json.loads(schema_rd.read()), ROOT_TABLES, combined_tables=COMBINED_TABLES)
         try:
-            resource = "records"
-            with open(datasource.file.path, "rb") as f:
-                items = ijson.items(f, f"{resource}.item")
-                for item in items:
-                    if item:
-                        is_valid = True
-                        break
-            if not is_valid:
+            resource = ""
+            if is_release_package(datasource.file.path):
                 resource = "releases"
-                with open(datasource.file.path, "rb") as f:
-                    items = ijson.items(f, f"{resource}.item")
-                    for item in items:
-                        if item:
-                            is_valid = True
-                            break
-            if is_valid:
+            elif is_record_package(datasource.file.path):
+                resource = "records"
+            if resource:
                 spec.process_items(iter_file(datasource.file.path, resource))
                 analyzed_data = spec.dump()
+                is_valid = True
         except (ijson.JSONError, ijson.IncompleteJSONError) as e:
             logger.info(
                 "Error while validating data %s" % object_id,
