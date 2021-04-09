@@ -35,12 +35,31 @@
         <v-skeleton-loader class="mt-8" v-if="loading" type="table-tbody"></v-skeleton-loader>
         <div class="mt-8 tables">
             <app-table
-                v-for="table in tables"
+                v-for="(table, idx) in tables"
                 :key="table.name"
                 :headers="table.headers"
                 :name="'Table: ' + table.name"
                 :data="table.data"
+                :include="table.include"
+                :allow-actions="idx !== 0"
+                @remove="changeIncludeStatus(table, false)"
+                @restore="changeIncludeStatus(table, true)"
             />
+        </div>
+        <div class="mt-15 d-flex">
+            <v-btn class="mr-6" color="gray-light" x-large @click="$emit('back')" v-if="isSplit" key="back">
+                <translate>Go back</translate>
+            </v-btn>
+
+            <v-btn class="mr-6" color="accent" x-large @click="$emit('remove')" v-else key="remove">
+                <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
+                <translate>Remove table</translate>
+            </v-btn>
+
+            <v-btn color="accent" x-large @click="$emit('save')">
+                <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
+                <translate>Save and Continue</translate>
+            </v-btn>
         </div>
     </div>
 </template>
@@ -172,6 +191,10 @@ export default {
             }
         },
 
+        /**
+         * Fetch and parse preview of table
+         * @param { string } tableId
+         */
         async getTablePreview(tableId) {
             this.loading = true;
             const { uploadDetails, selections } = this.$store.state;
@@ -185,13 +208,36 @@ export default {
                 data.map(async (preview) => {
                     const parsed = await Papa.parse(data[0].preview);
                     return {
+                        id: preview.id,
                         name: preview.name,
                         headers: parsed.data[0],
                         data: parsed.data.slice(1),
+                        include: true,
                     };
                 })
             );
             this.loading = false;
+        },
+
+        /**
+         * Change include status of table
+         * @param { { include: boolean, id: string } } table
+         * @param { boolean } value
+         */
+        async changeIncludeStatus(table, value) {
+            try {
+                await ApiService.changeIncludeStatus(
+                    this.$store.state.uploadDetails.type + 's',
+                    this.$store.state.uploadDetails.id,
+                    this.$store.state.selections.id,
+                    table.id,
+                    value
+                );
+                table.include = value;
+            } catch (e) {
+                /* istanbul ignore next */
+                console.error(e);
+            }
         },
     },
 };

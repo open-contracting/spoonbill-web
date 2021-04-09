@@ -5,29 +5,13 @@
             <translate tag="h2" class="page-title">Customize Tables</translate>
         </v-col>
         <v-col cols="12">
-            <customize-tables-table v-if="currentTable" :table="currentTable" />
-            <div class="mt-15 d-flex">
-                <v-btn
-                    class="mr-6"
-                    :disabled="selections && selections.tables.length - 1 === currentTableIndex"
-                    color="accent"
-                    x-large
-                    @click="onRemoveClick"
-                >
-                    <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
-                    <translate>Remove table</translate>
-                </v-btn>
-
-                <v-btn
-                    :disabled="selections && selections.tables.length - 1 === currentTableIndex"
-                    color="accent"
-                    x-large
-                    @click="onContinueClick"
-                >
-                    <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
-                    <translate>Save and Continue</translate>
-                </v-btn>
-            </div>
+            <customize-tables-table
+                v-if="currentTable"
+                :table="currentTable"
+                @remove="onRemoveClick"
+                @save="onContinueClick"
+                @back="onBackClick"
+            />
         </v-col>
     </v-row>
 </template>
@@ -71,6 +55,16 @@ export default {
     },
 
     methods: {
+        /**
+         * Go to previous table if exists
+         */
+        onBackClick() {
+            if (this.currentTableIndex > 0) {
+                this.currentTableIndex--;
+                this.currentTable = this.selections.tables[this.currentTableIndex];
+            }
+        },
+
         /**
          * Set true value for table's 'include' status and opens next table
          */
