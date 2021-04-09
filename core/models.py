@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.postgres.fields import ArrayField
 from django.core.files.storage import FileSystemStorage
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -108,7 +109,7 @@ class DataSelection(models.Model):
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     tables = models.ManyToManyField("Table", blank=True)
-    column_headings = models.CharField(max_length=30, choices=HEADING_TYPES, default=OCDS)
+    headings_type = models.CharField(max_length=30, choices=HEADING_TYPES, default=OCDS)
 
     class Meta:
         db_table = "data_selections"
@@ -121,6 +122,6 @@ class Table(models.Model):
     name = models.CharField(max_length=120)
     split = models.BooleanField(default=False)
     include = models.BooleanField(default=True)
-    flatten_name = models.CharField(max_length=120, blank=True, null=True)
-    array_tables = models.ManyToManyField("self", blank=True, null=True)
-    columns = ArrayField(models.JSONField(default=dict), blank=True, null=True)
+    heading = models.CharField(max_length=120, blank=True, null=True)
+    array_tables = models.ManyToManyField("self", blank=True)
+    column_headings = ArrayField(models.JSONField(default=dict, encoder=DjangoJSONEncoder), blank=True, null=True)

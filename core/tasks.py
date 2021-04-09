@@ -22,13 +22,12 @@ from core.serializers import UploadSerializer, UrlSerializer
 from core.utils import retrieve_available_tables
 from spoonbill_web.celery import app as celery_app
 
-logger = logging.getLogger(__name__)
-
+DATA_DIR = os.path.dirname(__file__) + "/data"
 getters = {
     "Upload": {"model": Upload, "serializer": UploadSerializer},
     "Url": {"model": Url, "serializer": UrlSerializer},
 }
-DATA_DIR = os.path.dirname(__file__) + "/data"
+logger = logging.getLogger(__name__)
 
 
 @celery_app.task

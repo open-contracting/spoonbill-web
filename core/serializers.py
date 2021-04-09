@@ -6,7 +6,7 @@ from core.models import DataSelection, Table, Upload, Url, Validation
 class ArrayTablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
-        fields = ("id", "name", "include", "flatten_name")
+        fields = ("id", "name", "include", "heading")
 
 
 class TablesSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class TablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
         read_only_fields = ("array_tables",)
-        fields = "__all__"
+        fields = ("id", "name", "split", "array_tables", "include", "heading")
 
 
 class DataSelectionSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class DataSelectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DataSelection
-        read_only_fields = ("column_headings",)
+        read_only_fields = ("headings_type",)
         fields = "__all__"
 
 

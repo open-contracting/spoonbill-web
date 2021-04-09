@@ -94,3 +94,77 @@ class TestUpload:
         assert len(response.json()) == 1
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview"}
+
+    def test_table_r_friendly_preview(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, "uploads")
+        tables = client.get(f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/").json()
+        response = client.patch(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/",
+            data={"headings_type": "es_r_friendly"},
+            content_type="application/json",
+        )
+
+        response = client.get(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+        )
+        assert len(response.json()) == 1
+        data = response.json()[0]
+        assert set(data.keys()) == {"id", "name", "preview", "headings"}
+
+    def test_table_split_preview(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, "uploads")
+        tables = client.get(f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/").json()
+
+        response = client.patch(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            data={"split": True},
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+
+        response = client.patch(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/",
+            data={"headings_type": "es_r_friendly"},
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+
+        response = client.get(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+        )
+        assert len(response.json()) == 3
+        data = response.json()[0]
+        assert set(data.keys()) == {"id", "name", "preview", "headings"}
+
+    def test_table_split_include_preview(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, "uploads")
+        tables = client.get(f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/").json()
+
+        response = client.patch(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            data={"split": True},
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+        array_tables = response.json()["array_tables"]
+
+        response = client.patch(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/",
+            data={"headings_type": "es_r_friendly"},
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+
+        response = client.patch(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{array_tables[0]['id']}/",
+            data={"include": False},
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+
+        response = client.get(
+            f"/uploads/{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+        )
+        assert len(response.json()) == 2
+        data = response.json()[0]
+        assert set(data.keys()) == {"id", "name", "preview", "headings"}
