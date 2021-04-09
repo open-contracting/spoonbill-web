@@ -1,5 +1,6 @@
 import csv
 import json
+import re
 import uuid
 
 import ijson
@@ -68,7 +69,8 @@ def get_column_headings(datasource, tables, table):
         return column_headings
     columns = tables[table.name]["columns"].keys() if table.split else tables[table.name]["combined_columns"].keys()
     for col in columns:
-        column_headings.append({col: heading_formatters[datasource.headings_type](headings.get(col, col))})
+        non_index_based = re.sub(r"\d", "*", col)
+        column_headings.append({col: heading_formatters[datasource.headings_type](headings.get(non_index_based, col))})
     return column_headings
 
 
