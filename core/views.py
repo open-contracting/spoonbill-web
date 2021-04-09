@@ -223,7 +223,7 @@ class TableViewSet(viewsets.ModelViewSet):
         tables = data["tables"]
         root_table = tables.get(table.name, {})
         update_fields = []
-        for key in ("split", "include"):
+        for key in ("split", "include", "heading"):
             if key in request.data:
                 setattr(table, key, request.data[key])
                 update_fields.append(key)
