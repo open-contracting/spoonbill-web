@@ -1,10 +1,19 @@
 <template>
     <div class="app-table">
-        <div class="mb-4 d-flex justify-space-between align-center">
-            <p class="fw-300 mb-0 app-table__name">{{ name }}</p>
-            <slot name="actions" />
+        <div class="d-flex align-center" :class="allowActions ? 'mb-1' : 'mb-3 mt-1'">
+            <p class="mr-3 fw-300 mb-0 app-table__name">{{ name }}</p>
+            <div v-if="allowActions">
+                <v-btn text v-if="include" @click="$emit('remove')" key="remove">
+                    <v-img height="16" contain src="@/assets/icons/remove.svg" />
+                    <translate class="text-link">Remove</translate>
+                </v-btn>
+                <v-btn text v-else @click="$emit('restore')" key="restore">
+                    <v-img height="16" contain src="@/assets/icons/restore.svg" />
+                    <translate class="text-link">Restore table</translate>
+                </v-btn>
+            </div>
         </div>
-        <v-simple-table :style="{ width: headers.length * 100 + 'px' }">
+        <v-simple-table v-if="include" :style="{ width: headers.length * 100 + 'px' }">
             <template v-slot:default>
                 <thead>
                     <tr>
@@ -37,6 +46,14 @@ export default {
         data: {
             type: Array,
             required: true,
+        },
+        include: {
+            type: Boolean,
+            default: true,
+        },
+        allowActions: {
+            type: Boolean,
+            default: false,
         },
     },
 };

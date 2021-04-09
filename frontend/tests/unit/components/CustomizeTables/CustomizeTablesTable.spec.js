@@ -114,5 +114,31 @@ describe('CustomizeTablesTable.vue', () => {
             expect(ApiService.getTablePreview).toBeCalledTimes(2);
             expect(store.state.selections.tables.find((table) => table.id === 'tenders table').split).toBe(true);
         });
+
+        test("'changeIncludeStatus' changes include status of table", async () => {
+            jest.clearAllMocks();
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                available_tables,
+            });
+            await store.dispatch('fetchSelections', 'test id');
+            const wrapper = mount(CustomizeTablesTable, {
+                localVue,
+                vuetify,
+                store,
+                propsData: {
+                    table: {
+                        id: 'tenders table',
+                        name: 'tenders',
+                    },
+                },
+            });
+
+            const table = { id: 'test id', include: true };
+            await wrapper.vm.changeIncludeStatus(table, false);
+            expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(1);
+            expect(table.include).toBe(false);
+        });
     });
 });

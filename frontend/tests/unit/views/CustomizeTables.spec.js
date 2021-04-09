@@ -31,18 +31,34 @@ describe('CustomizeTables.vue', () => {
     });
 
     describe('methods', () => {
-        test("'onContinueClick' changes include status of current table to true", async () => {
+        /** @type { Wrapper<Vue> }*/
+        let wrapper;
+        beforeEach(() => {
             store.commit('setUploadDetails', {
                 id: 'test id',
                 type: UPLOAD_TYPES.UPLOAD,
             });
-            const wrapper = shallowMount(CustomizeTables, {
+            wrapper = shallowMount(CustomizeTables, {
                 localVue,
                 vuetify,
                 store,
                 router,
             });
+            jest.clearAllMocks();
+        });
 
+        test("'onBackClick' goes to previous table if exists", async () => {
+            await store.dispatch('fetchSelections', 'test id');
+            wrapper.vm.onBackClick();
+            expect(wrapper.vm.currentTableIndex).toBe(0);
+            await wrapper.vm.onContinueClick();
+            expect(ApiService.changeIncludeStatus).toBeCalledTimes(1);
+            expect(wrapper.vm.currentTableIndex).toBe(1);
+            wrapper.vm.onBackClick();
+            expect(wrapper.vm.currentTableIndex).toBe(0);
+        });
+
+        test("'onContinueClick' changes include status of current table to true", async () => {
             await store.dispatch('fetchSelections', 'test id');
             await wrapper.vm.onContinueClick();
             expect(ApiService.changeIncludeStatus).toBeCalledTimes(1);
@@ -50,18 +66,6 @@ describe('CustomizeTables.vue', () => {
         });
 
         test("'onRemoveClick' changes include status of current table to false", async () => {
-            store.commit('setUploadDetails', {
-                id: 'test id',
-                type: UPLOAD_TYPES.UPLOAD,
-            });
-            const wrapper = shallowMount(CustomizeTables, {
-                localVue,
-                vuetify,
-                store,
-                router,
-            });
-
-            jest.clearAllMocks();
             wrapper.vm.$root.openConfirmDialog = jest.fn(() => Promise.resolve(false));
             await store.dispatch('fetchSelections', 'test id');
             await wrapper.vm.onRemoveClick();
