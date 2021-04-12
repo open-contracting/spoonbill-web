@@ -12,7 +12,7 @@ from channels.layers import get_channel_layer
 from django.conf import settings
 from django.core.files import File
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 from spoonbill.stats import DataPreprocessor
 from spoonbill.utils import iter_file

@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.files.storage import FileSystemStorage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import instance_directory_path
 

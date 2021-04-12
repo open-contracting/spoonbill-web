@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 headings = {
     "/amendments/amendsReleaseID": _("Amendment Amended Release (identifier)"),
