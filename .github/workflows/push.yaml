@@ -37,11 +37,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Install requirements
         run: pip install -r requirements_dev.txt
       - name: Run pre-commit
         run: |
-            pip install --upgrade pre-commit
+            pip install --upgrade pre-commit coveralls
             pre-commit autoupdate
             pre-commit run --all-files
       - name: Run tests
@@ -49,6 +55,10 @@ jobs:
             sed -i 1d .envrc
             source .envrc
             pytest
+      - name: Upload to coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
       - name: Install gettext
         run: sudo apt-get install gettext
       - name: Create traslate files
@@ -163,6 +173,7 @@ jobs:
               echo "FRONT_IMAGE=docker.pkg.github.com/${{ github.repository }}/${{ secrets.FRONT_IMAGE_NAME }}:latest" >> .env
               echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
               echo "SENTRY_ENVIRONMENT=${{ secrets.SENTRY_ENVIRONMENT }}" >> .env
+              echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
       - name: Copy .env
         uses: garygrossgarten/github-action-scp@release
         with:

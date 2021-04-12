@@ -35,11 +35,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Install requirements
         run: pip install -r requirements_dev.txt
       - name: Run pre-commit
         run: |
-            pip install --upgrade pre-commit diff-cover
+            pip install pre-commit diff-cover coveralls
             pre-commit autoupdate
             pre-commit run --all-files
       - name: Run tests
@@ -48,4 +54,7 @@ jobs:
             source .envrc
             pytest  --cov-report xml
             git fetch --all
-            diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=95
+            coveralls --service=github
+            diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=${{ secrets.COVERAGE_PERCENT }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
