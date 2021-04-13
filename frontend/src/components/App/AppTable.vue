@@ -22,7 +22,13 @@
                 </thead>
                 <tbody>
                     <tr v-for="(row, rowIndex) in data" :key="rowIndex">
-                        <td v-for="(col, colIndex) in row" :key="colIndex">{{ col }}</td>
+                        <td
+                            v-for="(col, colIndex) in row"
+                            :class="{ highlighted: highlightedCols.includes(colIndex) }"
+                            :key="colIndex"
+                        >
+                            {{ col }}
+                        </td>
                     </tr>
                 </tbody>
             </template>
@@ -55,14 +61,28 @@ export default {
             type: Boolean,
             default: false,
         },
+        additionalColumns: {
+            type: Array,
+            required: true,
+        },
+    },
+
+    computed: {
+        highlightedCols() {
+            return this.headers.reduce((acc, header, idx) => {
+                if (this.additionalColumns.includes(header)) {
+                    acc.push(idx);
+                }
+                return acc;
+            }, []);
+        },
     },
 };
 </script>
 
 <style scoped lang="scss">
 .app-table {
-    &__name {
-    }
+    max-width: 100%;
 
     ::v-deep table {
         border-collapse: collapse !important;
@@ -75,8 +95,11 @@ export default {
             color: map-get($colors, 'darkest') !important;
         }
         th {
-            max-width: 100px;
+            min-width: 100px;
             background-color: #facd91;
+        }
+        td.highlighted {
+            background-color: #b6bafd;
         }
     }
 }

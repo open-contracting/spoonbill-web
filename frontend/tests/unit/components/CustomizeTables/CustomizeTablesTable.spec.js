@@ -85,7 +85,7 @@ describe('CustomizeTablesTable.vue', () => {
                     name: 'documents',
                 },
             });
-            expect(wrapper.vm.availableData.length).toBe(2);
+            expect(wrapper.vm.availableData.length).toBe(0);
             expect(wrapper.vm.arrays.length).toBe(0);
         });
 
