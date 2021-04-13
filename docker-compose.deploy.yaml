@@ -36,8 +36,7 @@ services:
       - '--entrypoints.https.address=:443'
       - '--log=true'
       - '--log.level=INFO'
-      - '--certificatesresolvers.acmec.acme.email=pontostroy@quintagroup.org'
-      - '--certificatesresolvers.acmec.acme.storage=/acme.json'
+      - '--certificatesresolvers.acmec.acme.email=${ACME_EMAIL}'
       - '--certificatesresolvers.acmec.acme.httpchallenge=true'
       - '--certificatesresolvers.acmec.acme.httpchallenge.entrypoint=http'
       - '--certificatesresolvers.acmec.acme.storage=/letsencrypt/acme.json'
@@ -48,7 +47,7 @@ services:
     container_name: app
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.app.rule=Host(`api.$DOMAIN`)'
+      - 'traefik.http.routers.app.rule=Host(`$API_DOMAIN`)'
       - 'traefik.http.routers.app.entrypoints=http,https'
       - 'traefik.http.routers.app.tls=true'
       - 'traefik.http.routers.app.tls.certresolver=acmec'
@@ -56,6 +55,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - traefik
     ports:
       - "8000:8000"
     hostname: app

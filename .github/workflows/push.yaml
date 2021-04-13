@@ -62,7 +62,7 @@ jobs:
       - name: Install gettext
         run: sudo apt-get install gettext
       - name: Create traslate files
-        run: ./manage.py makemessages -l es
+        run: ./manage.py makemessages --all --keep-pot
       - name: "Upload translate files to transifex"
         with:
             TX_TOKEN: ${{ secrets.TX_TOKEN }}
@@ -110,7 +110,7 @@ jobs:
               pip install transifex-client
               cd ./frontend
               export TX_TOKEN=${{ secrets.TX_TOKEN }}
-              tx pull -l es
+              tx pull -a
       - name: "Download translate files from transifex"
         uses: docker://sergioisidoro/github-transifex-action:v0.2.0
         with:
@@ -174,6 +174,8 @@ jobs:
               echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
               echo "SENTRY_ENVIRONMENT=${{ secrets.SENTRY_ENVIRONMENT }}" >> .env
               echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
+              echo "API_DOMAIN=${{ secrets.API_DOMAIN }}" >> .env
+              echo "ACME_EMAIL=${{ secrets.ACME_EMAIL }}" >> .env
       - name: Copy .env
         uses: garygrossgarten/github-action-scp@release
         with:
