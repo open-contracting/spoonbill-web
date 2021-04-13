@@ -2,8 +2,15 @@
 host = https://www.transifex.com
 
 [spoonbill.web-api]
+file_filter = spoonbill_web/locale/<lang>/LC_MESSAGES/django.po
+minimum_perc = 0
+source_file = spoonbill_web/locale/django.pot
+source_lang = en
+type = PO
+
+[spoonbill.core-web-api]
 file_filter = core/locale/<lang>/LC_MESSAGES/django.po
 minimum_perc = 0
-source_file = core/locale/es/LC_MESSAGES/django.po
+source_file = core/locale/django.pot
 source_lang = en
 type = PO
