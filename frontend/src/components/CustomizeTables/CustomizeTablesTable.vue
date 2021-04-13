@@ -42,6 +42,7 @@
                 :data="table.data"
                 :include="table.include"
                 :allow-actions="idx !== 0"
+                :additional-columns="additionalColumns"
                 @remove="changeIncludeStatus(table, false)"
                 @restore="changeIncludeStatus(table, true)"
             />
@@ -139,6 +140,10 @@ export default {
             return res;
         },
 
+        additionalColumns() {
+            return this.additionalInfo.available_data?.columns?.additional || [];
+        },
+
         availableData() {
             const res = [];
             const availableColumns = this.additionalInfo.available_data?.columns?.available;
@@ -150,8 +155,8 @@ export default {
                 );
                 res.push(this.$gettextInterpolate(translated, { n: availableColumns }));
             }
-            const additionalColumns = this.additionalInfo.available_data?.additional;
-            if (additionalColumns) {
+            const additionalColumns = this.additionalInfo.available_data?.columns?.additional;
+            if (additionalColumns?.length) {
                 let translated = this.$ngettext(
                     'There is %{ n } column with additional data not part of OCDS',
                     'There are %{ n } columns with additional data not part of OCDS',
@@ -206,7 +211,9 @@ export default {
             );
             this.tables = await Promise.all(
                 data.map(async (preview) => {
-                    const parsed = await Papa.parse(data[0].preview);
+                    const parsed = await Papa.parse(data[0].preview, {
+                        skipEmptyLines: true,
+                    });
                     return {
                         id: preview.id,
                         name: preview.name,
