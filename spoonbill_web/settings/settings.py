@@ -14,15 +14,18 @@ import logging.config
 import os
 from pathlib import Path
 
+import sentry_sdk
 from django.utils.translation import gettext_lazy as _
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import ignore_logger
 from yaml import safe_load as load
 
 # Sentry
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 if SENTRY_DSN:
-    import sentry_sdk
-    from sentry_sdk.integrations.celery import CeleryIntegration
-    from sentry_sdk.integrations.django import DjangoIntegration
+    # https://docs.sentry.io/platforms/python/logging/#ignoring-a-logger
+    ignore_logger("django.security.DisallowedHost")
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
@@ -54,8 +57,9 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "v3ry$3cr3tk3yf0rdj@ng0")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split()
-
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+if "ALLOWED_HOSTS" in os.environ:
+    ALLOWED_HOSTS.extend(os.getenv("DJANGO_ALLOWED_HOSTS", "").split())
 
 # Application definition
 
@@ -146,7 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-LANGUAGE = [(LANGUAGE_CODE, _("English")), ("es", _("Spanish"))]
+LANGUAGES = [("en", _("English")), ("es", _("Spanish"))]
 
 TIME_ZONE = "UTC"
 
@@ -155,8 +159,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-LOCALE_PATHS = [f"{BASE_DIR}/core/locale"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

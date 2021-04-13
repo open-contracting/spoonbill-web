@@ -74,3 +74,24 @@ pre-commit install
 Configuration placed in file `.pre-commit-config.yaml`
 
 [More about pre-commit](https://pre-commit.com/)
+
+
+## Internationalization and Transifex
+
+### Generate pot files
+
+```shell
+python manage.py makemessages --all --keep-pot
+```
+
+### Push pot files to transifex
+
+```shell
+tx push -st
+```
+
+### Pull translations
+
+```shell
+tx pull -a
+```

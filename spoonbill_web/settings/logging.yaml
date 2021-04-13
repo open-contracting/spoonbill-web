@@ -5,6 +5,8 @@ formatters:
     format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 handlers:
+  'null':
+    class: logging.NullHandler
   console:
     class: logging.StreamHandler
     level: DEBUG
@@ -16,6 +18,9 @@ loggers:
     handlers: [console]
     propagate: no
     level: INFO
+  django.security.DisallowedHost:
+    handlers: ['null']
+    propagate: no
   django:
     handlers: [console]
     propagate: yes
