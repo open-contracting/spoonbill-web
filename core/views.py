@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.utils import timezone
+from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
@@ -41,14 +42,15 @@ class UploadViewSet(viewsets.GenericViewSet):
             file_ = File(request.FILES["file"])
             validation_obj = Validation.objects.create()
             upload_obj = Upload.objects.create(file=file_, validation=validation_obj)
-            task = validate_data.delay(upload_obj.id, model="Upload")
+            lang_code = get_language()
+            task = validate_data.delay(upload_obj.id, model="Upload", lang_code=lang_code)
             validation_obj.task_id = task.id
             validation_obj.save(update_fields=["task_id"])
 
             upload_obj.validation = validation_obj
             upload_obj.expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)
             upload_obj.save(update_fields=["validation", "expired_at"])
-            cleanup_upload.apply_async((upload_obj.id, "Upload"), eta=upload_obj.expired_at)
+            cleanup_upload.apply_async((upload_obj.id, "Upload", lang_code), eta=upload_obj.expired_at)
             return Response(
                 self.get_serializer_class()(upload_obj).data,
                 status=status.HTTP_201_CREATED,
@@ -143,7 +145,8 @@ class URLViewSet(viewsets.GenericViewSet):
                 url_obj = Url.objects.create(**serializer.data)
                 url_obj.validation = validation_obj
                 url_obj.save(update_fields=["validation"])
-                download_data_source.delay(url_obj.id, model="Url")
+                lang_code = get_language()
+                download_data_source.delay(url_obj.id, model="Url", lang_code=lang_code)
                 return Response(self.get_serializer_class()(url_obj).data, status=status.HTTP_201_CREATED)
             else:
                 return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

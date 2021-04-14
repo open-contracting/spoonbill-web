@@ -2,6 +2,7 @@ import csv
 import json
 import re
 import uuid
+from contextlib import contextmanager
 
 import ijson
 from django.utils.translation import activate, get_language
@@ -106,3 +107,13 @@ def is_record_package(filepath):
             if item:
                 return True
     return False
+
+
+@contextmanager
+def internationalization(lang_code="en"):
+    current_lang = get_language()
+    try:
+        activate(lang_code)
+        yield
+    finally:
+        activate(current_lang)

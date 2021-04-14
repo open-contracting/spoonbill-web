@@ -41,7 +41,7 @@ class TestUrl:
         assert url["status"] == "queued.download"
 
         url_obj = Url.objects.get(id=url["id"])
-        download_datasource_task.delay.assert_called_once_with(url_obj.id, model="Url")
+        download_datasource_task.delay.assert_called_once_with(url_obj.id, model="Url", lang_code="en")
 
     def test_get_non_existed_datasource(self, client):
         response = client.get(f"{self.url_prefix}some-invalid-id/")
