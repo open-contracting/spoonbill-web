@@ -268,9 +268,10 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                     "name": f"{tables[table.name]['name']}.csv",
                     "id": str(table.id),
                     "preview": csvfile.read(),
+                    "heading": table.heading,
                 }
                 if selection.headings_type != selection.OCDS:
-                    preview["headings"] = table.column_headings
+                    preview["column_headings"] = table.column_headings
             data.append(preview)
             for child_table in table.array_tables.all():
                 if not child_table.include:
@@ -281,9 +282,10 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         "name": f"{tables[child_table.name]['name']}.csv",
                         "id": str(child_table.id),
                         "preview": csvfile.read(),
+                        "heading": child_table.heading,
                     }
                     if selection.headings_type != selection.OCDS:
-                        preview["headings"] = child_table.column_headings
+                        preview["column_headings"] = child_table.column_headings
                 data.append(preview)
         else:
             preview_path = f"{datasource_dir}/{table.name}_combined.csv"
@@ -294,8 +296,9 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                     "name": f"{tables[table.name]['name']}.csv",
                     "id": str(table.id),
                     "preview": csvfile.read(),
+                    "heading": table.heading,
                 }
                 if selection.headings_type != selection.OCDS:
-                    preview["headings"] = table.column_headings
+                    preview["column_headings"] = table.column_headings
                 data.append(preview)
         return Response(data)

@@ -97,7 +97,7 @@ class TestUpload:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview"}
+        assert set(data.keys()) == {"id", "name", "preview", "heading"}
 
     def test_table_r_friendly_preview(self, client, upload_obj_validated):
         selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
@@ -113,7 +113,7 @@ class TestUpload:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "headings"}
+        assert set(data.keys()) == {"id", "name", "preview", "column_headings", "heading"}
 
     def test_table_split_preview(self, client, upload_obj_validated):
         selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
@@ -138,7 +138,7 @@ class TestUpload:
         )
         assert len(response.json()) == 3
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "headings"}
+        assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
 
     def test_table_split_include_preview(self, client, upload_obj_validated):
         selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
@@ -171,4 +171,4 @@ class TestUpload:
         )
         assert len(response.json()) == 2
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "headings"}
+        assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
