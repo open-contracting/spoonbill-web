@@ -63,7 +63,7 @@ services:
       - .env
     environment:
       - DEBUG=1
-      - DJANGO_ALLOWED_HOSTS=*
+      - DJANGO_ALLOWED_HOSTS=$API_DOMAIN
       - DB_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
@@ -139,6 +139,14 @@ services:
       - 'traefik.http.routers.site.tls=true'
       - 'traefik.http.routers.site.tls.certresolver=acmec'
       - 'traefik.http.routers.site.tls.options=default'
+      - 'traefik.http.middlewares.redirect.redirectregex.regex=^https://$OLD_DOMAIN/(.*)'
+      - 'traefik.http.middlewares.redirect.redirectregex.replacement=https://$DOMAIN/$${1}'
+      - 'traefik.http.routers.oldsite.rule=Host(`$OLD_DOMAIN`)'
+      - 'traefik.http.routers.oldsite.entrypoints=http,https'
+      - 'traefik.http.routers.oldsite.tls=true'
+      - 'traefik.http.routers.oldsite.tls.certresolver=acmec'
+      - 'traefik.http.routers.oldsite.tls.options=default'
+      - 'traefik.http.routers.oldsite.middlewares=redirect@docker'
     ports:
       - "88:88"
     env_file:
