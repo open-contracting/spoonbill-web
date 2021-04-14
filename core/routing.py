@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import re_path
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested import routers
@@ -26,6 +27,7 @@ url_preview_router.register(r"preview", views.TablePreviewViewSet, basename="url
 upload_preview_router = routers.NestedSimpleRouter(upload_table_router, r"tables", lookup="table")
 upload_preview_router.register(r"preview", views.TablePreviewViewSet, basename="uploads-selections-preview")
 
+prefix = "/" if not settings.API_PREFIX else settings.API_PREFIX
 websocket_urlpatterns = [
-    re_path(r"ws/api/(?P<upload_id>[0-9a-f-]+)/$", consumers.ValidationConsumer.as_asgi()),
+    re_path(r"{prefix}ws/(?P<upload_id>[0-9a-f-]+)/$".format(prefix=prefix), consumers.ValidationConsumer.as_asgi()),
 ]
