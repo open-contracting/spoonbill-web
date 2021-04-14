@@ -38,8 +38,10 @@ class TestUpload:
         assert not upload["deleted"]
 
         upload_obj = Upload.objects.get(id=upload["id"])
-        validation_task.delay.assert_called_once_with(upload_obj.id, model="Upload")
-        cleanup_upload_task.apply_async.assert_called_once_with((upload_obj.id, "Upload"), eta=upload_obj.expired_at)
+        validation_task.delay.assert_called_once_with(upload_obj.id, model="Upload", lang_code="en")
+        cleanup_upload_task.apply_async.assert_called_once_with(
+            (upload_obj.id, "Upload", "en"), eta=upload_obj.expired_at
+        )
 
         # cleanup test data
         shutil.rmtree(f"{settings.MEDIA_ROOT}{upload_obj.id}")
