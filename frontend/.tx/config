@@ -4,6 +4,6 @@ host = https://www.transifex.com
 [spoonbill.web-app-ui]
 file_filter = ./locale/<lang>/lang.po
 minimum_perc = 0
-source_file = dictionary.pot
+source_file = web-app-ui.pot
 source_lang = en
 type = PO
