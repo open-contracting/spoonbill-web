@@ -176,6 +176,7 @@ jobs:
               echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
               echo "API_DOMAIN=${{ secrets.API_DOMAIN }}" >> .env
               echo "ACME_EMAIL=${{ secrets.ACME_EMAIL }}" >> .env
+              echo "OLD_DOMAIN=${{ secrets.OLD_DOMAIN }}" >> .env
       - name: Copy .env
         uses: garygrossgarten/github-action-scp@release
         with:
