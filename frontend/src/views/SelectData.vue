@@ -2,7 +2,7 @@
     <v-row>
         <v-col cols="12" md="8" xl="8">
             <layout-info />
-            <h2 class="page-title">Select data to flatten to Excel/CSV</h2>
+            <translate tag="h2" class="page-title">Select data to flatten to Excel/CSV</translate>
 
             <translate tag="p" class="page-description">
                 Choose the available tables that you want to flatten and add them to selected tables to continue. Tables that

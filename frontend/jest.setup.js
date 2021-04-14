@@ -48,6 +48,7 @@ jest.mock('@/services/ApiService', () => {
                     resolve({
                         data: {
                             id: 'test id',
+                            headings_type: 'ocds',
                             tables: [
                                 {
                                     id: 'parties table',
@@ -155,6 +156,30 @@ jest.mock('@/services/ApiService', () => {
             });
         }),
 
+        changeHeadingsType: jest.fn((id) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            id: id,
+                        },
+                    });
+                }, 10);
+            });
+        }),
+
+        updateTableHeading: jest.fn((id) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        data: {
+                            id: id,
+                        },
+                    });
+                }, 10);
+            });
+        }),
+
         getTablePreview: jest.fn((type, uploadId, selectionsId, tableId) => {
             return new Promise((resolve) => {
                 setTimeout(() => {
@@ -166,7 +191,7 @@ jest.mock('@/services/ApiService', () => {
                                 preview: 'col1,col2,col3↵cell11,cell12,cell13↵cell21,cell22,cell23',
                             },
                             {
-                                id: tableId,
+                                id: 'table 2',
                                 name: 'Awards_b.csv',
                                 preview: 'col1,col2,col3↵cell11,cell12,cell13↵cell21,cell22,cell23',
                             },
@@ -176,4 +201,8 @@ jest.mock('@/services/ApiService', () => {
             });
         }),
     };
+});
+
+Object.defineProperty(window, 'scroll', {
+    value: jest.fn(),
 });

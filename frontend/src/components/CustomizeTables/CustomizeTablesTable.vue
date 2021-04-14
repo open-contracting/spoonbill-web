@@ -2,7 +2,14 @@
     <div class="table">
         <h3 class="mb-4 table__name">{{ table.name }}</h3>
         <v-row>
-            <v-col cols="12" md="8" lg="6">
+            <v-col cols="12" md="6">
+                <div v-if="aboutThisTable">
+                    <translate tag="p" class="mb-2">About this table</translate>
+                    <p class="fw-300" v-for="(item, idx) in aboutThisTable" :key="idx">{{ item }}</p>
+                </div>
+            </v-col>
+
+            <v-col cols="12" md="6">
                 <div class="table-info">
                     <div v-if="availableData.length">
                         <translate tag="p" class="mb-2">Available data</translate>
@@ -17,28 +24,24 @@
                             <li v-for="(item, idx) of arrays" :key="idx">{{ item }}</li>
                         </ul>
                     </div>
-
-                    <v-switch
-                        v-model="isSplit"
-                        inset
-                        hide-details
-                        class="mt-6"
-                        color="darkest"
-                        slot="actions"
-                        :label="
-                            isSplit ? $gettext('Keep arrays in main table') : $gettext('Split arrays into separate tables')
-                        "
-                    ></v-switch>
                 </div>
             </v-col>
         </v-row>
+        <v-switch
+            v-model="isSplit"
+            inset
+            hide-details
+            color="darkest"
+            slot="actions"
+            :label="isSplit ? $gettext('Keep arrays in main table') : $gettext('Split arrays into separate tables')"
+        ></v-switch>
         <v-skeleton-loader class="mt-8" v-if="loading" type="table-tbody"></v-skeleton-loader>
         <div class="mt-8 tables">
             <app-table
                 v-for="(table, idx) in tables"
                 :key="table.name"
                 :headers="table.headers"
-                :name="'Table: ' + table.name"
+                :name="table.heading || table.name"
                 :data="table.data"
                 :include="table.include"
                 :allow-actions="idx !== 0"
@@ -101,6 +104,90 @@ export default {
             async set() {
                 await this.onSplitSwitchChange();
             },
+        },
+
+        aboutThisTable() {
+            const name = this.table.name;
+            switch (name) {
+                case 'awards':
+                    return [
+                        this.$gettext(
+                            'This table contained information on the activities undertaken in order to enter ' +
+                                'into a contract.'
+                        ),
+                        this.$gettext(
+                            'Data regarding tender process - publicly inviting prospective contractors to ' +
+                                'submit bids for evaluation and selecting a winner or winners.'
+                        ),
+                    ];
+                case 'parties':
+                    return [
+                        this.$gettext(
+                            'This table contained information on the parties (organizations, economic ' +
+                                'operators, and other participants) who are involved in the contracting process and ' +
+                                'their roles, e.g. buyer, procuring entity, supplier, etc.'
+                        ),
+                        this.$gettext(
+                            'Organization references elsewhere in the schema are used to refer back to these ' +
+                                'entries in this list.'
+                        ),
+                    ];
+                case 'planning':
+                    return [
+                        this.$gettext(
+                            'This table contained information from the planning phase of the contracting process.'
+                        ),
+                        this.$gettext(
+                            'This includes information related to the process of deciding what to contract, when, and how.'
+                        ),
+                    ];
+                case 'tenders':
+                    return [
+                        this.$gettext(
+                            'This table contained information on the activities undertaken in order to ' +
+                                'enter into a contract.'
+                        ),
+                        this.$gettext(
+                            'Data regarding tender process - publicly inviting prospective contractors to ' +
+                                'submit bids for evaluation and selecting a winner or winners.'
+                        ),
+                    ];
+                case 'contracts':
+                    return [
+                        this.$gettext(
+                            'This table contained information from the contract creation phase of the ' +
+                                'procurement process. and the signed contract between the buyer and supplier(s).'
+                        ),
+                    ];
+                case 'milestones':
+                    return [
+                        this.$gettext(
+                            'This table contained a list of milestones associated with the different ' +
+                                'stages of the procurement process (planning, tender, award, contract, implementation).'
+                        ),
+                    ];
+                case 'amendments':
+                    return [
+                        this.$gettext(
+                            'This table contained information on the changes to the different stages ' +
+                                'of the procurement process (tender, award, contract).'
+                        ),
+                        this.$gettext('For example, when the value or duration of a contract is changed.'),
+                        this.$gettext(
+                            'The term amendment often has a specific legal meaning for a publisher. Certain ' +
+                                'changes to a tender, award, or contract might only be allowed as part of an amendment.'
+                        ),
+                    ];
+                case 'Documents':
+                    return [
+                        this.$gettext(
+                            'This table contained information on the documents available for the different ' +
+                                'stages of the procurement process (planning, tender, award, contract, implementation).'
+                        ),
+                    ];
+                default:
+                    return null;
+            }
         },
 
         arrays() {
@@ -201,6 +288,7 @@ export default {
          * @param { string } tableId
          */
         async getTablePreview(tableId) {
+            window.scroll(0, 0);
             this.loading = true;
             const { uploadDetails, selections } = this.$store.state;
             const { data } = await ApiService.getTablePreview(
@@ -217,6 +305,7 @@ export default {
                     return {
                         id: preview.id,
                         name: preview.name,
+                        heading: preview.heading,
                         headers: parsed.data[0],
                         data: parsed.data.slice(1),
                         include: true,
@@ -265,10 +354,5 @@ export default {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    .v-input {
-        position: absolute;
-        right: 0;
-        top: -5px;
-    }
 }
 </style>

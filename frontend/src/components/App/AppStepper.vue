@@ -11,19 +11,24 @@
             <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
 
             <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2" @click="navigateTo('/select-data')">
-                <translate :class="{ 'text-link': value > 2 }" @click="navigateTo('/select-data')">Select data</translate>
+                <translate :class="{ 'text-link': value > 2 }">Select data</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 2, complete: value > 3 }"></v-divider>
 
-            <v-stepper-step :complete="value > 3" complete-icon="mdi-check" step="3">
-                <translate>Customize tables</translate>
+            <v-stepper-step
+                :complete="value > 3"
+                complete-icon="mdi-check"
+                step="3"
+                @click="navigateTo('/customize-tables')"
+            >
+                <translate :class="{ 'text-link': value > 3 }">Customize tables</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 3, complete: value > 4 }"></v-divider>
 
-            <v-stepper-step :complete="value > 4" complete-icon="mdi-check" step="4">
-                <translate>Edit headings</translate>
+            <v-stepper-step :complete="value > 4" complete-icon="mdi-check" step="4" @click="navigateTo('/edit-headings')">
+                <translate :class="{ 'text-link': value > 4 }">Edit headings</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 4, complete: value > 5 }"></v-divider>
@@ -47,6 +52,10 @@ export default {
                     return 2;
                 case 'customize tables':
                     return 3;
+                case 'edit headings':
+                    return 4;
+                case 'download':
+                    return 5;
                 default:
                     return 1;
             }

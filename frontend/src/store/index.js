@@ -80,6 +80,10 @@ export default new Vuex.Store({
             const table = state.selections.tables.find((table) => table.id === tableId);
             table.include = value;
         },
+
+        setHeadingsType(state, value) {
+            state.selections.headings_type = value;
+        },
     },
     actions: {
         async fetchSelections({ state, commit }, id) {
