@@ -19,40 +19,14 @@
 <script>
 import LayoutInfo from '@/components/Layout/LayoutInfo';
 import CustomizeTablesTable from '@/components/CustomizeTables/CustomizeTablesTable';
-import getQueryParam from '@/utils/getQueryParam';
+import getSelectionsMixin from '@/mixins/getSelectionsMixin';
 
 export default {
     name: 'CustomizeTables',
 
     components: { CustomizeTablesTable, LayoutInfo },
 
-    computed: {
-        selections() {
-            return this.$store.state.selections;
-        },
-    },
-
-    data() {
-        return {
-            currentTable: null,
-            currentTableIndex: 0,
-        };
-    },
-
-    async created() {
-        const selectionsId = getQueryParam('selections');
-        if (selectionsId && !this.selections) {
-            await this.$store.dispatch('fetchSelections', selectionsId);
-            if (!this.selections) {
-                this.$router.push({
-                    path: '/upload-file',
-                    query: this.$route.query,
-                });
-                return;
-            }
-        }
-        this.currentTable = this.selections.tables[0];
-    },
+    mixins: [getSelectionsMixin],
 
     methods: {
         /**
@@ -73,8 +47,12 @@ export default {
                 tableId: this.currentTable.id,
                 value: true,
             });
-            this.currentTableIndex++;
-            this.currentTable = this.selections.tables[this.currentTableIndex];
+            if (this.currentTableIndex === this.selections.tables.length - 1) {
+                this.$router.push({ path: '/edit-headings', query: this.$route.query });
+            } else {
+                this.currentTableIndex++;
+                this.currentTable = this.selections.tables[this.currentTableIndex];
+            }
         },
 
         /**

@@ -1,0 +1,10 @@
+.v-radio {
+    &.v-item--active {
+        .v-label {
+            color: map-get($colors, 'darkest');
+        }
+    }
+    .v-label {
+        padding-top: 4px;
+    }
+}

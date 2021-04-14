@@ -5,6 +5,7 @@ import WS from 'jest-websocket-mock';
 
 const testSelections = {
     id: 'test id',
+    headings_type: 'ocds',
     tables: [
         {
             id: 'table-1',
@@ -88,6 +89,12 @@ describe('store', () => {
                 value: true,
             });
             expect(store.state.selections.tables.find((table) => table.id === 'table-1').include).toBe(true);
+        });
+
+        test("'setHeadingsType' changes headings_type of selections", () => {
+            store.commit('setSelections', testSelections);
+            store.commit('setHeadingsType', 'r_friendly');
+            expect(store.state.selections.headings_type).toBe('r_friendly');
         });
     });
 

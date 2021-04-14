@@ -25,6 +25,16 @@ const routes = [
         component: () => import('@/views/CustomizeTables'),
     },
     {
+        path: '/edit-headings',
+        name: 'edit headings',
+        component: () => import('@/views/EditHeadings'),
+    },
+    {
+        path: '/download',
+        name: 'download',
+        component: () => import('@/views/Download'),
+    },
+    {
         path: '*',
         redirect: '/upload-file',
     },

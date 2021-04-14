@@ -50,7 +50,7 @@
   "scripts": {
     "build": "vue-cli-service build",
     "gettext-compile": "gettext-compile --output src/translations/translations.json",
-    "gettext-extract": "gettext-extract --removeHTMLWhitespaces --output dictionary.pot $(find src -type f -name '*.vue')",
+    "gettext-extract": "gettext-extract --removeHTMLWhitespaces --output web-app-ui.pot $(find src -type f -name '*.vue')",
     "lint": "vue-cli-service lint",
     "serve": "vue-cli-service serve",
     "test:unit": "vue-cli-service test:unit"

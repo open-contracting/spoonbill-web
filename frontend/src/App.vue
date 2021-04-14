@@ -93,9 +93,6 @@ export default {
             }
             this.$store.commit('increaseNumberOfUploads');
             if (selectionsId) {
-                this.$router
-                    .push(`/customize-tables?${type.toLowerCase()}=${uploadDetails.id}&selections=${selectionsId}`)
-                    .catch(() => {});
                 this.loading = false;
                 return;
             }

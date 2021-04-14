@@ -84,4 +84,31 @@ export default {
             include: value,
         });
     },
+
+    /**
+     * Update table's name
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     * @param { string } tableId - id of table
+     * @param { string } heading
+     */
+    updateTableHeading(type, uploadId, selectionsId, tableId, heading) {
+        return axios.patch(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/`, {
+            heading,
+        });
+    },
+
+    /**
+     * Change heading type of selection
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     * @param { string } value
+     */
+    changeHeadingsType(type, uploadId, selectionsId, value) {
+        return axios.patch(`${type}/${uploadId}/selections/${selectionsId}/`, {
+            headings_type: value,
+        });
+    },
 };
