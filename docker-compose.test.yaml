@@ -1,15 +1,46 @@
 version: '3.7'
 
 services:
+  traefik:
+    image: traefik:v2.4
+    container_name: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - main
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.dashboard.rule=PathPrefix(`/dashboard`)'
+      - 'traefik.http.routers.dashboard.entrypoints=dashboard'
+      - 'traefik.http.routers.dashboard.service=api@internal'
+    ports:
+      - 80:80
+      - 8888:8888
+    command:
+      - '--api'
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedByDefault=false'
+      - '--entrypoints.http=true'
+      - '--entrypoints.http.address=:80'
+      - '--entrypoints.dashboard=true'
+      - '--entrypoints.dashboard.address=:8888'
+      - '--log=true'
+      - '--log.level=INFO'
   app:
     build: .
     image: app
     pull_policy: if_not_present
     command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
     container_name: app
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.app.entrypoints=http'
+      - 'traefik.http.routers.app.rule=PathPrefix(`/api`) || PathPrefix(`/ws`)'
     depends_on:
       - postgres
       - redis
+      - traefik
     ports:
       - "127.0.0.1:8000:8000"
     hostname: app
@@ -17,7 +48,8 @@ services:
       - .env
     environment:
       - DEBUG=1
-      - DJANGO_ALLOWED_HOSTS=*
+      - DJANGO_ALLOWED_HOSTS=127.0.0.1 localhost
+      - ALLOWED_HOSTS=127.0.0.1 localhost
       - DB_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
@@ -91,12 +123,16 @@ services:
     build:
       context: ./frontend
       args:
-        VUE_APP_API_URL: http://127.0.0.1:8000
-        VUE_APP_WEBSOCKET_URL: ws://127.0.0.1:8000/ws/api
+        VUE_APP_API_URL: http://127.0.0.1/api/
+        VUE_APP_WEBSOCKET_URL: ws://127.0.0.1/api/ws
     image: front
     container_name: front
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.site.entrypoints=http'
+      - 'traefik.http.routers.site.rule=PathPrefix(`/`)'
     ports:
-      - "80:80"
+      - "88:88"
     depends_on:
       - app
     hostname: front
