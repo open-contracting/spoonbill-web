@@ -5,9 +5,9 @@ RUN npm install
 COPY . .
 ARG VUE_APP_API_URL
 ARG VUE_APP_WEBSOCKET_URL
-ENV VUE_APP_API_URL ${VUE_APP_API_URL:-http://localhost:8000}
-ENV VUE_APP_WEBSOCKET_URL ${VUE_APP_WEBSOCKET_URL:-ws://localhost:8000/ws/api/}
-RUN npm run gettext-compile locale/es/lang.po
+ENV VUE_APP_API_URL ${VUE_APP_API_URL:-http://localhost/api/}
+ENV VUE_APP_WEBSOCKET_URL ${VUE_APP_WEBSOCKET_URL:-ws://localhost/api/ws}
+RUN npm run gettext-compile locale/*/lang.po || true
 RUN VUE_APP_API_URL=${VUE_APP_API_URL} VUE_APP_WEBSOCKET_URL=${VUE_APP_WEBSOCKET_URL} npm run build
 
 FROM nginx:stable
