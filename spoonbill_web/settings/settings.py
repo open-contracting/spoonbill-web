@@ -160,10 +160,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+# Routes
+API_PREFIX = os.getenv("API_PREFIX", "")
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "/static/" if not API_PREFIX else f"{API_PREFIX}static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # CORS settings

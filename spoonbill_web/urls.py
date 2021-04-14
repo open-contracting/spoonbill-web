@@ -18,5 +18,5 @@ from django.conf.urls.static import static
 from django.urls import include, path
 
 urlpatterns = [
-    path("", include("core.urls")),
+    path(settings.API_PREFIX, include("core.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
