@@ -4,6 +4,9 @@ on:
     branches:
        - master
        - main
+    paths-ignore:
+       - 'frontend/**'
+       - 'docs/**'
 
 jobs:
   tests:
