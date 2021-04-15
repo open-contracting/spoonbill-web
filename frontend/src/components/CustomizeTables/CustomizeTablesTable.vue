@@ -111,32 +111,26 @@ export default {
             switch (name) {
                 case 'awards':
                     return [
+                        this.$gettext('This table contains information from the award phase of the contracting process.'),
                         this.$gettext(
-                            'This table contained information on the activities undertaken in order to enter ' +
-                                'into a contract.'
-                        ),
-                        this.$gettext(
-                            'Data regarding tender process - publicly inviting prospective contractors to ' +
-                                'submit bids for evaluation and selecting a winner or winners.'
+                            'There can be more than one award per contracting process e.g. because the ' +
+                                'contract is split among different providers, or because it is a standing offer.'
                         ),
                     ];
                 case 'parties':
                     return [
                         this.$gettext(
-                            'This table contained information on the parties (organizations, economic ' +
-                                'operators, and other participants) who are involved in the contracting process and ' +
-                                'their roles, e.g. buyer, procuring entity, supplier, etc.'
+                            'This table contains information on the parties (organizations, economic ' +
+                                'operators and other participants) who are involved in the contracting process ' +
+                                'and their roles, e.g. buyer, procuring entity, supplier, etc.'
                         ),
                         this.$gettext(
-                            'Organization references elsewhere in the schema are used to refer back to these ' +
-                                'entries in this list.'
+                            'Organization references elsewhere in the data refer back to the entries in this list.'
                         ),
                     ];
                 case 'planning':
                     return [
-                        this.$gettext(
-                            'This table contained information from the planning phase of the contracting process.'
-                        ),
+                        this.$gettext('This table contains information from the planning phase of the contracting process.'),
                         this.$gettext(
                             'This includes information related to the process of deciding what to contract, when, and how.'
                         ),
@@ -144,44 +138,46 @@ export default {
                 case 'tenders':
                     return [
                         this.$gettext(
-                            'This table contained information on the activities undertaken in order to ' +
-                                'enter into a contract.'
+                            'This table contains information on the activities undertaken in order ' +
+                                'to enter into a contract.'
                         ),
                         this.$gettext(
-                            'Data regarding tender process - publicly inviting prospective contractors to ' +
-                                'submit bids for evaluation and selecting a winner or winners.'
+                            'Data regarding tender process - publicly inviting prospective contractors ' +
+                                'to submit bids for evaluation and selecting a winner or winners.'
                         ),
                     ];
                 case 'contracts':
                     return [
                         this.$gettext(
-                            'This table contained information from the contract creation phase of the ' +
-                                'procurement process. and the signed contract between the buyer and supplier(s).'
+                            'This table contains information from the contract creation phase of the ' +
+                                'procurement process and the signed contract between the buyer or procuring ' +
+                                'entity and supplier(s).'
                         ),
                     ];
                 case 'milestones':
                     return [
                         this.$gettext(
-                            'This table contained a list of milestones associated with the different ' +
-                                'stages of the procurement process (planning, tender, award, contract, implementation).'
+                            'This table contains a list of milestones associated with the different stages ' +
+                                'of the procurement process (planning, tender, award, contract, implementation).'
                         ),
                     ];
                 case 'amendments':
                     return [
                         this.$gettext(
-                            'This table contained information on the changes to the different stages ' +
-                                'of the procurement process (tender, award, contract).'
+                            'This table contains information on the changes to the different stages of ' +
+                                'the procurement process (tender, award, contract). For example, ' +
+                                'when the value or duration of a contract is changed. '
                         ),
-                        this.$gettext('For example, when the value or duration of a contract is changed.'),
                         this.$gettext(
-                            'The term amendment often has a specific legal meaning for a publisher. Certain ' +
-                                'changes to a tender, award, or contract might only be allowed as part of an amendment.'
+                            'The term amendment often has a specific legal ' +
+                                'meaning for a publisher. Certain changes to a tender, award, or contract ' +
+                                'might only be allowed as part of an amendment.'
                         ),
                     ];
                 case 'Documents':
                     return [
                         this.$gettext(
-                            'This table contained information on the documents available for the different ' +
+                            'This table contains information on the documents available for the different ' +
                                 'stages of the procurement process (planning, tender, award, contract, implementation).'
                         ),
                     ];
