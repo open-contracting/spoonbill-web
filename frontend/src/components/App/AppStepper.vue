@@ -72,7 +72,6 @@ export default {
          * Goes to the first step and clears upload details after confirmation
          */
         async onUploadFileStepClick() {
-            if (this.value === 1) return;
             const confirmed = await this.openConfirmDialog();
             if (confirmed) {
                 this.$store.commit('setUploadDetails', null);
