@@ -10,7 +10,7 @@
 
             <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
 
-            <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2" @click="navigateTo('/select-data')">
+            <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2" @click="navigateTo(2, '/select-data')">
                 <translate :class="{ 'text-link': value > 2 }">Select data</translate>
             </v-stepper-step>
 
@@ -20,14 +20,19 @@
                 :complete="value > 3"
                 complete-icon="mdi-check"
                 step="3"
-                @click="navigateTo('/customize-tables')"
+                @click="navigateTo(3, '/customize-tables')"
             >
                 <translate :class="{ 'text-link': value > 3 }">Customize tables</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 3, complete: value > 4 }"></v-divider>
 
-            <v-stepper-step :complete="value > 4" complete-icon="mdi-check" step="4" @click="navigateTo('/edit-headings')">
+            <v-stepper-step
+                :complete="value > 4"
+                complete-icon="mdi-check"
+                step="4"
+                @click="navigateTo(4, '/edit-headings')"
+            >
                 <translate :class="{ 'text-link': value > 4 }">Edit headings</translate>
             </v-stepper-step>
 
@@ -67,6 +72,7 @@ export default {
          * Goes to the first step and clears upload details after confirmation
          */
         async onUploadFileStepClick() {
+            if (this.value === 1) return;
             const confirmed = await this.openConfirmDialog();
             if (confirmed) {
                 this.$store.commit('setUploadDetails', null);
@@ -77,9 +83,11 @@ export default {
 
         /**
          * Goes to specified path saving current route query after confirmation
+         * @param { number } step
          * @param { string } path
          */
-        async navigateTo(path) {
+        async navigateTo(step, path) {
+            if (this.value < step) return;
             const confirmed = await this.openConfirmDialog();
             if (confirmed) {
                 this.$router.push({ path, query: this.$route.query });
