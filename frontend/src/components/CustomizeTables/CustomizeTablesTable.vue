@@ -29,6 +29,7 @@
         </v-row>
         <v-switch
             v-model="isSplit"
+            v-if="canBeSplit"
             inset
             hide-details
             color="darkest"
@@ -95,6 +96,10 @@ export default {
     computed: {
         additionalInfo() {
             return this.$store.state.uploadDetails.available_tables.find((table) => table.name === this.table.name);
+        },
+
+        canBeSplit() {
+            return this.additionalInfo.arrays?.above_threshold;
         },
 
         isSplit: {
