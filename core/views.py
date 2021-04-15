@@ -48,7 +48,7 @@ class UploadViewSet(viewsets.GenericViewSet):
             validation_obj.save(update_fields=["task_id"])
 
             upload_obj.validation = validation_obj
-            upload_obj.expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)
+            upload_obj.expired_at = timezone.now() + timedelta(days=settings.JOB_FILES_TIMEOUT)
             upload_obj.save(update_fields=["validation", "expired_at"])
             cleanup_upload.apply_async((upload_obj.id, "Upload", lang_code), eta=upload_obj.expired_at)
             return Response(

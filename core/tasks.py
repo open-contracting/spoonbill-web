@@ -245,7 +245,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     datasource.save(update_fields=["analyzed_file"])
             datasource.status = "queued.validation"
             datasource.downloaded = True
-            expired_at = timezone.now() + timedelta(days=settings.UPLOAD_TIMEDELTA)
+            expired_at = timezone.now() + timedelta(days=settings.JOB_FILES_TIMEOUT)
             datasource.expired_at = expired_at
             datasource.save(update_fields=["status", "downloaded", "expired_at"])
 
