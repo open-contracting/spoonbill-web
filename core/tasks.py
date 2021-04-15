@@ -76,7 +76,7 @@ def validate_data(object_id, model=None, lang_code="en"):
 
         if is_valid and not datasource.available_tables and not datasource.analyzed_file:
             with TemporaryFile() as temp:
-                temp.write(json.dumps(analyzed_data).encode("utf-8"))
+                temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
                 temp.seek(0)
                 datasource.analyzed_file = File(temp)
                 datasource.available_tables = retrieve_available_tables(analyzed_data)
