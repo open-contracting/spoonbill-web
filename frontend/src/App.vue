@@ -33,7 +33,7 @@
 <script>
 import LayoutHeader from './components/Layout/LayoutHeader';
 import getQueryParam from '@/utils/getQueryParam';
-import { UPLOAD_TYPES, UPLOAD_STATUSES } from '@/constants';
+import { UPLOAD_TYPES } from '@/constants';
 import AppConfirmDialog from '@/components/App/AppConfirmDialog';
 
 export default {
@@ -77,7 +77,6 @@ export default {
     async created() {
         const urlId = getQueryParam('url');
         const uploadId = getQueryParam('upload');
-        const selectionsId = getQueryParam('selections');
         if (urlId || uploadId) {
             this.loading = true;
             const type = urlId ? UPLOAD_TYPES.URL : UPLOAD_TYPES.UPLOAD;
@@ -91,22 +90,8 @@ export default {
                 this.loading = false;
                 return;
             }
-            this.$store.commit('increaseNumberOfUploads');
-            if (selectionsId) {
-                this.loading = false;
-                return;
-            }
-            if (
-                [
-                    UPLOAD_STATUSES.QUEUED_DOWNLOAD,
-                    UPLOAD_STATUSES.DOWNLOADING,
-                    UPLOAD_STATUSES.QUEUED_VALIDATION,
-                    UPLOAD_STATUSES.VALIDATION,
-                ].includes(uploadDetails.status)
-            ) {
-                this.$router.push(`/upload-file?${type.toLowerCase()}=${uploadDetails.id}`).catch(() => {});
-            }
             this.loading = false;
+            this.$store.commit('increaseNumberOfUploads');
         } else {
             this.$router.push('/upload-file').catch(() => {});
         }
