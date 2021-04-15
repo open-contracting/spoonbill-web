@@ -149,7 +149,7 @@ export default {
             font-weight: 300;
             color: map-get($colors, 'darkest') !important;
             max-width: 100px;
-            overflow-wrap: anywhere;
+            word-break: break-all;
         }
         th {
             min-width: 100px;
