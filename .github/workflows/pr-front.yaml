@@ -1,6 +1,6 @@
 name: pull-request-front
 on:
-  push:
+  pull_request:
     branches:
        - master
        - main
