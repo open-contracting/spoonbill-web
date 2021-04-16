@@ -1,10 +1,8 @@
 <template>
     <v-stepper alt-labels class="app-stepper" :value="value">
         <v-stepper-header>
-            <v-stepper-step :complete="value > 1" complete-icon="mdi-check" step="1" @click="onUploadFileStepClick">
-                <translate class="text-link" @click="onUploadFileStepClick" v-if="value > 1 || $store.state.numberOfUploads">
-                    Re-upload file
-                </translate>
+            <v-stepper-step :complete="value > 1" complete-icon="mdi-check" step="1" @click="navigateTo(1, '/upload-file')">
+                <translate class="text-link" v-if="value > 1 || $store.state.numberOfUploads">Re-upload file</translate>
                 <translate translate-context="Upload file" v-else>Upload file</translate>
             </v-stepper-step>
 
@@ -69,37 +67,13 @@ export default {
 
     methods: {
         /**
-         * Goes to the first step and clears upload details after confirmation
-         */
-        async onUploadFileStepClick() {
-            const confirmed = await this.openConfirmDialog();
-            if (confirmed) {
-                this.$store.commit('setUploadDetails', null);
-                this.$store.commit('setSelections', null);
-                this.$router.push('/upload-file').catch(() => {});
-            }
-        },
-
-        /**
-         * Goes to specified path saving current route query after confirmation
+         * Go to specified path
          * @param { number } step
          * @param { string } path
          */
-        async navigateTo(step, path) {
-            if (this.value < step) return;
-            const confirmed = await this.openConfirmDialog();
-            if (confirmed) {
-                this.$router.push({ path, query: this.$route.query });
-            }
-        },
-
-        async openConfirmDialog() {
-            return await this.$root.openConfirmDialog({
-                title: this.$gettext('Are you sure to go back?'),
-                content: this.$gettext('When going to the previous step, all current changes will be reversed'),
-                submitBtnText: this.$gettext('Yes, go back'),
-                icon: require('@/assets/icons/back.svg'),
-            });
+        navigateTo(step, path) {
+            if (this.value <= step) return;
+            this.$router.push({ path, query: path === '/upload-file' ? {} : this.$route.query });
         },
     },
 };

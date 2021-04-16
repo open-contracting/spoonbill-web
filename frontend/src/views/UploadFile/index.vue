@@ -28,8 +28,8 @@
                     <v-divider class="my-5" />
                     <p class="mb-0">
                         <translate>
-                            The JSON data should be in OCDS 1.1 or 1.0, otherwise it may not be possible to flatten. If you.
-                            Are uncertain whether your data complies with OCDS, use the
+                            The JSON data should be in OCDS 1.1 or 1.0, otherwise it may not be possible to flatten. If you
+                            are uncertain whether your data complies with OCDS, use the
                         </translate>
                         <translate tag="a" class="text-link" target="_blank" href="#">Data Review Tool</translate>
                         <translate> to check first</translate>.

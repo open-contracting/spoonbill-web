@@ -28,39 +28,10 @@ describe('AppStepper.vue', () => {
             );
         });
 
-        test("'openConfirmDialog' method opens 'confirm' dialog and returns Promise", () => {
-            const res = wrapper.vm.openConfirmDialog();
-            expect(res).toBeInstanceOf(Promise);
-            expect(wrapper.vm.$root.openConfirmDialog).toBeCalledTimes(1);
-        });
-
-        test("'onUploadFileStepClick' clears state and navigates to '/upload-file'", async () => {
-            await wrapper.vm.onUploadFileStepClick();
-            expect(store.commit).toBeCalledTimes(2);
-            expect(router.push).toBeCalledTimes(1);
-
-            wrapper.vm.$root.openConfirmDialog = jest.fn(
-                () =>
-                    new Promise((resolve) => {
-                        resolve(false);
-                    })
-            );
-
-            expect(store.commit).toBeCalledTimes(2);
-            expect(router.push).toBeCalledTimes(1);
-        });
-
         test("'navigateTo' navigates to specified path", async () => {
-            await wrapper.vm.navigateTo('/test-route');
+            await wrapper.vm.navigateTo(-1, '/test-route');
             expect(router.push).toBeCalledTimes(1);
-
-            wrapper.vm.$root.openConfirmDialog = jest.fn(
-                () =>
-                    new Promise((resolve) => {
-                        resolve(false);
-                    })
-            );
-
+            await wrapper.vm.navigateTo(2, '/test-route');
             expect(router.push).toBeCalledTimes(1);
         });
     });
