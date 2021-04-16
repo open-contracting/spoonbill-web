@@ -46,7 +46,7 @@ def validate_data(object_id, model=None, lang_code="en"):
         datasource.save(update_fields=["status"])
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            f"validate_data_{datasource.id}",
+            f"datasource_{datasource.id}",
             {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
         )
 
@@ -88,7 +88,7 @@ def validate_data(object_id, model=None, lang_code="en"):
                 datasource.save(update_fields=["available_tables"])
 
         async_to_sync(channel_layer.group_send)(
-            f"validate_data_{datasource.id}",
+            f"datasource_{datasource.id}",
             {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
         )
 
@@ -146,7 +146,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                f"validate_data_{object_id}",
+                f"datasource_{object_id}",
                 {
                     "type": "task.download_data_source",
                     "datasource": serializer.to_representation(instance=datasource),
@@ -171,7 +171,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 datasource.status = "failed"
                 datasource.save(update_fields=["error", "status"])
                 async_to_sync(channel_layer.group_send)(
-                    f"validate_data_{object_id}",
+                    f"datasource_{object_id}",
                     {
                         "type": "task.download_data_source",
                         "datasource": serializer.to_representation(instance=datasource),
@@ -188,7 +188,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     progress = (downloaded / size) * 100
                     progress = progress if progress < 100 else 100
                     async_to_sync(channel_layer.group_send)(
-                        f"validate_data_{object_id}",
+                        f"datasource_{object_id}",
                         {
                             "type": "task.download_data_source",
                             "datasource": serializer.to_representation(instance=datasource),
@@ -216,7 +216,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     datasource.status = "failed"
                     datasource.save(update_fields=["error", "status"])
                     async_to_sync(channel_layer.group_send)(
-                        f"validate_data_{object_id}",
+                        f"datasource_{object_id}",
                         {
                             "type": "task.download_data_source",
                             "datasource": serializer.to_representation(instance=datasource),
@@ -233,7 +233,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                         progress = (downloaded / size) * 100
                         progress = progress if progress < 100 else 100
                         async_to_sync(channel_layer.group_send)(
-                            f"validate_data_{object_id}",
+                            f"datasource_{object_id}",
                             {
                                 "type": "task.download_data_source",
                                 "datasource": serializer.to_representation(instance=datasource),
@@ -250,7 +250,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
             datasource.save(update_fields=["status", "downloaded", "expired_at"])
 
             async_to_sync(channel_layer.group_send)(
-                f"validate_data_{object_id}",
+                f"datasource_{object_id}",
                 {
                     "type": "task.download_data_source",
                     "datasource": serializer.to_representation(instance=datasource),
@@ -286,7 +286,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
             datasource.status = "failed"
             datasource.save(update_fields=["status", "error"])
             async_to_sync(channel_layer.group_send)(
-                f"validate_data_{object_id}",
+                f"datasource_{object_id}",
                 {
                     "type": "task.download_data_source",
                     "datasource": serializer.to_representation(instance=datasource),

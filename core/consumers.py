@@ -6,7 +6,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 class ValidationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["upload_id"]
-        self.room_group_name = f"validate_data_{self.room_name}"
+        self.room_group_name = f"datasource_{self.room_name}"
 
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
