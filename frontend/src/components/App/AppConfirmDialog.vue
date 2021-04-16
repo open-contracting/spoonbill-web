@@ -39,6 +39,12 @@ export default {
                 submitBtnText: '',
                 icon: '',
             },
+            defaultOptions: {
+                title: this.$gettext('Are you sure to go back?'),
+                content: this.$gettext('When going to the previous step, all current changes will be reversed'),
+                submitBtnText: this.$gettext('Yes, go back'),
+                icon: require('@/assets/icons/back.svg'),
+            },
         };
     },
 
@@ -51,7 +57,8 @@ export default {
          * Opens dialog. Returns promise which allows to handle result of dialog closing
          * @return { Promise }
          */
-        open({ title, content, submitBtnText, icon }) {
+        open(options) {
+            const { title, content, submitBtnText, icon } = options || this.defaultOptions;
             this.options.title = title;
             this.options.content = content;
             this.options.submitBtnText = submitBtnText;

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import store from '@/store';
 
 Vue.use(VueRouter);
 
@@ -42,6 +43,21 @@ const routes = [
 
 const router = new VueRouter({
     routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+    const fromIndex = routes.findIndex((route) => route.name === from.name);
+    const toIndex = routes.findIndex((route) => route.name === to.name);
+    if (fromIndex > -1 && fromIndex > toIndex) {
+        const confirmed = await router.app.$root.openConfirmDialog();
+        if (confirmed && to.name === 'upload file') {
+            store.commit('setSelections', null);
+            store.commit('setUploadDetails', null);
+        }
+        next(confirmed);
+    } else {
+        next();
+    }
 });
 
 export default router;

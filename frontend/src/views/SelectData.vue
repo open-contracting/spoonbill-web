@@ -153,7 +153,10 @@ export default {
     },
 
     created() {
-        const allTables = this.$store.state.uploadDetails.available_tables || [];
+        if (!this.$store.state.uploadDetails) {
+            this.$router.push('/upload-file');
+        }
+        const allTables = this.$store.state.uploadDetails?.available_tables || [];
         this.availableTables = allTables.filter((table) => table.available_data);
         this.unavailableTables = allTables.filter((table) => !table.available_data);
     },
