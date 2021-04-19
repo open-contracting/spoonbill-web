@@ -61,6 +61,7 @@ export default {
     watch: {
         table: {
             handler(v) {
+                window.scroll(0, 0);
                 this.getTablePreview(v.id);
             },
             immediate: true,
@@ -77,7 +78,6 @@ export default {
          * @param { string } tableId
          */
         async getTablePreview(tableId) {
-            window.scroll(0, 0);
             this.loading = true;
             const { uploadDetails, selections } = this.$store.state;
             const { data } = await ApiService.getTablePreview(
