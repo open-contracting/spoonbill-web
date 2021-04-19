@@ -23,7 +23,14 @@
                 <div class="pa-5 pt-0">
                     <p class="mb-0">
                         <translate>If you would like to convert CSV data to JSON, please use the older </translate>
-                        <translate tag="a" class="text-link" target="_blank" href="#">Command-Line tool</translate>.
+                        <translate
+                            tag="a"
+                            class="text-link"
+                            target="_blank"
+                            rel="noopener"
+                            href="https://flatten-tool.readthedocs.io/en/latest/usage-ocds/"
+                            >Command-Line tool</translate
+                        >.
                     </p>
                     <v-divider class="my-5" />
                     <p class="mb-0">
@@ -31,7 +38,15 @@
                             The JSON data should be in OCDS 1.1 or 1.0, otherwise it may not be possible to flatten. If you
                             are uncertain whether your data complies with OCDS, use the
                         </translate>
-                        <translate tag="a" class="text-link" target="_blank" href="#">Data Review Tool</translate>
+                        <translate
+                            tag="a"
+                            class="text-link"
+                            target="_blank"
+                            rel="noopener"
+                            href="https://standard.open-contracting.org/review/"
+                        >
+                            Data Review Tool
+                        </translate>
                         <translate> to check first</translate>.
                     </p>
                 </div>
