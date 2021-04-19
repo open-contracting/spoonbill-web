@@ -168,18 +168,19 @@ export default {
          * @param { string } tableName
          */
         onTableClick(ev, tableName) {
-            if (!this.checkedTables.length || (!ev.ctrlKey && !ev.shiftKey)) {
+            const ctrlKey = ev.ctrlKey || (navigator.platform.toUpperCase().indexOf('MAC') >= 0 && ev.metaKey);
+            if (!this.checkedTables.length || (!ctrlKey && !ev.shiftKey)) {
                 this.checkedTables = [tableName];
                 return;
             }
-            if ((ev.ctrlKey || ev.shiftKey) && this.checkedTables.includes(tableName)) {
+            if ((ctrlKey || ev.shiftKey) && this.checkedTables.includes(tableName)) {
                 this.checkedTables.splice(
                     this.checkedTables.findIndex((table) => table === tableName),
                     1
                 );
                 return;
             }
-            if (ev.ctrlKey && this.isInTheSameSection(this.checkedTables[0], tableName)) {
+            if (ctrlKey && this.isInTheSameSection(this.checkedTables[0], tableName)) {
                 this.checkedTables.push(tableName);
             }
         },
