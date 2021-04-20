@@ -36,7 +36,7 @@
                 </v-btn>
             </div>
         </div>
-        <v-simple-table v-if="include" :style="{ width: headers.length * 100 + 'px' }">
+        <v-simple-table ref="table" v-if="include" :style="{ width: headers.length * 100 + 'px' }">
             <template v-slot:default>
                 <thead>
                     <tr v-if="headings">
@@ -99,6 +99,10 @@ export default {
             type: Object,
             default: null,
         },
+        showFirstRow: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     data() {
@@ -111,6 +115,11 @@ export default {
     watch: {
         nameMenu() {
             this.newName = this.name;
+        },
+
+        async headings() {
+            await this.$nextTick();
+            this.calculateTableHeight();
         },
     },
 
@@ -125,7 +134,21 @@ export default {
         },
     },
 
+    mounted() {
+        this.calculateTableHeight();
+    },
+
     methods: {
+        calculateTableHeight() {
+            if (this.showFirstRow) {
+                const table = this.$refs.table.$el.querySelector('.v-data-table__wrapper');
+                const theadHeight = table.querySelector('thead').getBoundingClientRect().height;
+                const tbodyFirstRowHeight = table.querySelector('tbody tr').getBoundingClientRect().height;
+                table.style.maxHeight = theadHeight + tbodyFirstRowHeight + 15 + 'px';
+                table.style.overflowY = 'auto';
+            }
+        },
+
         changeName() {
             this.$emit('change-name', this.newName);
             this.nameMenu = false;
@@ -138,25 +161,28 @@ export default {
 .app-table {
     max-width: 100%;
 
-    ::v-deep table {
-        border-collapse: collapse !important;
-        th,
-        td {
-            padding: 4px !important;
-            border: 1px solid map-get($colors, 'darkest');
-            text-align: center !important;
-            font-size: 14px !important;
-            font-weight: 300;
-            color: map-get($colors, 'darkest') !important;
-            max-width: 100px;
-            word-break: break-all;
-        }
-        th {
-            min-width: 100px;
-            background-color: #facd91;
-        }
-        td.highlighted {
-            background-color: #b6bafd;
+    ::v-deep .v-data-table__wrapper {
+        overflow: auto;
+        table {
+            border-collapse: collapse !important;
+            th,
+            td {
+                padding: 4px !important;
+                border: 1px solid map-get($colors, 'darkest');
+                text-align: center !important;
+                font-size: 14px !important;
+                font-weight: 300;
+                color: map-get($colors, 'darkest') !important;
+                max-width: 100px;
+                word-break: break-all;
+            }
+            th {
+                min-width: 100px;
+                background-color: #facd91;
+            }
+            td.highlighted {
+                background-color: #b6bafd;
+            }
         }
     }
 }
