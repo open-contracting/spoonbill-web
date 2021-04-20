@@ -71,7 +71,7 @@
                 </v-row>
             </v-container>
             <div class="mt-6" v-if="unavailableTables.length">
-                <p class="mb-4 column-name">Unavailable tables</p>
+                <translate tag="p" class="mb-4 column-name">Unavailable tables</translate>
                 <select-data-table-info v-for="table in unavailableTables" :key="table.name" :table="table" unavailable />
             </div>
             <div class="mt-15">
@@ -284,9 +284,9 @@ export default {
     padding: 24px 20px;
     border: 1px solid map-get($colors, 'gray-dark');
     background-color: #ffffff;
-    min-height: 230px;
     width: 100%;
-    height: 100%;
+    height: 230px;
+    overflow-y: auto;
     .table-info:not(:last-child) {
         margin-bottom: 5px;
     }
