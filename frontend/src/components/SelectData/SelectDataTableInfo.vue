@@ -31,12 +31,12 @@ export default {
     computed: {
         details() {
             if (this.unavailable) {
-                return 'no-data';
+                return this.$gettext('no-data');
             } else {
                 const { rows, arrays } = this.table;
-                let result = 'total row count: ' + rows;
+                let result = this.$gettext('total row count: ') + rows;
                 if (arrays) {
-                    result += `, ${arrays.count} array${arrays.count > 1 ? 's' : ''}`;
+                    result += `, ${arrays.count} ${arrays.count > 1 ? this.$gettext('arrays') : this.$gettext('array')}`;
                 }
                 return result;
             }
