@@ -2,7 +2,7 @@
     <div>
         <v-skeleton-loader class="mt-8" v-if="loading" type="table-tbody"></v-skeleton-loader>
 
-        <div class="mt-8 tables">
+        <div class="mt-8 tables" v-else>
             <app-table
                 v-for="table in tables"
                 :key="table.id"
@@ -10,7 +10,6 @@
                 :name="table.heading || table.name"
                 :data="table.data"
                 :include="table.include"
-                :additional-columns="additionalColumns"
                 editable-name
                 @change-name="updateTableHeading($event, table.id)"
                 :headings="table.headings"
@@ -31,11 +30,6 @@ export default {
     components: { AppTable },
 
     props: {
-        table: {
-            type: Object,
-            required: true,
-        },
-
         headingsType: {
             type: String,
             required: true,
@@ -49,37 +43,34 @@ export default {
         };
     },
 
-    computed: {
-        additionalInfo() {
-            return this.$store.state.uploadDetails.available_tables.find((table) => table.name === this.table.name);
-        },
-
-        additionalColumns() {
-            return this.additionalInfo.available_data?.columns?.additional || [];
-        },
-    },
-
     watch: {
-        table: {
-            handler(v) {
-                window.scroll(0, 0);
-                this.getTablePreview(v.id);
+        headingsType: {
+            handler() {
+                this.getAllPreviews();
             },
             immediate: true,
-        },
-
-        headingsType() {
-            this.getTablePreview(this.table.id);
         },
     },
 
     methods: {
+        async getAllPreviews() {
+            this.loading = true;
+            const previews = await Promise.all(
+                this.$store.state.selections.tables.map(async (table) => {
+                    return await this.getTablePreview(table.id);
+                })
+            );
+            this.tables = previews.reduce((acc, preview) => {
+                return acc.concat(preview);
+            }, []);
+            this.loading = false;
+        },
+
         /**
          * Fetch and parse preview of table
          * @param { string } tableId
          */
         async getTablePreview(tableId) {
-            this.loading = true;
             const { uploadDetails, selections } = this.$store.state;
             const { data } = await ApiService.getTablePreview(
                 uploadDetails.type + 's',
@@ -87,7 +78,7 @@ export default {
                 selections.id,
                 tableId
             );
-            this.tables = await Promise.all(
+            return await Promise.all(
                 data.map(async (preview) => {
                     const parsed = await Papa.parse(data[0].preview, {
                         skipEmptyLines: true,
@@ -108,7 +99,6 @@ export default {
                     };
                 })
             );
-            this.loading = false;
         },
 
         /**

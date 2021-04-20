@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
 import EditHeadingsTables from '@/components/EditHeadings/EditHeadingsTables';
 import store from '@/store';
 import Vuetify from 'vuetify';
@@ -45,14 +45,14 @@ describe('EditHeadingsTables.vue', () => {
     const vuetify = new Vuetify();
 
     describe('methods', () => {
-        test("'getTablePreview' gets tables preview", async () => {
+        test("'getAllPreviews' gets previews for all tables", async () => {
             store.commit('setUploadDetails', {
                 id: 'test id',
                 type: UPLOAD_TYPES.UPLOAD,
                 available_tables,
             });
             await store.dispatch('fetchSelections', 'test id');
-            const wrapper = mount(EditHeadingsTables, {
+            const wrapper = shallowMount(EditHeadingsTables, {
                 localVue,
                 vuetify,
                 store,
@@ -65,9 +65,34 @@ describe('EditHeadingsTables.vue', () => {
                 },
             });
 
+            jest.clearAllMocks();
+            await wrapper.vm.getAllPreviews();
+            expect(ApiService.getTablePreview).toBeCalledTimes(4);
+        });
+
+        test("'getTablePreview' gets tables preview", async () => {
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                available_tables,
+            });
+            await store.dispatch('fetchSelections', 'test id');
+            const wrapper = shallowMount(EditHeadingsTables, {
+                localVue,
+                vuetify,
+                store,
+                propsData: {
+                    table: {
+                        id: 'tenders table',
+                        name: 'tenders',
+                    },
+                    headingsType: 'ocds',
+                },
+            });
+
+            jest.clearAllMocks();
             await wrapper.vm.getTablePreview('tenders table');
-            expect(wrapper.vm.tables.length).toBe(2);
-            expect(ApiService.getTablePreview).toBeCalledTimes(2);
+            expect(ApiService.getTablePreview).toBeCalledTimes(1);
         });
 
         test("'updateTableHeading' updates heading of table", async () => {
@@ -78,7 +103,7 @@ describe('EditHeadingsTables.vue', () => {
                 available_tables,
             });
             await store.dispatch('fetchSelections', 'test id');
-            const wrapper = mount(EditHeadingsTables, {
+            const wrapper = shallowMount(EditHeadingsTables, {
                 localVue,
                 vuetify,
                 store,

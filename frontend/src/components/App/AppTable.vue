@@ -89,7 +89,7 @@ export default {
         },
         additionalColumns: {
             type: Array,
-            required: true,
+            default: () => [],
         },
         editableName: {
             type: Boolean,

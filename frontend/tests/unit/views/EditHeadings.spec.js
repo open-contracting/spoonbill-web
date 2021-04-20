@@ -50,20 +50,12 @@ describe('EditHeadings.vue', () => {
 
         test("'onBackClick' goes to previous table or previous step", async () => {
             await store.dispatch('fetchSelections', 'test id');
-            wrapper.vm.onContinueClick();
-            expect(wrapper.vm.currentTableIndex).toBe(1);
-            wrapper.vm.onBackClick();
-            expect(wrapper.vm.currentTableIndex).toBe(0);
             wrapper.vm.onBackClick();
             expect(router.push).toBeCalledTimes(1);
         });
 
         test("'onContinueClick' goes to next table or next step", async () => {
             await store.dispatch('fetchSelections', 'test id');
-            wrapper.vm.onContinueClick();
-            expect(wrapper.vm.currentTableIndex).toBe(1);
-            wrapper.vm.onContinueClick();
-            wrapper.vm.onContinueClick();
             wrapper.vm.onContinueClick();
             expect(router.push).toBeCalledTimes(1);
         });
