@@ -14,6 +14,7 @@
                 editable-name
                 @change-name="updateTableHeading($event, table.id)"
                 :headings="table.headings"
+                show-first-row
             />
         </div>
     </div>
