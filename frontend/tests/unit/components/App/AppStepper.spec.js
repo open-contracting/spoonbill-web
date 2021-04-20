@@ -31,7 +31,7 @@ describe('AppStepper.vue', () => {
         test("'navigateTo' navigates to specified path", async () => {
             await wrapper.vm.navigateTo(-1, '/test-route');
             expect(router.push).toBeCalledTimes(1);
-            await wrapper.vm.navigateTo(2, '/test-route');
+            await wrapper.vm.navigateTo(2, '/select-data');
             expect(router.push).toBeCalledTimes(1);
         });
     });

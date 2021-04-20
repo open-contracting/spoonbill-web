@@ -8,7 +8,7 @@
         <v-col cols="12" v-if="$store.state.selections && currentTable">
             <edit-heading-options @change="changeHeadingsType" />
 
-            <edit-headings-tables :table="currentTable" :headings-type="$store.state.selections.headings_type" />
+            <edit-headings-tables :headings-type="$store.state.selections.headings_type" />
 
             <div class="mt-15 d-flex">
                 <v-btn class="mr-6" color="gray-light" x-large @click="onBackClick">
@@ -38,29 +38,23 @@ export default {
 
     mixins: [getSelectionsMixin],
 
+    mounted() {
+        window.scroll(0, 0);
+    },
+
     methods: {
         /**
-         * Go to previous table or step
+         * Go to previous step
          */
         onBackClick() {
-            if (this.currentTableIndex === 0) {
-                this.$router.push({ path: '/customize-tables', query: this.$route.query });
-            } else {
-                this.currentTableIndex--;
-                this.currentTable = this.selections.tables[this.currentTableIndex];
-            }
+            this.$router.push({ path: '/customize-tables', query: this.$route.query });
         },
 
         /**
-         * Go to next table or step
+         * Go to next step
          */
         onContinueClick() {
-            if (this.currentTableIndex < this.selections.tables.length - 1) {
-                this.currentTableIndex++;
-                this.currentTable = this.selections.tables[this.currentTableIndex];
-            } else {
-                this.$router.push({ path: '/download', query: this.$route.query });
-            }
+            this.$router.push({ path: '/download', query: this.$route.query });
         },
 
         /**

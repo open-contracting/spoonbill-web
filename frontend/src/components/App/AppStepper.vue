@@ -50,6 +50,7 @@ export default {
     computed: {
         value() {
             const route = this.$route.name;
+            /* istanbul ignore next */
             switch (route) {
                 case 'select data':
                     return 2;
