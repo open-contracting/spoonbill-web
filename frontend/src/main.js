@@ -6,9 +6,16 @@ import vuetify from './plugins/vuetify';
 import axios from 'axios';
 import GetTextPlugin from 'vue-gettext';
 import translations from '@/translations/translations.json';
+import * as Sentry from '@sentry/vue';
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 Vue.config.productionTip = false;
+
+Sentry.init({
+    Vue: Vue,
+    dsn: process.env.VUE_APP_SENTRY_DSN,
+    logErrors: true,
+});
 
 const selectedLanguage = localStorage.getItem('lang');
 Vue.use(GetTextPlugin, {
