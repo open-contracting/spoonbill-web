@@ -20,7 +20,7 @@
             </div>
         </v-col>
 
-        <v-col cols="12" md="4" class="d-flex justify-md-end">
+        <v-col cols="12">
             <v-btn color="accent" x-large :disabled="!canApply" @click="$emit('change', headingsType)">
                 <v-img width="24" height="24" class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
                 <translate>Apply change</translate>

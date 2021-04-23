@@ -243,7 +243,7 @@ export default {
                 );
                 this.$store.commit('setSelections', selections);
                 this.$router.push({
-                    path: '/customize-tables',
+                    path: '/customize-tables/' + this.$store.state.selections.tables[0].id,
                     query: {
                         ...this.$route.query,
                         selections: selections.id,

@@ -1,19 +1,19 @@
 <template>
     <div class="d-flex flex-column justify-center align-center select-data-loading-progress">
-        <slot />
-        <v-img height="60" contain src="@/assets/icons/json.svg" />
-
-        <div class="file-name">
-            {{ fileName }}
-        </div>
-
-        <span class="my-3">
+        <span class="mb-1">
             {{ status }}
         </span>
 
-        <div class="d-flex align-center justify-center progress" style="height: 24px">
-            <v-progress-linear height="9" :indeterminate="percent === -1" :value="percent" :color="color" />
-            <div v-if="percent > -1" class="ml-2">{{ percent }}%</div>
+        <div class="d-flex w-100">
+            <v-img class="mr-4" height="48" max-width="38" contain src="@/assets/icons/json.svg" />
+
+            <div class="py-1 d-flex flex-column w-100">
+                <div class="file-name">
+                    {{ fileName }}
+                </div>
+                <v-progress-linear height="7" :indeterminate="percent === -1" :value="percent" :color="color" />
+                <div v-show="percent > -1" class="align-self-end">{{ percent }}%</div>
+            </div>
         </div>
 
         <v-btn class="app-btn" :disabled="!cancelable" large @click="$emit('cancel')" color="gray-light">Cancel</v-btn>
@@ -51,14 +51,13 @@ export default {
 
 <style scoped lang="scss">
 .select-data-loading-progress {
-    padding: 52px;
+    padding: 32px 86px;
     width: 100%;
     border: 1px dashed map-get($colors, 'gray-dark');
     border-radius: 8px;
     background-color: #ffffff;
 
     .file-name {
-        margin-top: 5px;
         font-size: 14px;
         font-weight: 300;
         white-space: nowrap;
