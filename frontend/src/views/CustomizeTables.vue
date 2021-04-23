@@ -161,6 +161,7 @@ export default {
         &--active {
             color: map-get($colors, 'moody-blue');
             font-weight: 700;
+            font-size: 20px;
         }
     }
 }

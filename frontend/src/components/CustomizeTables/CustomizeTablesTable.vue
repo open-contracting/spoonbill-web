@@ -1,6 +1,5 @@
 <template>
     <div class="table">
-        <h3 class="mb-4 table__name">{{ table.name }}</h3>
         <v-row>
             <v-col cols="12" md="6">
                 <div v-if="aboutThisTable">
