@@ -51,7 +51,7 @@ jest.mock('@/services/ApiService', () => {
                             headings_type: 'ocds',
                             tables: [
                                 {
-                                    id: 'parties table',
+                                    id: 'parties-table',
                                     name: 'parties',
                                     rows: 5,
                                     arrays: {
@@ -65,14 +65,14 @@ jest.mock('@/services/ApiService', () => {
                                     },
                                 },
                                 {
-                                    id: 'tenders table',
+                                    id: 'tenders-table',
                                     name: 'tenders',
                                     rows: 11,
                                     arrays: { count: 7, threshold: 5, above_threshold: ['tender/items'] },
                                     available_data: { columns: { total: 35, available: 34 } },
                                 },
                                 {
-                                    id: 'awards table',
+                                    id: 'awards-table',
                                     name: 'awards',
                                     rows: 4,
                                     arrays: {
@@ -83,7 +83,7 @@ jest.mock('@/services/ApiService', () => {
                                     available_data: { total: 16, available: 9 },
                                 },
                                 {
-                                    id: 'documents table',
+                                    id: 'documents-table',
                                     name: 'documents',
                                     rows: 5,
                                 },

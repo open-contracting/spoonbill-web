@@ -5,7 +5,7 @@
             <translate tag="h2" class="page-title">Add friendly column headings</translate>
         </v-col>
 
-        <v-col cols="12" v-if="$store.state.selections && currentTable">
+        <v-col cols="12" v-if="$store.state.selections">
             <edit-heading-options @change="changeHeadingsType" />
 
             <edit-headings-tables :headings-type="$store.state.selections.headings_type" />
@@ -29,14 +29,31 @@ import LayoutInfo from '@/components/Layout/LayoutInfo';
 import EditHeadingOptions from '@/components/EditHeadings/EditHeadingOptions';
 import ApiService from '@/services/ApiService';
 import EditHeadingsTables from '@/components/EditHeadings/EditHeadingsTables';
-import getSelectionsMixin from '@/mixins/getSelectionsMixin';
+import getQueryParam from '@/utils/getQueryParam';
 
 export default {
     name: 'EditHeadings',
 
     components: { EditHeadingsTables, EditHeadingOptions, LayoutInfo },
 
-    mixins: [getSelectionsMixin],
+    computed: {
+        selections() {
+            return this.$store.state.selections;
+        },
+    },
+
+    async created() {
+        const selectionsId = getQueryParam('selections');
+        if (selectionsId && !this.selections) {
+            await this.$store.dispatch('fetchSelections', selectionsId);
+            if (!this.selections) {
+                this.$router.push({
+                    path: '/upload-file',
+                    query: this.$route.query,
+                });
+            }
+        }
+    },
 
     mounted() {
         window.scroll(0, 0);

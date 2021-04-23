@@ -140,6 +140,7 @@ export default {
 
     methods: {
         calculateTableHeight() {
+            /* istanbul ignore next */
             if (this.showFirstRow) {
                 const table = this.$refs.table.$el.querySelector('.v-data-table__wrapper');
                 const theadHeight = table.querySelector('thead').getBoundingClientRect().height;
@@ -178,7 +179,7 @@ export default {
             }
             th {
                 min-width: 100px;
-                background-color: #facd91;
+                background-color: map-get($colors, 'gray-light');
             }
             td.highlighted {
                 background-color: #b6bafd;

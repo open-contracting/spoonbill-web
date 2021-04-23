@@ -109,16 +109,16 @@ describe('EditHeadingsTables.vue', () => {
                 store,
                 propsData: {
                     table: {
-                        id: 'tenders table',
+                        id: 'tenders-table',
                         name: 'tenders',
                     },
                     headingsType: 'ocds',
                 },
             });
 
-            await wrapper.vm.getTablePreview('tenders table');
-            await wrapper.vm.updateTableHeading('new name', 'tenders table');
-            expect(wrapper.vm.tables.find((table) => table.id === 'tenders table').heading).toBe('new name');
+            await wrapper.vm.getTablePreview('tenders-table');
+            await wrapper.vm.updateTableHeading('new name', 'tenders-table');
+            expect(wrapper.vm.tables.find((table) => table.id === 'tenders-table').heading).toBe('new name');
         });
     });
 });

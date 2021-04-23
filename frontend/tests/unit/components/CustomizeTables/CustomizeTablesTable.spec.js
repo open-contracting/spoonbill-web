@@ -58,13 +58,13 @@ describe('CustomizeTablesTable.vue', () => {
                 store,
                 propsData: {
                     table: {
-                        id: 'tenders table',
+                        id: 'tenders-table',
                         name: 'tenders',
                     },
                 },
             });
 
-            await wrapper.vm.getTablePreview('tenders table');
+            await wrapper.vm.getTablePreview('tenders-table');
             expect(wrapper.vm.tables.length).toBe(2);
             expect(ApiService.getTablePreview).toBeCalledTimes(2);
             expect(wrapper.vm.availableData.length).toBe(1);
@@ -72,7 +72,7 @@ describe('CustomizeTablesTable.vue', () => {
 
             await wrapper.setProps({
                 table: {
-                    id: 'awards table',
+                    id: 'awards-table',
                     name: 'awards',
                 },
             });
@@ -81,7 +81,7 @@ describe('CustomizeTablesTable.vue', () => {
 
             await wrapper.setProps({
                 table: {
-                    id: 'documents table',
+                    id: 'documents-table',
                     name: 'documents',
                 },
             });
@@ -103,7 +103,7 @@ describe('CustomizeTablesTable.vue', () => {
                 store,
                 propsData: {
                     table: {
-                        id: 'tenders table',
+                        id: 'tenders-table',
                         name: 'tenders',
                     },
                 },
@@ -112,7 +112,7 @@ describe('CustomizeTablesTable.vue', () => {
             await wrapper.vm.onSplitSwitchChange();
             expect(ApiService.changeSplitStatus).toHaveBeenCalledTimes(1);
             expect(ApiService.getTablePreview).toBeCalledTimes(2);
-            expect(store.state.selections.tables.find((table) => table.id === 'tenders table').split).toBe(true);
+            expect(store.state.selections.tables.find((table) => table.id === 'tenders-table').split).toBe(true);
         });
 
         test("'changeIncludeStatus' changes include status of table", async () => {
@@ -129,7 +129,7 @@ describe('CustomizeTablesTable.vue', () => {
                 store,
                 propsData: {
                     table: {
-                        id: 'tenders table',
+                        id: 'tenders-table',
                         name: 'tenders',
                     },
                 },

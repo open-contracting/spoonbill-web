@@ -20,6 +20,10 @@ h1, h2, h3 {
     font-weight: 300 !important;
 }
 
+.w-100 {
+    width: 100% !important;
+}
+
 .text-link {
     color: map-get($colors, 'darkest');
     text-decoration: none;

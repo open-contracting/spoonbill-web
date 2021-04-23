@@ -49,7 +49,6 @@ describe('CustomizeTables.vue', () => {
 
         test("'onBackClick' goes to previous table if exists", async () => {
             await store.dispatch('fetchSelections', 'test id');
-            wrapper.vm.onBackClick();
             expect(wrapper.vm.currentTableIndex).toBe(0);
             await wrapper.vm.onContinueClick();
             expect(ApiService.changeIncludeStatus).toBeCalledTimes(1);
@@ -68,14 +67,22 @@ describe('CustomizeTables.vue', () => {
         test("'onRemoveClick' changes include status of current table to false", async () => {
             wrapper.vm.$root.openConfirmDialog = jest.fn(() => Promise.resolve(false));
             await store.dispatch('fetchSelections', 'test id');
+            const oldIndex = wrapper.vm.currentTableIndex;
             await wrapper.vm.onRemoveClick();
             expect(ApiService.changeIncludeStatus).toBeCalledTimes(0);
-            expect(wrapper.vm.currentTableIndex).toBe(0);
+            expect(wrapper.vm.currentTableIndex).toBe(oldIndex);
 
             wrapper.vm.$root.openConfirmDialog = jest.fn(() => Promise.resolve(true));
             await wrapper.vm.onRemoveClick();
             expect(ApiService.changeIncludeStatus).toBeCalledTimes(1);
-            expect(wrapper.vm.currentTableIndex).toBe(1);
+            expect(wrapper.vm.currentTableIndex).toBe(oldIndex + 1);
+        });
+
+        test("'goTo' opens specified table", async () => {
+            await store.dispatch('fetchSelections', 'test id');
+            router.push = jest.fn();
+            wrapper.vm.goTo('test-id');
+            expect(router.push).toBeCalledTimes(1);
         });
     });
 });

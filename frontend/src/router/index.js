@@ -21,7 +21,7 @@ const routes = [
         component: () => import('@/views/SelectData'),
     },
     {
-        path: '/customize-tables',
+        path: '/customize-tables/:id?',
         name: 'customize tables',
         component: () => import('@/views/CustomizeTables'),
     },

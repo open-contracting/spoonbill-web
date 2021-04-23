@@ -1,14 +1,14 @@
 <template>
     <v-stepper alt-labels class="app-stepper" :value="value">
         <v-stepper-header>
-            <v-stepper-step :complete="value > 1" complete-icon="mdi-check" step="1" @click="navigateTo(1, '/upload-file')">
+            <v-stepper-step :complete="value > 1" complete-icon="mdi-pencil" step="1" @click="navigateTo(1, '/upload-file')">
                 <translate class="text-link" v-if="value > 1 || $store.state.numberOfUploads">Re-upload file</translate>
                 <translate translate-context="Upload file" v-else>Upload file</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
 
-            <v-stepper-step :complete="value > 2" complete-icon="mdi-check" step="2" @click="navigateTo(2, '/select-data')">
+            <v-stepper-step :complete="value > 2" complete-icon="mdi-pencil" step="2" @click="navigateTo(2, '/select-data')">
                 <translate :class="{ 'text-link': value > 2 }">Select data</translate>
             </v-stepper-step>
 
@@ -16,7 +16,7 @@
 
             <v-stepper-step
                 :complete="value > 3"
-                complete-icon="mdi-check"
+                complete-icon="mdi-pencil"
                 step="3"
                 @click="navigateTo(3, '/customize-tables')"
             >
@@ -27,7 +27,7 @@
 
             <v-stepper-step
                 :complete="value > 4"
-                complete-icon="mdi-check"
+                complete-icon="mdi-pencil"
                 step="4"
                 @click="navigateTo(4, '/edit-headings')"
             >
