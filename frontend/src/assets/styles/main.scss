@@ -9,10 +9,6 @@ body .theme--light.v-application {
     line-height: 1.3;
 }
 
-/*.container:not(.full-width) {
-    max-width: 1280px !important;
-}*/
-
 @media (min-width: 1904px) {
     .container:not(.full-width) {
         max-width: 1280px;

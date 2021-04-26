@@ -1,20 +1,16 @@
 <template>
-    <div>
-        <v-container>
-            <v-row>
-                <v-col class="pt-0" cols="12" v-if="selections">
-                    <v-tabs centered :value="currentTableIndex">
-                        <v-tab v-for="table in selections.tables" :key="table.id" @click="goTo(table.id)">
-                            {{ table.name }}
-                        </v-tab>
-                    </v-tabs>
-                </v-col>
-                <v-col class="pt-7" cols="12" md="8" xl="8">
-                    <translate tag="h2" class="page-title">Customize Tables</translate>
-                </v-col>
-            </v-row>
-        </v-container>
-        <v-container class="full-width">
+    <v-row>
+        <v-col class="pt-0" cols="12" v-if="selections">
+            <v-tabs centered :value="currentTableIndex">
+                <v-tab v-for="table in selections.tables" :key="table.id" @click="goTo(table.id)">
+                    {{ table.name }}
+                </v-tab>
+            </v-tabs>
+        </v-col>
+        <v-col class="pt-7" cols="12" md="8" xl="8">
+            <translate tag="h2" class="page-title">Customize Tables</translate>
+        </v-col>
+        <v-col cols="12">
             <customize-tables-table
                 v-if="currentTable"
                 :table="currentTable"
@@ -22,8 +18,8 @@
                 @save="onContinueClick"
                 @back="onBackClick"
             />
-        </v-container>
-    </div>
+        </v-col>
+    </v-row>
 </template>
 
 <script>
