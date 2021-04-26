@@ -1,7 +1,6 @@
 <template>
     <v-row>
         <v-col cols="12" md="8" xl="8">
-            <layout-info />
             <translate tag="h2" class="page-title">Select data to flatten to Excel/CSV</translate>
 
             <translate tag="p" class="page-description">
@@ -33,7 +32,7 @@
 
             <upload-file-options class="mt-9" />
         </v-col>
-        <v-col cols="12" md="4" xl="3" offset-xl="1">
+        <v-col cols="12" md="4">
             <app-f-a-q>
                 <translate slot="title">FAQ</translate>
 
@@ -53,14 +52,13 @@
 </template>
 
 <script>
-import LayoutInfo from '@/components/Layout/LayoutInfo';
 import UploadFileOptions from '@/components/UploadFile/UploadFileOptions';
 import AppFAQ from '@/components/App/AppFAQ';
 
 export default {
     name: 'UploadFileRegistry',
 
-    components: { AppFAQ, UploadFileOptions, LayoutInfo },
+    components: { AppFAQ, UploadFileOptions },
 
     data() {
         return {

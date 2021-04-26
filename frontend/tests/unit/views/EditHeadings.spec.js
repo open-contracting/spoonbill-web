@@ -15,21 +15,6 @@ describe('EditHeadings.vue', () => {
     const localVue = createLocalVue();
     const vuetify = new Vuetify();
 
-    it('gets selections once created', async () => {
-        store.commit('setSelections', null);
-        store.commit('setUploadDetails', {
-            id: 'test id',
-            type: UPLOAD_TYPES.UPLOAD,
-        });
-        shallowMount(EditHeadings, {
-            localVue,
-            vuetify,
-            store,
-            router,
-        });
-        expect(ApiService.getSelections).toBeCalledTimes(1);
-    });
-
     describe('methods', () => {
         /** @type { Wrapper<Vue> } */
         let wrapper;
@@ -66,5 +51,33 @@ describe('EditHeadings.vue', () => {
             expect(ApiService.changeHeadingsType).toBeCalledTimes(1);
             expect(store.state.selections.headings_type).toBe('r_friendly');
         });
+    });
+
+    it('gets selections once created', async () => {
+        jest.clearAllMocks();
+        store.commit('setSelections', null);
+        store.commit('setUploadDetails', {
+            id: 'test id',
+            type: UPLOAD_TYPES.UPLOAD,
+        });
+
+        shallowMount(EditHeadings, {
+            localVue,
+            vuetify,
+            store,
+            router,
+        });
+        expect(ApiService.getSelections).toBeCalledTimes(1);
+
+        store.dispatch = jest.fn();
+        router.push = jest.fn();
+        const wrapper = shallowMount(EditHeadings, {
+            localVue,
+            vuetify,
+            store,
+            router,
+        });
+        await wrapper.vm.$nextTick();
+        expect(router.push).toBeCalledTimes(1);
     });
 });

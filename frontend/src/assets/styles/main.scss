@@ -6,6 +6,17 @@ body .theme--light.v-application {
     font-family: 'GT Eesti Pro Display', sans-serif;
     color: map-get($colors, 'primary');
     background-color: map-get($colors, 'super-light') !important;
+    line-height: 1.3;
+}
+
+@media (min-width: 1904px) {
+    .container:not(.full-width) {
+        max-width: 1280px;
+    }
+    .container--full-width {
+        margin-left: -252px;
+        margin-right: -252px;
+    }
 }
 
 h1, h2, h3 {

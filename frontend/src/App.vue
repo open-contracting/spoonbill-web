@@ -3,12 +3,15 @@
         <layout-header />
 
         <v-main>
-            <v-container class="pt-15 pb-5">
+            <v-container class="pt-12 pb-5">
                 <v-overlay v-if="loading" class="d-flex align-center justify-center" :value="true">
                     <v-progress-circular size="48" color="accent" indeterminate />
                 </v-overlay>
 
-                <router-view v-else />
+                <template v-else>
+                    <layout-info />
+                    <router-view />
+                </template>
             </v-container>
         </v-main>
 
@@ -35,11 +38,12 @@ import LayoutHeader from './components/Layout/LayoutHeader';
 import getQueryParam from '@/utils/getQueryParam';
 import { UPLOAD_TYPES } from '@/constants';
 import AppConfirmDialog from '@/components/App/AppConfirmDialog';
+import LayoutInfo from '@/components/Layout/LayoutInfo';
 
 export default {
     name: 'App',
 
-    components: { AppConfirmDialog, LayoutHeader },
+    components: { LayoutInfo, AppConfirmDialog, LayoutHeader },
 
     data() {
         return {

@@ -1,7 +1,6 @@
 <template>
     <v-row>
         <v-col cols="12" md="8" xl="8">
-            <layout-info />
             <translate tag="h2" class="page-title">Add friendly column headings</translate>
         </v-col>
 
@@ -10,7 +9,7 @@
 
             <edit-headings-tables :headings-type="$store.state.selections.headings_type" />
 
-            <div class="mt-15 d-flex">
+            <div class="mt-10 d-flex">
                 <v-btn class="mr-6" color="gray-light" x-large @click="onBackClick">
                     <translate>Go back</translate>
                 </v-btn>
@@ -25,7 +24,6 @@
 </template>
 
 <script>
-import LayoutInfo from '@/components/Layout/LayoutInfo';
 import EditHeadingOptions from '@/components/EditHeadings/EditHeadingOptions';
 import ApiService from '@/services/ApiService';
 import EditHeadingsTables from '@/components/EditHeadings/EditHeadingsTables';
@@ -34,7 +32,7 @@ import getQueryParam from '@/utils/getQueryParam';
 export default {
     name: 'EditHeadings',
 
-    components: { EditHeadingsTables, EditHeadingOptions, LayoutInfo },
+    components: { EditHeadingsTables, EditHeadingOptions },
 
     computed: {
         selections() {

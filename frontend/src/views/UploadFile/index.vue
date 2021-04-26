@@ -1,7 +1,6 @@
 <template>
     <v-row>
         <v-col cols="12" md="8" xl="8">
-            <layout-info />
             <translate tag="h2" class="page-title">Select a JSON file to flatten</translate>
 
             <translate tag="p" class="page-description">
@@ -16,7 +15,7 @@
 
             <upload-file-input class="mt-7" />
         </v-col>
-        <v-col cols="12" md="4" xl="3" offset-xl="1">
+        <v-col cols="12" md="4">
             <app-f-a-q accent>
                 <v-icon slot="title" color="primary">mdi-alert</v-icon>
 
@@ -57,13 +56,12 @@
 
 <script>
 import UploadFileInput from '@/components/UploadFile/UploadFileInput';
-import LayoutInfo from '@/components/Layout/LayoutInfo';
 import AppFAQ from '@/components/App/AppFAQ';
 
 export default {
     name: 'UploadFile',
 
-    components: { AppFAQ, UploadFileInput, LayoutInfo },
+    components: { AppFAQ, UploadFileInput },
 };
 </script>
 

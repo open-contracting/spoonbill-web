@@ -1,15 +1,14 @@
 <template>
     <v-row>
-        <v-col cols="12" md="8" xl="8">
-            <layout-info />
-            <translate tag="h2" class="page-title">Customize Tables</translate>
-        </v-col>
-        <v-col class="pt-1" cols="12" v-if="selections">
-            <v-tabs :value="currentTableIndex">
+        <v-col class="pt-0" cols="12" v-if="selections">
+            <v-tabs centered :value="currentTableIndex">
                 <v-tab v-for="table in selections.tables" :key="table.id" @click="goTo(table.id)">
                     {{ table.name }}
                 </v-tab>
             </v-tabs>
+        </v-col>
+        <v-col class="pt-7" cols="12" md="8" xl="8">
+            <translate tag="h2" class="page-title">Customize Tables</translate>
         </v-col>
         <v-col cols="12">
             <customize-tables-table
@@ -24,14 +23,13 @@
 </template>
 
 <script>
-import LayoutInfo from '@/components/Layout/LayoutInfo';
 import CustomizeTablesTable from '@/components/CustomizeTables/CustomizeTablesTable';
 import getQueryParam from '@/utils/getQueryParam';
 
 export default {
     name: 'CustomizeTables',
 
-    components: { CustomizeTablesTable, LayoutInfo },
+    components: { CustomizeTablesTable },
 
     computed: {
         currentTableIndex() {
@@ -143,6 +141,8 @@ export default {
 
 <style scoped lang="scss">
 ::v-deep .v-tabs {
+    border-radius: 2px;
+    border-bottom: 1px solid map-get($colors, 'gray-dark');
     .v-tabs-slider-wrapper {
         display: none !important;
     }
