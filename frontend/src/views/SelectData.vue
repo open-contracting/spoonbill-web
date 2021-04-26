@@ -1,7 +1,6 @@
 <template>
     <v-row>
         <v-col cols="12" md="8" xl="8">
-            <layout-info />
             <translate tag="h2" class="page-title">Select data to flatten to Excel/CSV</translate>
 
             <translate tag="p" class="page-description">
@@ -74,14 +73,14 @@
                 <translate tag="p" class="mb-4 column-name">Unavailable tables</translate>
                 <select-data-table-info v-for="table in unavailableTables" :key="table.name" :table="table" unavailable />
             </div>
-            <div class="mt-15">
+            <div class="mt-10">
                 <v-btn @click="createSelections" :disabled="!selectedTables.length" color="accent" height="56" width="152">
                     <v-img max-width="24" class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
                     <translate>Continue</translate>
                 </v-btn>
             </div>
         </v-col>
-        <v-col cols="12" md="4" xl="3" offset-xl="1">
+        <v-col cols="12" md="4">
             <app-f-a-q>
                 <translate slot="title">FAQ</translate>
 
@@ -101,7 +100,6 @@
 </template>
 
 <script>
-import LayoutInfo from '@/components/Layout/LayoutInfo';
 import draggable from 'vuedraggable';
 import SelectDataTableInfo from '@/components/SelectData/SelectDataTableInfo';
 import AppFAQ from '@/components/App/AppFAQ';
@@ -110,7 +108,7 @@ import ApiService from '@/services/ApiService';
 export default {
     name: 'SelectData',
 
-    components: { AppFAQ, SelectDataTableInfo, LayoutInfo, draggable },
+    components: { AppFAQ, SelectDataTableInfo, draggable },
 
     data() {
         return {
@@ -250,6 +248,7 @@ export default {
                     },
                 });
             } catch (e) {
+                /* istanbul ignore next */
                 console.error(e);
             }
         },

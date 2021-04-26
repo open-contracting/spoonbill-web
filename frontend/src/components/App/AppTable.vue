@@ -1,7 +1,12 @@
 <template>
     <div class="app-table">
         <div class="d-flex align-center" :class="allowActions ? 'mb-1' : 'mb-3 mt-1'">
-            <p class="mr-3 fw-300 mb-0 app-table__name">Table: {{ name }}</p>
+            <p class="mr-3 fw-300 mb-0">
+                Table:
+                <span :class="{ 'app-table__name--highlighted': highlightName }">
+                    {{ name }}
+                </span>
+            </p>
             <div v-if="editableName">
                 <v-menu :close-on-content-click="false" v-model="nameMenu">
                     <template v-slot:activator="{ on, attrs }">
@@ -36,7 +41,7 @@
                 </v-btn>
             </div>
         </div>
-        <v-simple-table ref="table" v-if="include" :style="{ width: headers.length * 100 + 'px' }">
+        <v-simple-table ref="table" v-if="include" :style="{ width: headers.length * 100 + 2 + 'px' }">
             <template v-slot:default>
                 <thead>
                     <tr v-if="headings">
@@ -103,6 +108,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        highlightName: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     data() {
@@ -140,12 +149,11 @@ export default {
 
     methods: {
         calculateTableHeight() {
-            /* istanbul ignore next */
             if (this.showFirstRow) {
                 const table = this.$refs.table.$el.querySelector('.v-data-table__wrapper');
                 const theadHeight = table.querySelector('thead').getBoundingClientRect().height;
                 const tbodyFirstRowHeight = table.querySelector('tbody tr').getBoundingClientRect().height;
-                table.style.maxHeight = theadHeight + tbodyFirstRowHeight + 15 + 'px';
+                table.style.maxHeight = theadHeight + tbodyFirstRowHeight + 18 + 'px';
                 table.style.overflowY = 'auto';
             }
         },
@@ -161,6 +169,10 @@ export default {
 <style scoped lang="scss">
 .app-table {
     max-width: 100%;
+    .app-table__name--highlighted {
+        color: map-get($colors, 'moody-blue');
+        font-weight: 700;
+    }
 
     ::v-deep .v-data-table__wrapper {
         overflow: auto;

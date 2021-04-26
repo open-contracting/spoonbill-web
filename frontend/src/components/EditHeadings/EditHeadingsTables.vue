@@ -2,7 +2,7 @@
     <div>
         <v-skeleton-loader class="mt-8" v-if="loading" type="table-tbody"></v-skeleton-loader>
 
-        <div class="mt-8 tables" v-else>
+        <div class="mt-8 tables container--full-width" v-else>
             <app-table
                 v-for="table in tables"
                 :key="table.id"

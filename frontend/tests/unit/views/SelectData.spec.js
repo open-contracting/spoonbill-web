@@ -6,36 +6,39 @@ import router from '@/router';
 import ApiService from '@/services/ApiService';
 import { UPLOAD_TYPES } from '@/constants';
 
+const uploadDetails = {
+    id: 'test',
+    available_tables: [
+        {
+            name: 'parties',
+            rows: 5,
+            arrays: { count: 2, threshold: 5, above_threshold: ['tenderer'], below_threshold: ['parties/0/roles'] },
+            available_data: { columns: { total: 22, available: 18, additional: ['parties/0/identifier/Name'] } },
+        },
+        {
+            name: 'tenders',
+            rows: 11,
+            arrays: { count: 7, threshold: 5, above_threshold: ['tender/items'] },
+            available_data: { columns: { total: 35, available: 34 } },
+        },
+        {
+            name: 'awards',
+            rows: 4,
+            arrays: { count: 2, threshold: 5, above_threshold: ['awards/0/suppliers', 'awards/0/items'] },
+            available_data: { total: 16, available: 9 },
+        },
+        {
+            name: 'documents',
+            rows: 5,
+        },
+    ],
+};
+
 describe('SelectData.vue', () => {
     const localVue = createLocalVue();
     const vuetify = new Vuetify();
-    store.commit('setUploadDetails', {
-        id: 'test',
-        available_tables: [
-            {
-                name: 'parties',
-                rows: 5,
-                arrays: { count: 2, threshold: 5, above_threshold: ['tenderer'], below_threshold: ['parties/0/roles'] },
-                available_data: { columns: { total: 22, available: 18, additional: ['parties/0/identifier/Name'] } },
-            },
-            {
-                name: 'tenders',
-                rows: 11,
-                arrays: { count: 7, threshold: 5, above_threshold: ['tender/items'] },
-                available_data: { columns: { total: 35, available: 34 } },
-            },
-            {
-                name: 'awards',
-                rows: 4,
-                arrays: { count: 2, threshold: 5, above_threshold: ['awards/0/suppliers', 'awards/0/items'] },
-                available_data: { total: 16, available: 9 },
-            },
-            {
-                name: 'documents',
-                rows: 5,
-            },
-        ],
-    });
+
+    store.commit('setUploadDetails', uploadDetails);
     /** @type { Wrapper<Vue> } */
     let wrapper;
     beforeEach(() => {
@@ -45,6 +48,20 @@ describe('SelectData.vue', () => {
             store,
             router,
         });
+    });
+
+    it('goes to the first step if uploadDetails are empty', () => {
+        store.commit('setUploadDetails', null);
+        router.push = jest.fn();
+
+        mount(SelectData, {
+            localVue,
+            vuetify,
+            store,
+            router,
+        });
+        expect(router.push).toBeCalledTimes(1);
+        store.commit('setUploadDetails', uploadDetails);
     });
 
     it('filter all tables once created', () => {

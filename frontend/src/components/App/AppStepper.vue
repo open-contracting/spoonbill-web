@@ -82,6 +82,8 @@ export default {
 
 <style scoped lang="scss">
 .app-stepper.v-stepper {
+    margin: 0 auto;
+    max-width: 815px;
     box-shadow: none;
     background-color: map-get($colors, 'super-light');
     ::v-deep .v-stepper__header {

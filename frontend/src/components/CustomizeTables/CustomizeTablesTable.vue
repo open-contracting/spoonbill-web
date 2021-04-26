@@ -36,7 +36,7 @@
             :label="isSplit ? $gettext('Keep arrays in main table') : $gettext('Split arrays into separate tables')"
         ></v-switch>
         <v-skeleton-loader class="mt-8" v-if="loading" type="table-tbody"></v-skeleton-loader>
-        <div class="mt-8 tables">
+        <div class="mt-8 tables container--full-width">
             <app-table
                 v-for="(table, idx) in tables"
                 :key="table.name"
@@ -46,11 +46,12 @@
                 :include="table.include"
                 :allow-actions="idx !== 0"
                 :additional-columns="additionalColumns"
+                highlight-name
                 @remove="changeIncludeStatus(table, false)"
                 @restore="changeIncludeStatus(table, true)"
             />
         </div>
-        <div class="mt-15 d-flex">
+        <div class="mt-10 d-flex">
             <v-btn class="mr-6" color="gray-light" x-large @click="$emit('back')" v-if="isSplit" key="back">
                 <translate>Go back</translate>
             </v-btn>

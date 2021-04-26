@@ -2,13 +2,31 @@ import { mount } from '@vue/test-utils';
 import AppTable from '@/components/App/AppTable';
 
 describe('AppTable.vue', () => {
-    test("'highlightedCols' returns indexes of additional columns", () => {
+    test('default props are correct', async () => {
+        const wrapper = mount(AppTable, {
+            propsData: {
+                name: 'Test',
+                headers: ['h1', 'h2', 'h3', 'h4', 'h5'],
+                data: [['d1', 'd2', 'd3', 'd4', 'd5']],
+            },
+        });
+
+        expect(wrapper.vm.include).toBe(true);
+        expect(wrapper.vm.allowActions).toBe(false);
+        expect(wrapper.vm.additionalColumns).toStrictEqual([]);
+        expect(wrapper.vm.editableName).toBe(false);
+        expect(wrapper.vm.headings).toBe(null);
+        expect(wrapper.vm.showFirstRow).toBe(false);
+    });
+
+    test("'highlightedCols' returns indexes of additional columns", async () => {
         const wrapper = mount(AppTable, {
             propsData: {
                 name: 'Test',
                 headers: ['h1', 'h2', 'h3', 'h4', 'h5'],
                 data: [['d1', 'd2', 'd3', 'd4', 'd5']],
                 additionalColumns: ['h2', 'h3'],
+                showFirstRow: true,
             },
         });
 
@@ -49,6 +67,11 @@ describe('AppTable.vue', () => {
             await wrapper.setData({
                 newName: null,
                 nameMenu: true,
+            });
+            await wrapper.setProps({
+                headings: {
+                    h1: 'test',
+                },
             });
             expect(wrapper.vm.newName).toBe('Test');
         });

@@ -5,6 +5,8 @@ import Vuetify from 'vuetify';
 import router from '@/router';
 import ApiService from '@/services/ApiService';
 import { UPLOAD_TYPES } from '@/constants';
+import VueRouter from 'vue-router';
+
 jest.mock('@/utils/getQueryParam', () => {
     return (name) => {
         return name + '-id';
@@ -14,21 +16,6 @@ jest.mock('@/utils/getQueryParam', () => {
 describe('CustomizeTables.vue', () => {
     const localVue = createLocalVue();
     const vuetify = new Vuetify();
-
-    it('gets selections once created', async () => {
-        store.commit('setSelections', null);
-        store.commit('setUploadDetails', {
-            id: 'test id',
-            type: UPLOAD_TYPES.UPLOAD,
-        });
-        shallowMount(CustomizeTables, {
-            localVue,
-            vuetify,
-            store,
-            router,
-        });
-        expect(ApiService.getSelections).toBeCalledTimes(1);
-    });
 
     describe('methods', () => {
         /** @type { Wrapper<Vue> }*/
@@ -84,5 +71,55 @@ describe('CustomizeTables.vue', () => {
             wrapper.vm.goTo('test-id');
             expect(router.push).toBeCalledTimes(1);
         });
+
+        test("'goToNext' goes to the next table if it exists", async () => {
+            await store.dispatch('fetchSelections', 'test id');
+            router.push = jest.fn();
+            wrapper.vm.goToNext();
+            expect(router.push).toBeCalledWith({
+                path: '/customize-tables/' + store.state.selections.tables[wrapper.vm.currentTableIndex + 1].id,
+                query: {},
+            });
+        });
+
+        test("'goToNext' goes to the next step if it is last table", async () => {
+            await store.dispatch('fetchSelections', 'test id');
+            router.push = new VueRouter().push;
+            await wrapper.vm.goTo(store.state.selections.tables[store.state.selections.tables.length - 1].id);
+            router.push = jest.fn();
+            wrapper.vm.goToNext();
+            expect(router.push).toBeCalledWith({
+                path: '/edit-headings',
+                query: {},
+            });
+        });
+    });
+
+    it('gets selections once created', async () => {
+        jest.clearAllMocks();
+        store.commit('setSelections', null);
+        store.commit('setUploadDetails', {
+            id: 'test id',
+            type: UPLOAD_TYPES.UPLOAD,
+        });
+
+        shallowMount(CustomizeTables, {
+            localVue,
+            vuetify,
+            store,
+            router,
+        });
+        expect(ApiService.getSelections).toBeCalledTimes(1);
+
+        store.dispatch = jest.fn();
+        router.push = jest.fn();
+        const wrapper = shallowMount(CustomizeTables, {
+            localVue,
+            vuetify,
+            store,
+            router,
+        });
+        await wrapper.vm.$nextTick();
+        expect(router.push).toBeCalledTimes(1);
     });
 });

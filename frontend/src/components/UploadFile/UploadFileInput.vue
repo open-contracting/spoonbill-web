@@ -35,7 +35,7 @@
             Note that large files may take a while to process. Please be patient.
         </translate>
 
-        <upload-file-options class="mt-15" v-if="isValid" @select="onOptionSelect" />
+        <upload-file-options class="mt-10" v-if="isValid" @select="onOptionSelect" />
     </div>
 </template>
 
