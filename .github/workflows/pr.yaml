@@ -55,7 +55,7 @@ jobs:
         run: |
             sed -i 1d .envrc
             source .envrc
-            pytest  --cov-report xml
+            pytest  --cov-report xml --cov-fail-under=${{ secrets.COVERAGE_PERCENT }}
             git fetch --all
             coveralls --service=github
             diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=${{ secrets.COVERAGE_PERCENT }}
