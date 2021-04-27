@@ -69,6 +69,7 @@ export default {
          * @param { string } tableId
          */
         goTo(tableId) {
+            if (this.currentTable.id === tableId) return;
             this.$router.push({
                 path: '/customize-tables/' + tableId,
                 query: this.$route.query,
