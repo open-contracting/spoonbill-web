@@ -2,8 +2,10 @@
     <v-stepper alt-labels class="app-stepper" :value="value">
         <v-stepper-header>
             <v-stepper-step :complete="value > 1" complete-icon="mdi-pencil" step="1" @click="navigateTo(1, '/upload-file')">
-                <translate class="text-link" v-if="value > 1 || $store.state.numberOfUploads">Re-upload file</translate>
-                <translate translate-context="Upload file" v-else>Upload file</translate>
+                <translate class="text-link" v-if="$store.state.numberOfUploads > 0 || value > 1" key="re">
+                    Re-upload file
+                </translate>
+                <translate translate-context="Upload file" key="upload" v-else>Upload file</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
@@ -72,7 +74,16 @@ export default {
          * @param { number } step
          * @param { string } path
          */
-        navigateTo(step, path) {
+        async navigateTo(step, path) {
+            if (this.value === 1 && step === 1 && this.$store.state.numberOfUploads > 0) {
+                const confirmed = await this.$root.openConfirmDialog();
+                if (confirmed) {
+                    this.$store.commit('setUploadDetails', null);
+                    this.$store.commit('setSelections', null);
+                }
+                return;
+            }
+
             if (this.value <= step) return;
             this.$router.push({ path, query: path === '/upload-file' ? {} : this.$route.query });
         },
