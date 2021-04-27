@@ -54,7 +54,7 @@ jobs:
         run: |
             sed -i 1d .envrc
             source .envrc
-            pytest
+            pytest --cov-fail-under=${{ secrets.COVERAGE_PERCENT }}
       - name: Upload to coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
