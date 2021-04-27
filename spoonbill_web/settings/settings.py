@@ -184,7 +184,7 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "")
 JOB_FILES_TIMEOUT = 1  # days
 
 MEDIA_ROOT = "/tmp/"
-MEDIA_URL = "/files/"
+MEDIA_URL = "/files/" if not API_PREFIX else f"{API_PREFIX}files/"
 
 # Channels
 ASGI_APPLICATION = "spoonbill_web.asgi.application"
