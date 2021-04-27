@@ -85,7 +85,7 @@ export default {
             }
 
             if (this.value <= step) return;
-            this.$router.push({ path, query: path === '/upload-file' ? {} : this.$route.query });
+            this.$router.push({ path, query: path === '/upload-file' ? {} : this.$route.query }).catch(() => {});
         },
     },
 };
