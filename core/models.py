@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from django.contrib.postgres.fields import ArrayField
@@ -6,7 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import instance_directory_path
+from core.utils import export_directory_path, instance_directory_path
 
 fs = FileSystemStorage()
 
@@ -49,6 +50,7 @@ class Upload(models.Model):
     deleted = models.BooleanField(default=False)
     selections = models.ManyToManyField("DataSelection", blank=True)
     available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
+    root_key = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         db_table = "uploads"
@@ -86,6 +88,7 @@ class Url(models.Model):
     error = models.TextField(blank=True, null=True)
     selections = models.ManyToManyField("DataSelection", blank=True)
     available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
+    root_key = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         db_table = "urls"
@@ -110,11 +113,16 @@ class DataSelection(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     tables = models.ManyToManyField("Table", blank=True)
     headings_type = models.CharField(max_length=30, choices=HEADING_TYPES, default=OCDS)
+    flattens = models.ManyToManyField("Flatten", blank=True)
 
     class Meta:
         db_table = "data_selections"
         verbose_name = _("Data Selection")
         verbose_name_plural = _("Data Selections")
+
+    @property
+    def flatten_types(self):
+        return [f.export_format for f in self.flattens.all()]
 
 
 class Table(models.Model):
@@ -124,4 +132,27 @@ class Table(models.Model):
     include = models.BooleanField(default=True)
     heading = models.CharField(max_length=120, blank=True, null=True)
     array_tables = models.ManyToManyField("self", blank=True)
-    column_headings = ArrayField(models.JSONField(default=dict, encoder=DjangoJSONEncoder), blank=True, null=True)
+    column_headings = models.JSONField(default=dict, encoder=DjangoJSONEncoder, blank=True, null=True)
+
+
+class Flatten(models.Model):
+
+    CSV = "csv"
+    XLSX = "xlsx"
+    EXPORT_FORMATS = [(CSV, _("A comma-separated values (CSV) file")), (XLSX, _("XLSX (Excel) file format"))]
+
+    SCHEDULED = "scheduled"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    STATUS_CHOICES = [
+        (COMPLETED, _("Completed")),
+        (FAILED, _("Failed")),
+        (PROCESSING, _("Processing")),
+        (SCHEDULED, _("Scheduled")),
+    ]
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    export_format = models.CharField(max_length=10, choices=EXPORT_FORMATS, default=XLSX)
+    file = models.FileField(upload_to=export_directory_path, blank=True, null=True, storage=fs)
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=SCHEDULED)
+    error = models.CharField(max_length=300)

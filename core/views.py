@@ -12,9 +12,15 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
-from core.models import DataSelection, Table, Upload, Url, Validation
-from core.serializers import DataSelectionSerializer, TablesSerializer, UploadSerializer, UrlSerializer
-from core.tasks import cleanup_upload, download_data_source, validate_data
+from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
+from core.serializers import (
+    DataSelectionSerializer,
+    FlattenSerializer,
+    TablesSerializer,
+    UploadSerializer,
+    UrlSerializer,
+)
+from core.tasks import cleanup_upload, download_data_source, flatten_data, validate_data
 from core.utils import set_column_headings, store_preview_csv
 
 COLUMNS = "columns"
@@ -302,3 +308,65 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                     preview["column_headings"] = table.column_headings
                 data.append(preview)
         return Response(data)
+
+
+class FlattenViewSet(viewsets.GenericViewSet):
+    serializer_class = FlattenSerializer
+    queryset = Flatten.objects.all()
+    http_method_names = ["get", "patch", "post", "head", "options", "trace"]
+    lookup_field = "id"
+
+    def retrieve(self, request, id=None, *args, **kwargs):
+        serializer = self.get_serializer_class()(self.get_object())
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class()(data=request.data or request.POST)
+        if serializer.is_valid():
+            selection = DataSelection.objects.get(id=kwargs["selection_id"])
+            selection.flatten_types
+            flatten_type = serializer.data.get("export_format", Flatten.XLSX)
+            if flatten_type in selection.flatten_types:
+                return Response(
+                    {"detail": _("Flatten request for this type already exists.")},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            flatten = Flatten.objects.create(**serializer.data)
+            selection.flattens.add(flatten)
+            serializer = self.get_serializer_class()(flatten)
+            model = "Upload" if "upload_id" in kwargs else "Url"
+            lang_code = get_language()
+            flatten_data.delay(flatten.id, model=model, lang_code=lang_code)
+            return Response(serializer.data)
+        else:
+            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class()(data=request.data)
+        if serializer.is_valid():
+            flatten = Flatten.objects.get(id=kwargs["id"])
+            new_status = request.data.get("status", "")
+            if flatten.status not in (Flatten.FAILED, Flatten.COMPLETED):
+                return Response(
+                    {"detail": _("You can't reschedule flatten in (%s) status") % flatten.status},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            elif new_status != Flatten.SCHEDULED:
+                return Response(
+                    {"detail": _("You can set status to %s only") % Flatten.SCHEDULED},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            flatten.status = Flatten.SCHEDULED
+            flatten.save(update_fields=["status"])
+            model = "Upload" if "upload_id" in kwargs else "Url"
+            lang_code = get_language()
+            flatten_data.delay(flatten.id, model=model, lang_code=lang_code)
+            self.get_serializer_class()(flatten)
+            return Response(serializer.data)
+        else:
+            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, *args, **kwargs):
+        queryset = Flatten.objects.filter(dataselection=kwargs.get("selection_id", ""))
+        serializer = self.get_serializer_class()(queryset, many=True)
+        return Response(serializer.data)

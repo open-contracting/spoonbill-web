@@ -10,19 +10,30 @@ import requests
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from spoonbill import FileFlattener
 from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
+from spoonbill.flatten import FlattenOptions
 from spoonbill.stats import DataPreprocessor
 from spoonbill.utils import iter_file
 
-from core.models import Upload, Url
-from core.serializers import UploadSerializer, UrlSerializer
-from core.utils import internationalization, is_record_package, is_release_package, retrieve_available_tables
+from core.models import Flatten, Upload, Url
+from core.serializers import FlattenSerializer, UploadSerializer, UrlSerializer
+from core.utils import (
+    get_flatten_options,
+    internationalization,
+    is_record_package,
+    is_release_package,
+    retrieve_available_tables,
+    zip_files,
+)
 from spoonbill_web.celery import app as celery_app
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
+SCHEMA_PATH = f"{DATA_DIR}/schema.json"
 getters = {
     "Upload": {"model": Upload, "serializer": UploadSerializer},
     "Url": {"model": Url, "serializer": UrlSerializer},
@@ -30,17 +41,39 @@ getters = {
 logger = logging.getLogger(__name__)
 
 
+def get_serializer_by_model(str_model, log_context=None):
+    """
+    Utility for return model and serializer by string model value
+
+    :param str_model: String value (name) of model class
+    :return: tuple with model and serializer
+    """
+    if str_model not in getters:
+        extra = {"MESSAGE_ID": "model_not_registered", "MODEL": str_model}
+        if log_context:
+            extra.update(log_context)
+        logger.info(
+            "Model %s not registered in getters" % str_model,
+            extra=extra,
+        )
+        return None, None
+    else:
+        return getters[str_model]["model"], getters[str_model]["serializer"]()
+
+
 @celery_app.task
 def validate_data(object_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
-        if model not in getters:
-            logger.info(
-                "Model %s not registered in getters" % model,
-                extra={"MESSAGE_ID": "model_not_registered", "TASK": "validation", "MODEL": model, "ID": object_id},
-            )
+        logger_context = {"DATASOURCE_ID": object_id, "TASK": "validate_data"}
+        ds_model, serializer = get_serializer_by_model(model, logger_context)
+        if not ds_model:
             return
-        datasource = getters[model]["model"].objects.get(id=object_id)
-        serializer = getters[model]["serializer"]()
+        try:
+            datasource = ds_model.objects.get(id=object_id)
+        except ObjectDoesNotExist:
+            logger_context["MODEL"] = model
+            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            return
 
         datasource.status = "validation"
         datasource.save(update_fields=["status"])
@@ -53,26 +86,33 @@ def validate_data(object_id, model=None, lang_code="en"):
         logger.debug("Start validation for %s file" % object_id)
 
         is_valid = False
-        with open(f"{DATA_DIR}/schema.json") as schema_rd:
-            spec = DataPreprocessor(json.loads(schema_rd.read()), ROOT_TABLES, combined_tables=COMBINED_TABLES)
-            try:
-                resource = ""
-                if is_release_package(datasource.file.path):
-                    resource = "releases"
-                elif is_record_package(datasource.file.path):
-                    resource = "records"
-                if resource:
-                    spec.process_items(iter_file(datasource.file.path, resource))
-                    analyzed_data = spec.dump()
-                    is_valid = True
-            except (ijson.JSONError, ijson.IncompleteJSONError) as e:
-                logger.info(
-                    "Error while validating data %s" % object_id,
-                    extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
-                )
+        with open(SCHEMA_PATH) as fd:
+            schema = json.loads(fd.read())
+        spec = DataPreprocessor(schema, ROOT_TABLES, combined_tables=COMBINED_TABLES)
+        try:
+            resource = ""
+            if is_release_package(datasource.file.path):
+                resource = "releases"
+            elif is_record_package(datasource.file.path):
+                resource = "records"
+            if resource:
+                for count in spec.process_items(iter_file(datasource.file.path, resource), with_preview=True):
+                    async_to_sync(channel_layer.group_send)(
+                        f"datasource_{datasource.id}",
+                        {"type": "task.validate", "datasource": {"id": str(datasource.id)}, "processed_rows": count},
+                    )
+                analyzed_data = spec.dump()
+                is_valid = True
+        except (ijson.JSONError, ijson.IncompleteJSONError) as e:
+            logger.info(
+                "Error while validating data %s" % object_id,
+                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+            )
 
         datasource.validation.is_valid = is_valid
+        datasource.root_key = resource
         datasource.validation.save(update_fields=["is_valid"])
+        datasource.save(update_fields=["root_key"])
 
         if is_valid and not datasource.available_tables and not datasource.analyzed_file:
             with TemporaryFile() as temp:
@@ -99,25 +139,24 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
     Task cleanup all data related to upload id
     """
     with internationalization(lang_code=lang_code):
-        if model not in getters:
-            logger.info(
-                "Model %s not registered in getters" % model,
-                extra={
-                    "MESSAGE_ID": "model_not_registered",
-                    "TASK": "cleanup_upload",
-                    "MODEL": model,
-                    "ID": object_id,
-                },
-            )
+        logger_context = {"DATASOURCE_ID": object_id, "TASK": "cleanup_upload"}
+        ds_model, _ = get_serializer_by_model(model, logger_context)
+        if not ds_model:
             return
-        datasource = getters[model]["model"].objects.get(id=object_id)
+        try:
+            datasource = ds_model.objects.get(id=object_id)
+        except ObjectDoesNotExist:
+            logger_context["MODEL"] = model
+            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            return
         if datasource.expired_at > timezone.now():
             logger.debug(
                 "Skip datasource cleanup %s, expired_at in future %s"
                 % (datasource.id, datasource.expired_at.isoformat())
             )
             return
-        shutil.rmtree(f"{settings.MEDIA_ROOT}{datasource.id}", ignore_errors=True)
+        datasource_path = os.path.dirname(datasource.file.path)
+        shutil.rmtree(datasource_path, ignore_errors=True)
         datasource.deleted = True
         datasource.save(update_fields=["deleted"])
         logger.debug("Remove all data from %s%s" % (settings.MEDIA_ROOT, datasource.id))
@@ -126,20 +165,12 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
 @celery_app.task
 def download_data_source(object_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
-        if model not in getters:
-            logger.info(
-                "Model %s not registered in getters" % model,
-                extra={
-                    "MESSAGE_ID": "model_not_registered",
-                    "TASK": "download_datasource",
-                    "MODEL": model,
-                    "ID": object_id,
-                },
-            )
+        logger_context = {"DATASOURCE_ID": object_id, "TASK": "download_data_source"}
+        ds_model, serializer = get_serializer_by_model(model, logger_context)
+        if not ds_model or not serializer:
             return
         try:
-            datasource = getters[model]["model"].objects.get(id=object_id)
-            serializer = getters[model]["serializer"]()
+            datasource = ds_model.objects.get(id=object_id)
 
             datasource.status = "downloading"
             datasource.save(update_fields=["status"])
@@ -272,6 +303,10 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 "Schedule validation for %s" % object_id,
                 extra={"MESSAGE_ID": "schedule_validation", "UPLOAD_ID": object_id},
             )
+        except ObjectDoesNotExist:
+            logger_context["MODEL"] = model
+            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            return
         except Exception as e:
             logger.exception(
                 "Error while download datasource %s" % object_id,
@@ -291,4 +326,74 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     "type": "task.download_data_source",
                     "datasource": serializer.to_representation(instance=datasource),
                 },
+            )
+
+
+@celery_app.task
+def flatten_data(flatten_id, model=None, lang_code="en"):
+    with internationalization(lang_code=lang_code):
+        if model not in getters:
+            extra = {
+                "MESSAGE_ID": "model_not_registered",
+                "MODEL": model,
+                "TASK": "flatten_data",
+                "FLATTEN_ID": flatten_id,
+            }
+            logger.info("Model %s not registered in getters" % model, extra=extra)
+            return
+        try:
+            serializer = FlattenSerializer()
+            flatten = Flatten.objects.get(id=flatten_id)
+            selection = flatten.dataselection_set.all()[0]
+            datasource = getattr(selection, f"{model.lower()}_set").all()[0]
+            flatten.status = "processing"
+            flatten.save(update_fields=["status"])
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
+            )
+            with open(datasource.analyzed_file.path) as fd:
+                analyzed_data = json.loads(fd.read())
+            spec = DataPreprocessor.restore(analyzed_data)
+            opt = get_flatten_options(selection)
+            options = FlattenOptions(**opt)
+            datasource_dir = os.path.dirname(datasource.file.path)
+            export_dir = f"{datasource_dir}/export"
+            if not os.path.exists(export_dir):
+                os.makedirs(export_dir)
+            formats = {"csv": False, "xlsx": False}
+            formats[flatten.export_format] = True
+            flattener = FileFlattener(export_dir, options, spec.tables, root_key=datasource.root_key, **formats)
+            for count in flattener.flatten_file(datasource.file.path):
+                async_to_sync(channel_layer.group_send)(
+                    f"datasource_{datasource.id}",
+                    {"type": "task.flatten", "flatten": {"id": str(flatten.id)}, "processed_rows": count},
+                )
+            if flatten.export_format == flatten.CSV:
+                target_file = f"{export_dir}/{datasource.id}.zip"
+                zip_files(export_dir, target_file, extension="csv")
+                with open(target_file, "rb") as fd:
+                    flatten.file = File(fd)
+                    flatten.status = "completed"
+                    flatten.save(update_fields=["file", "status"])
+                os.remove(fd.name)
+            else:
+                target_file = f"{export_dir}/result.xlsx"
+                with open(target_file, "rb") as fd:
+                    flatten.file = File(fd)
+                    flatten.status = "completed"
+                    flatten.save(update_fields=["file", "status"])
+                os.remove(fd.name)
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
+            )
+        except TypeError as e:
+            flatten.status = "failed"
+            flatten.error = str(e)
+            flatten.save(update_fields=["error", "status"])
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
             )

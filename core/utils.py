@@ -1,10 +1,13 @@
 import csv
 import json
+import os
 import re
 import uuid
 from contextlib import contextmanager
+from zipfile import ZipFile
 
 import ijson
+from django.conf import settings
 from django.utils.translation import activate, get_language
 from spoonbill.common import ROOT_TABLES
 
@@ -14,6 +17,14 @@ from core.column_headings import headings
 def instance_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/<id>/<filename>
     return "{0}/{1}.json".format(instance.id, uuid.uuid4().hex)
+
+
+def export_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/<id>/<filename>
+    selection = instance.dataselection_set.all()[0]
+    ds_set = selection.url_set.all() or selection.upload_set.all()
+    ds = ds_set[0]
+    return "{0}/{1}".format(ds.id, filename.split("/")[-1])
 
 
 def retrieve_available_tables(analyzed_data):
@@ -65,13 +76,13 @@ def get_column_headings(datasource, tables, table):
         "en_user_friendly": lambda x: x,
         "es_user_friendly": lambda x: x,
     }
-    column_headings = []
+    column_headings = {}
     if datasource.headings_type == "ocds":
         return column_headings
     columns = tables[table.name]["columns"].keys() if table.split else tables[table.name]["combined_columns"].keys()
     for col in columns:
         non_index_based = re.sub(r"\d", "*", col)
-        column_headings.append({col: heading_formatters[datasource.headings_type](headings.get(non_index_based, col))})
+        column_headings.update({col: heading_formatters[datasource.headings_type](headings.get(non_index_based, col))})
     return column_headings
 
 
@@ -117,3 +128,40 @@ def internationalization(lang_code="en"):
         yield
     finally:
         activate(current_lang)
+
+
+def zip_files(source_dir, zipfile, extension=None):
+    with ZipFile(zipfile, "w") as fzip:
+        for folder, _, files in os.walk(source_dir):
+            for file_ in files:
+                if extension and file_.endswith(extension):
+                    fzip.write(os.path.join(folder, file_), file_)
+
+
+def get_flatten_options(selection):
+    selections = {}
+    exclude_tables_list = []
+
+    for table in selection.tables.all():
+        if not table.include:
+            exclude_tables_list.append(table.name)
+            continue
+        selections[table.name] = {"split": table.split}
+        if table.column_headings:
+            selections[table.name]["headers"] = table.column_headings
+        if table.heading:
+            selections[table.name]["name"] = table.heading
+        if table.split:
+            for a_table in table.array_tables.all():
+                if not a_table.include:
+                    exclude_tables_list.append(a_table.name)
+                    continue
+                selections[a_table.name] = {"split": a_table.split}
+                if a_table.column_headings:
+                    selections[a_table.name]["headers"] = a_table.column_headings
+                if a_table.heading:
+                    selections[a_table.name]["name"] = a_table.heading
+    options = {"selection": selections}
+    if exclude_tables_list:
+        options["exclude"] = exclude_tables_list
+    return options
