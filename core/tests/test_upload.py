@@ -22,16 +22,17 @@ class TestUpload:
         assert response.status_code == 201
         upload = response.json()
         assert set(upload.keys()) == {
-            "available_tables",
             "analyzed_file",
-            "expired_at",
-            "id",
-            "deleted",
-            "validation",
+            "available_tables",
             "created_at",
+            "deleted",
+            "expired_at",
             "file",
-            "status",
+            "id",
+            "root_key",
             "selections",
+            "status",
+            "validation",
         }
         assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert upload["file"].startswith(settings.MEDIA_URL)

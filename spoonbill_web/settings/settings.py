@@ -181,10 +181,10 @@ CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER", "")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "")
 
-UPLOAD_TIMEDELTA = 1  # days
+JOB_FILES_TIMEOUT = 1  # days
 
 MEDIA_ROOT = "/tmp/"
-MEDIA_URL = "/files/"
+MEDIA_URL = "/files/" if not API_PREFIX else f"{API_PREFIX}files/"
 
 # Channels
 ASGI_APPLICATION = "spoonbill_web.asgi.application"

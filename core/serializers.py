@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import DataSelection, Table, Upload, Url, Validation
+from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
 
 
 class ArrayTablesSerializer(serializers.ModelSerializer):
@@ -18,8 +18,16 @@ class TablesSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "split", "array_tables", "include", "heading")
 
 
+class FlattenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flatten
+        read_only_fields = ("status", "error", "file")
+        fields = "__all__"
+
+
 class DataSelectionSerializer(serializers.ModelSerializer):
     tables = TablesSerializer(many=True)
+    flattens = FlattenSerializer(read_only=True, many=True)
 
     class Meta:
         model = DataSelection
@@ -48,6 +56,7 @@ class UploadSerializer(serializers.ModelSerializer):
             "status",
             "validation",
             "available_tables",
+            "root_key",
         )
         fields = "__all__"
 
@@ -70,5 +79,6 @@ class UrlSerializer(serializers.ModelSerializer):
             "file",
             "validation",
             "error",
+            "root_key",
         )
         fields = "__all__"
