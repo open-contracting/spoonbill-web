@@ -12,13 +12,13 @@
             </div>
         </div>
 
-        <div class="rounded-box select-data-option select-data-option--dark">
+        <div class="rounded-box select-data-option">
             <translate tag="h3" class="select-data-option__title">Select fields manually</translate>
             <translate tag="p" class="select-data-option__description">
                 Explore the dataset to see what fields are available. Download tables to fit your requirements.
             </translate>
             <div class="d-flex justify-end">
-                <app-button text color="gray-light" accent @click="selectOption('MANUAL')">
+                <app-button text color="darkest" accent @click="selectOption('MANUAL')">
                     <translate>Continue to select tables</translate>
                 </app-button>
             </div>
@@ -68,16 +68,6 @@ export default {
         &__description {
             padding-bottom: 18px;
             font-weight: 300;
-        }
-
-        &--dark {
-            background-color: map-get($colors, 'primary');
-            color: map-get($colors, 'gray-light');
-            border-color: map-get($colors, 'darkest');
-            .select-data-option__title {
-                color: map-get($colors, 'gray-light');
-                border-color: map-get($colors, 'accent');
-            }
         }
     }
 }

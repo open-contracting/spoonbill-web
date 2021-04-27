@@ -1,41 +1,50 @@
 <template>
     <div>
-        <div class="mb-4 d-flex options" :class="{ 'options--disabled': uploadDetails }">
-            <div
-                class="option"
-                :class="{ 'option--selected': option.value === uploadType }"
-                v-for="option in options"
-                :key="option.value"
-                @click="selectUploadType(option.value)"
-                v-ripple
-            >
-                {{ option.title }}
+        <template v-if="!isValid">
+            <div class="mb-4 d-flex options" :class="{ 'options--disabled': uploadDetails }">
+                <div
+                    class="option"
+                    :class="{ 'option--selected': option.value === uploadType }"
+                    v-for="option in options"
+                    :key="option.value"
+                    @click="selectUploadType(option.value)"
+                    v-ripple
+                >
+                    {{ option.title }}
+                </div>
             </div>
+
+            <div class="p-relative">
+                <div class="d-flex align-center justify-center loader" v-if="loader">
+                    <v-img max-width="40" src="@/assets/icons/loader.svg" />
+                </div>
+
+                <upload-file-loading-progress
+                    v-if="loading.value"
+                    :cancelable="loading.cancelable"
+                    :status="loading.status"
+                    :file-name="loading.fileName"
+                    :percent="downloadProgress"
+                    :color="loading.color"
+                    @cancel="cancelRequest"
+                />
+
+                <template v-else>
+                    <app-dropzone @input="sendFile" v-if="uploadType === 'upload'" />
+
+                    <upload-file-url-input @submit="sendUrl" v-else />
+                </template>
+            </div>
+
+            <translate tag="p" class="mt-4 text-light-14">
+                Note that large files may take a while to process. Please be patient.
+            </translate>
+        </template>
+
+        <div v-else>
+            <translate tag="h2" class="mt-10 page-title">Select your next action</translate>
+            <upload-file-options class="mt-6" @select="onOptionSelect" />
         </div>
-
-        <div class="p-relative">
-            <upload-file-loading-progress
-                v-if="loading.value"
-                :cancelable="loading.cancelable"
-                :status="loading.status"
-                :file-name="loading.fileName"
-                :percent="downloadProgress"
-                :color="loading.color"
-                @cancel="cancelRequest"
-            />
-
-            <template v-else>
-                <app-dropzone @input="sendFile" v-if="uploadType === 'upload'" />
-
-                <upload-file-url-input @submit="sendUrl" v-else />
-            </template>
-        </div>
-
-        <translate tag="p" v-if="!isValid" class="mt-4 text-light-14">
-            Note that large files may take a while to process. Please be patient.
-        </translate>
-
-        <upload-file-options class="mt-10" v-if="isValid" @select="onOptionSelect" />
     </div>
 </template>
 
@@ -70,6 +79,8 @@ export default {
             /** @type { 'upload' | 'url' }*/
             uploadType: UPLOAD_TYPES.UPLOAD,
             fileName: null,
+            loader: false,
+            isValid: false,
         };
     },
 
@@ -87,10 +98,6 @@ export default {
             ];
         },
 
-        isValid() {
-            return this.$store.state.uploadDetails?.validation?.is_valid;
-        },
-
         uploadDetails() {
             return this.$store.state.uploadDetails;
         },
@@ -105,6 +112,7 @@ export default {
             handler(v) {
                 if (!v) {
                     this.loading.value = false;
+                    this.isValid = false;
                     return;
                 }
                 const status = v.status;
@@ -176,10 +184,6 @@ export default {
             }
             if (upload.validation.is_valid === true) {
                 this.uploadType = UPLOAD_TYPES.UPLOAD;
-                this.$store.commit('openSnackbar', {
-                    color: 'moody-blue',
-                    text: this.$gettext('Now your file is analyzed and ready to use.'),
-                });
                 this.loading = {
                     value: true,
                     status: this.$gettext('Analysis has been completed'),
@@ -187,7 +191,15 @@ export default {
                     color: 'moody-blue',
                 };
                 this.$store.commit('setDownloadProgress', 100);
-                this.valid = true;
+                this.loader = true;
+                setTimeout(() => {
+                    this.isValid = true;
+                    this.loader = false;
+                    this.$store.commit('openSnackbar', {
+                        color: 'moody-blue',
+                        text: this.$gettext('Now your file is analyzed and ready to use.'),
+                    });
+                }, 1000);
                 return;
             }
             this.loading = {
@@ -307,6 +319,27 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    .v-image {
+        animation: spin linear 2s infinite;
+    }
+    & + .select-data-loading-progress {
+        opacity: 0.3;
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .options {
     .option {
         cursor: pointer;
