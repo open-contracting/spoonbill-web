@@ -337,7 +337,7 @@ class FlattenViewSet(viewsets.GenericViewSet):
             model = "Upload" if "upload_id" in kwargs else "Url"
             lang_code = get_language()
             flatten_data.delay(flatten.id, model=model, lang_code=lang_code)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -2,12 +2,13 @@ import json
 from datetime import timedelta
 
 import pytest
+from django.conf import settings
 from django.utils import timezone
 
-from core.models import Upload, Url
-from core.tasks import cleanup_upload, download_data_source, validate_data
+from core.models import DataSelection, Flatten, Upload, Url
+from core.tasks import cleanup_upload, download_data_source, flatten_data, validate_data
 
-from .utils import Response
+from .utils import Response, create_flatten
 
 
 @pytest.mark.django_db
@@ -170,3 +171,80 @@ class TestDownloadDataSource:
         with open(url_obj.file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())
+
+
+@pytest.mark.django_db
+class TestFlattenDataTask:
+    model = "Upload"
+    url_prefix = url_prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
+
+    def test_flatten_non_registered_model(self, client, upload_obj_validated, mocker):
+        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        model = "NewModel"
+        mocked_logger = mocker.patch("core.tasks.logger")
+        flatten_data(flatten_id, model=model)
+
+        mocked_logger.info.assert_called_once_with(
+            "Model %s not registered in getters" % model,
+            extra={
+                "MESSAGE_ID": "model_not_registered",
+                "MODEL": model,
+                "TASK": "flatten_data",
+                "FLATTEN_ID": flatten_id,
+            },
+        )
+
+    def test_flatten_not_found(self, mocker):
+        mocked_logger = mocker.patch("core.tasks.logger")
+        flatten_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        flatten_data(flatten_id, model=self.model)
+        mocked_logger.info.assert_called_once_with(
+            "Flatten %s for %s model not found" % (flatten_id, self.model),
+            extra={
+                "MESSAGE_ID": "flatten_not_found",
+                "MODEL": self.model,
+                "FLATTEN_ID": flatten_id,
+                "TASK": "flatten_data",
+            },
+        )
+
+    def test_flatten_handle_type_error(self, client, upload_obj_validated, mocker):
+        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        mocked_get_options = mocker.patch("core.tasks.get_flatten_options")
+        exc_message = "TypeError message"
+        mocked_get_options.side_effect = TypeError(exc_message)
+        flatten_data(flatten_id, model=self.model)
+
+        flatten = Flatten.objects.get(id=flatten_id)
+        assert flatten.status == Flatten.FAILED
+        assert flatten.error == exc_message
+
+    def test_flatten_xlsx_successful(self, client, upload_obj_validated):
+        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        flatten_data(flatten_id, model=self.model)
+
+        flatten = Flatten.objects.get(id=flatten_id)
+        assert flatten.status == Flatten.COMPLETED
+        assert flatten.file.path.startswith(settings.MEDIA_ROOT)
+        assert flatten.file.path.endswith(Flatten.XLSX)
+
+    def test_flatten_csv_successful(self, client, upload_obj_validated):
+        selection_id, flatten_id = create_flatten(
+            client, upload_obj_validated, prefix=self.url_prefix, export_format=Flatten.CSV
+        )
+        selection = DataSelection.objects.get(id=selection_id)
+        table1 = selection.tables.all()[0]
+        table1.split = True
+        table1.heading = "New Table Name"
+        table1.save(update_fields=["split", "heading"])
+
+        table2 = selection.tables.all()[1]
+        table2.include = False
+        table2.save(update_fields=["include"])
+
+        flatten_data(flatten_id, model=self.model)
+
+        flatten = Flatten.objects.get(id=flatten_id)
+        assert flatten.status == Flatten.COMPLETED
+        assert flatten.file.path.startswith(settings.MEDIA_ROOT)
+        assert flatten.file.path.endswith(".zip")
