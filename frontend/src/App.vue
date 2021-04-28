@@ -69,6 +69,7 @@ export default {
                         this.$store.dispatch('setupConnection', {
                             id: v.id,
                             type: v.type,
+                            onOpen: () => this.$store.dispatch('fetchUploadDetails', { id: v.id, type: v.type }),
                         });
                 } else {
                     this.$store.dispatch('closeConnection');
@@ -90,14 +91,28 @@ export default {
             });
             const uploadDetails = this.$store.state.uploadDetails;
             if (!uploadDetails) {
-                this.$router.push('/upload-file').catch(() => {});
+                this.$router
+                    .push({
+                        name: 'upload file',
+                        params: {
+                            forced: 'true',
+                        },
+                    })
+                    .catch(() => {});
                 this.loading = false;
                 return;
             }
             this.loading = false;
             this.$store.commit('increaseNumberOfUploads');
         } else {
-            this.$router.push('/upload-file').catch(() => {});
+            this.$router
+                .push({
+                    name: 'upload file',
+                    params: {
+                        forced: 'true',
+                    },
+                })
+                .catch(() => {});
         }
     },
 };

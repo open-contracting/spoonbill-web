@@ -46,6 +46,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+    if (to.params.forced) {
+        next();
+        return;
+    }
     const fromIndex = routes.findIndex((route) => route.name === from.name);
     const toIndex = routes.findIndex((route) => route.name === to.name);
     if (fromIndex > -1 && fromIndex > toIndex) {

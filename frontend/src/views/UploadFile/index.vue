@@ -1,6 +1,6 @@
 <template>
     <v-row>
-        <v-col cols="12" md="8" xl="8">
+        <v-col cols="12" md="8">
             <translate tag="h2" class="page-title">Select a JSON file to flatten</translate>
 
             <translate tag="p" class="page-description">

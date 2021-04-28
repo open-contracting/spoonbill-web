@@ -9,6 +9,27 @@ body .theme--light.v-application {
     line-height: 1.3;
 }
 
+.spin-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    .v-image {
+        animation: spin linear 2s infinite;
+    }
+    & + .select-data-loading-progress {
+        opacity: 0.3;
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 @media (min-width: 1904px) {
     .container:not(.full-width) {
         max-width: 1280px;

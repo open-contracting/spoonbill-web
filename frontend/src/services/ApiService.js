@@ -111,4 +111,17 @@ export default {
             headings_type: value,
         });
     },
+
+    /**
+     * Create flatten
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     * @param { 'csv' | 'xlsx' } format
+     */
+    createFlatten(type, uploadId, selectionsId, format) {
+        return axios.post(`${type}/${uploadId}/selections/${selectionsId}/flattens/`, {
+            export_format: format,
+        });
+    },
 };

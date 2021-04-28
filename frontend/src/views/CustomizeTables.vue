@@ -7,7 +7,7 @@
                 </v-tab>
             </v-tabs>
         </v-col>
-        <v-col class="pt-7" cols="12" md="8" xl="8">
+        <v-col class="pt-7" cols="12" md="8">
             <translate tag="h2" class="page-title">Customize Tables</translate>
         </v-col>
         <v-col cols="12">
@@ -24,12 +24,14 @@
 
 <script>
 import CustomizeTablesTable from '@/components/CustomizeTables/CustomizeTablesTable';
-import getQueryParam from '@/utils/getQueryParam';
+import selectionsMixin from '@/mixins/selectionsMixin';
 
 export default {
     name: 'CustomizeTables',
 
     components: { CustomizeTablesTable },
+
+    mixins: [selectionsMixin],
 
     computed: {
         currentTableIndex() {
@@ -38,25 +40,12 @@ export default {
         currentTable() {
             return this.selections?.tables[this.currentTableIndex];
         },
-        selections() {
-            return this.$store.state.selections;
-        },
     },
 
     async created() {
-        const selectionsId = getQueryParam('selections');
-        if (selectionsId && !this.selections) {
-            await this.$store.dispatch('fetchSelections', selectionsId);
-            if (!this.selections) {
-                this.$router.push({
-                    path: '/upload-file',
-                    query: this.$route.query,
-                });
-                return;
-            }
-        }
+        await this.getSelections();
         if (!this.$route.params.id) {
-            this.$router.push({
+            await this.$router.push({
                 path: '/customize-tables/' + this.$store.state.selections.tables[0].id,
                 query: this.$route.query,
             });

@@ -83,12 +83,6 @@ export default {
                     const parsed = await Papa.parse(data[0].preview, {
                         skipEmptyLines: true,
                     });
-                    /* istanbul ignore if */
-                    if (preview.column_headings) {
-                        preview.column_headings = preview.column_headings.reduce((acc, item) => {
-                            return { ...acc, ...item };
-                        }, {});
-                    }
                     return {
                         id: preview.id,
                         name: preview.name,
