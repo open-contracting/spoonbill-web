@@ -161,6 +161,8 @@ USE_L10N = True
 USE_TZ = True
 
 
+LOCALE_PATHS = [f"{BASE_DIR}/core/locale", f"{BASE_DIR}/spoonbill_web/locale"]
+
 # Routes
 API_PREFIX = os.getenv("API_PREFIX", "")
 
