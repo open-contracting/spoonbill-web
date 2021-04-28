@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import shutil
+from copy import deepcopy
 from datetime import timedelta
 from tempfile import TemporaryFile
 
@@ -332,6 +333,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 @celery_app.task
 def flatten_data(flatten_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
+        logger_context = {"FLATTEN_ID": flatten_id, "TASK": "flatten_data"}
         if model not in getters:
             extra = {
                 "MESSAGE_ID": "model_not_registered",
@@ -389,9 +391,21 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
                 f"datasource_{datasource.id}",
                 {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
             )
+        except ObjectDoesNotExist:
+            extra = deepcopy(logger_context)
+            extra["MODEL"] = model
+            extra["MESSAGE_ID"] = "flatten_not_found"
+            logger.info("Flatten %s for %s model not found" % (flatten_id, model), extra=extra)
+            return
         except TypeError as e:
+            error_message = str(e)
+            extra = deepcopy(logger_context)
+            extra["MODEL"] = model
+            extra["MESSAGE_ID"] = "flatten_failed"
+            extra["ERROR_MESSAGE"] = error_message
+            logger.info("Flatten %s for %s datasource %s failed" % (flatten_id, model, datasource.id), extra=extra)
             flatten.status = "failed"
-            flatten.error = str(e)
+            flatten.error = error_message
             flatten.save(update_fields=["error", "status"])
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",

@@ -134,7 +134,7 @@ class TestUrl:
         response = client.get(
             f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 3
+        assert len(response.json()) == 2
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
 
@@ -167,6 +167,6 @@ class TestUrl:
         response = client.get(
             f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 2
+        assert len(response.json()) == 1
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}

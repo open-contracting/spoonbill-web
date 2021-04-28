@@ -3,9 +3,9 @@ import shutil
 import pytest
 from django.conf import settings
 
-from core.models import Upload
+from core.models import Flatten, Upload
 from core.serializers import UploadSerializer
-from core.tests.utils import create_data_selection, get_data_selections
+from core.tests.utils import create_data_selection, create_flatten, get_data_selections
 
 
 @pytest.mark.django_db
@@ -137,7 +137,7 @@ class TestUpload:
         response = client.get(
             f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 3
+        assert len(response.json()) == 2
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
 
@@ -170,6 +170,134 @@ class TestUpload:
         response = client.get(
             f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 2
+        assert len(response.json()) == 1
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
+
+    def test_flatten_create_successful(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
+        file_formats = ("xlsx", "csv")
+        for file_format in file_formats:
+            response = client.post(
+                f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/",
+                content_type="application/json",
+                data={"export_format": file_format},
+            )
+            assert response.status_code == 201
+            flatten_id = response.json()["id"]
+            response = client.get(
+                f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/{flatten_id}/",
+            )
+            flatten_data = response.json()
+            assert set(flatten_data.keys()) == {"id", "export_format", "file", "status", "error"}
+            assert flatten_data["export_format"] == file_format
+            assert flatten_data["file"] is None
+            assert flatten_data["status"] == "scheduled"
+            assert flatten_data["error"] == ""
+
+    def test_flatten_create_duplicate_fail(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
+        file_format = "xlsx"
+        response = client.post(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/",
+            content_type="application/json",
+            data={"export_format": file_format},
+        )
+        assert response.status_code == 201
+        flatten_data = response.json()
+        assert set(flatten_data.keys()) == {"id", "export_format", "file", "status", "error"}
+        assert flatten_data["export_format"] == file_format
+        assert flatten_data["file"] is None
+        assert flatten_data["status"] == "scheduled"
+        assert flatten_data["error"] == ""
+
+        response = client.post(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/",
+            content_type="application/json",
+            data={"export_format": file_format},
+        )
+        response_data = response.json()
+        assert response.status_code == 400
+        assert response_data == {"detail": "Flatten request for this type already exists."}
+
+    def test_flatten_create_fail(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
+        response = client.post(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/",
+            content_type="application/json",
+            data={"export_format": "file_format"},
+        )
+        assert response.status_code == 400
+        assert response.json() == {"detail": {"export_format": ['"file_format" is not a valid choice.']}}
+
+    def test_flatten_update_fail(self, client, upload_obj_validated):
+        selection_id, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        response = client.patch(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection_id}/flattens/{flatten_id}/",
+            content_type="application/json",
+            data={"status": "hurry-up"},
+        )
+        assert response.status_code == 400
+        assert response.json() == {"detail": f"You can't reschedule flatten in ({Flatten.SCHEDULED}) status"}
+
+        # set flatten terminated status
+        flatten = Flatten.objects.get(id=flatten_id)
+        flatten.status = Flatten.COMPLETED
+        flatten.save(update_fields=["status"])
+
+        response = client.patch(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection_id}/flattens/{flatten_id}/",
+            content_type="application/json",
+            data={"status": Flatten.PROCESSING},
+        )
+        assert response.status_code == 400
+        assert response.json() == {"detail": f"You can set status to {Flatten.SCHEDULED} only"}
+
+        response = client.patch(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection_id}/flattens/{flatten_id}/",
+            content_type="application/json",
+            data={"status": Flatten.PROCESSING, "export_format": "file_format"},
+        )
+        assert response.status_code == 400
+        assert response.json() == {"detail": {"export_format": ['"file_format" is not a valid choice.']}}
+
+    def test_list_flattens(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
+        selection_id = selection["id"]
+        url = f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection_id}/flattens/"
+        response = client.get(url)
+        assert response.status_code == 200
+        assert response.json() == []
+
+        _selection_id, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix, selection_id)
+        assert selection_id == _selection_id
+        response = client.get(url)
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 1
+        assert data[0]["id"] == flatten_id
+
+    def test_flatten_update_successful(self, client, upload_obj_validated):
+        selection_id, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        flatten = Flatten.objects.get(id=flatten_id)
+        flatten.status = Flatten.COMPLETED
+        flatten.save(update_fields=["status"])
+
+        response = client.get(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection_id}/flattens/{flatten_id}/"
+        )
+        assert response.status_code == 200
+        assert response.json()["status"] == Flatten.COMPLETED
+
+        response = client.patch(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection_id}/flattens/{flatten_id}/",
+            content_type="application/json",
+            data={"status": Flatten.SCHEDULED},
+        )
+        assert response.status_code == 200
+        response = client.get(
+            f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection_id}/flattens/{flatten_id}/"
+        )
+        assert response.status_code == 200
+        assert response.json()["status"] == Flatten.SCHEDULED

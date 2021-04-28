@@ -70,3 +70,14 @@ def get_data_selections(client, parent, prefix=None):
     assert response.status_code == 200
     json_resp = response.json()
     assert json_resp == json_data
+
+
+def create_flatten(client, parent, prefix=None, selection_id=None, export_format="xlsx"):
+    if not selection_id:
+        selection = create_data_selection(client, parent, prefix)
+        selection_id = selection["id"]
+
+    url = f"{prefix}{parent.id}/selections/{selection_id}/flattens/"
+    response = client.post(url, content_type="application/json", data={"export_format": export_format})
+    assert response.status_code == 201
+    return selection_id, response.json()["id"]
