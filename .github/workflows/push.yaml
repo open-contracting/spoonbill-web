@@ -40,9 +40,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-${{ secrets.CACHE_NAME }}-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-${{ secrets.CACHE_NAME }}-
       - name: Install requirements
         run: pip install -r requirements_dev.txt
       - name: Run pre-commit
