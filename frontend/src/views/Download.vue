@@ -151,7 +151,7 @@ export default {
          */
         async download(format) {
             const flatten = this.flattens.find((f) => f.export_format === format);
-            window.open(flatten.file);
+            window.open(process.env.VUE_APP_API_URL + flatten.file);
         },
     },
 };
