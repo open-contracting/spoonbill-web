@@ -113,6 +113,7 @@ export default {
 
         aboutThisTable() {
             const name = this.table.name;
+            /* istanbul ignore next */
             switch (name) {
                 case 'awards':
                     return [

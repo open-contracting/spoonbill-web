@@ -87,6 +87,15 @@ describe('CustomizeTablesTable.vue', () => {
             });
             expect(wrapper.vm.availableData.length).toBe(0);
             expect(wrapper.vm.arrays.length).toBe(0);
+
+            await wrapper.setProps({
+                table: {
+                    id: 'parties-table',
+                    name: 'parties',
+                },
+            });
+            expect(wrapper.vm.availableData.length).toBe(3);
+            expect(wrapper.vm.arrays.length).toBe(2);
         });
 
         test("'onSplitSwitchChange' changes split status of table", async () => {

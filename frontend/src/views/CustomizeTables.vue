@@ -101,7 +101,7 @@ export default {
                 });
             } else {
                 this.$router.push({
-                    path: '/select-data/' + this.selections.tables[this.currentTableIndex - 1].id,
+                    path: '/select-data',
                     query: this.$route.query,
                 });
             }

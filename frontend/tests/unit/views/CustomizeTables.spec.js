@@ -21,6 +21,7 @@ describe('CustomizeTables.vue', () => {
         /** @type { Wrapper<Vue> }*/
         let wrapper;
         beforeEach(() => {
+            router.push = new VueRouter().push;
             store.commit('setUploadDetails', {
                 id: 'test id',
                 type: UPLOAD_TYPES.UPLOAD,
@@ -42,6 +43,12 @@ describe('CustomizeTables.vue', () => {
             expect(wrapper.vm.currentTableIndex).toBe(1);
             wrapper.vm.onBackClick();
             expect(wrapper.vm.currentTableIndex).toBe(0);
+            router.push = jest.fn();
+            wrapper.vm.onBackClick();
+            expect(router.push).toBeCalledWith({
+                path: '/select-data',
+                query: {},
+            });
         });
 
         test("'onContinueClick' changes include status of current table to true", async () => {
