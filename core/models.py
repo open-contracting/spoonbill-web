@@ -75,8 +75,8 @@ class Url(models.Model):
         (FAILED, _("Failed")),
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    url = models.URLField()
-    analyzed_data_url = models.URLField(blank=True, null=True)
+    url = models.URLField(max_length=2048)
+    analyzed_data_url = models.URLField(max_length=2048, blank=True, null=True)
     analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
