@@ -28,6 +28,9 @@ class Validation(models.Model):
         verbose_name = _("Validation")
         verbose_name_plural = _("Validations")
 
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.id}"
+
 
 class Upload(models.Model):
     """
@@ -56,6 +59,9 @@ class Upload(models.Model):
         db_table = "uploads"
         verbose_name = _("Upload")
         verbose_name_plural = _("Uploads")
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.id}"
 
 
 class Url(models.Model):
@@ -95,6 +101,9 @@ class Url(models.Model):
         verbose_name = _("Url")
         verbose_name_plural = _("Urls")
 
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.id}"
+
 
 class DataSelection(models.Model):
 
@@ -124,6 +133,9 @@ class DataSelection(models.Model):
     def flatten_types(self):
         return [f.export_format for f in self.flattens.all()]
 
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.id}"
+
 
 class Table(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
@@ -133,6 +145,9 @@ class Table(models.Model):
     heading = models.CharField(max_length=120, blank=True, null=True)
     array_tables = models.ManyToManyField("self", blank=True)
     column_headings = models.JSONField(default=dict, encoder=DjangoJSONEncoder, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.id}"
 
 
 class Flatten(models.Model):
@@ -156,3 +171,6 @@ class Flatten(models.Model):
     file = models.FileField(upload_to=export_directory_path, blank=True, null=True, storage=fs)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=SCHEDULED)
     error = models.CharField(max_length=300)
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.id}"

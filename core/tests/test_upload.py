@@ -3,7 +3,7 @@ import shutil
 import pytest
 from django.conf import settings
 
-from core.models import Flatten, Upload
+from core.models import DataSelection, Flatten, Upload
 from core.serializers import UploadSerializer
 from core.tests.utils import create_data_selection, create_flatten, get_data_selections
 
@@ -137,7 +137,7 @@ class TestUpload:
         response = client.get(
             f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 2
+        assert len(response.json()) == 4
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
 
@@ -170,7 +170,7 @@ class TestUpload:
         response = client.get(
             f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 1
+        assert len(response.json()) == 3
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
 

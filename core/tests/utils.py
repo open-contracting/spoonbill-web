@@ -38,7 +38,7 @@ class Response:
         return self.reasons.get(str(self.status_code))
 
 
-data_selection = {"tables": [{"name": "parties"}, {"name": "awards"}]}
+data_selection = {"tables": [{"name": "tenders"}, {"name": "parties"}]}
 
 
 def create_data_selection(client, parent, prefix=None):

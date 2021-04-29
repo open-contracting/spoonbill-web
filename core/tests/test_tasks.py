@@ -11,8 +11,12 @@ from core.tasks import cleanup_upload, download_data_source, flatten_data, valid
 from .utils import Response, create_flatten
 
 
+class BaseUploadTestSuite:
+    model = "Upload"
+
+
 @pytest.mark.django_db
-class TestValidateDataTask:
+class TestValidateDataTask(BaseUploadTestSuite):
     def test_upload_success(self, upload_obj):
         upload_obj = Upload.objects.get(id=upload_obj.id)
         assert upload_obj.validation.is_valid is None
@@ -65,16 +69,31 @@ class TestValidateDataTask:
         upload_obj = Upload.objects.get(id=upload_obj.id)
         assert not upload_obj.validation.is_valid
 
+    def test_not_found(self, mocker):
+        mocked_logger = mocker.patch("core.tasks.logger")
+        obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        model = "Upload"
+        validate_data(obj_id, model=model)
+        mocked_logger.info.assert_called_once_with(
+            "Datasource %s %s not found" % (self.model, obj_id),
+            extra={
+                "MESSAGE_ID": "datasource_not_found",
+                "MODEL": model,
+                "DATASOURCE_ID": obj_id,
+                "TASK": "validate_data",
+            },
+        )
+
 
 @pytest.mark.django_db
-class TestCleanupUploadTask:
+class TestCleanupUploadTask(BaseUploadTestSuite):
     def test_success(self, upload_obj):
         expired_at = timezone.now()
         upload_obj.expired_at = expired_at
         upload_obj.save(update_fields=["expired_at"])
         assert not upload_obj.deleted
 
-        cleanup_upload(upload_obj.id, model="Upload")
+        cleanup_upload(upload_obj.id, model=self.model)
         upload_obj = Upload.objects.get(id=upload_obj.id)
         assert upload_obj.deleted
 
@@ -84,7 +103,7 @@ class TestCleanupUploadTask:
         upload_obj.save(update_fields=["expired_at"])
         assert not upload_obj.deleted
 
-        cleanup_upload(upload_obj.id, model="Upload")
+        cleanup_upload(upload_obj.id, model=self.model)
         upload_obj = Upload.objects.get(id=upload_obj.id)
         assert not upload_obj.deleted
 
@@ -93,15 +112,31 @@ class TestCleanupUploadTask:
         cleanup_upload(upload_obj.id, model="SomeNew")
         assert shutil.rmtree.call_count == 0
 
+    def test_cleanup_not_found(self, mocker):
+        mocked_logger = mocker.patch("core.tasks.logger")
+        obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        cleanup_upload(obj_id, model=self.model)
+        mocked_logger.info.assert_called_once_with(
+            "Datasource %s %s not found" % (self.model, obj_id),
+            extra={
+                "MESSAGE_ID": "datasource_not_found",
+                "MODEL": self.model,
+                "DATASOURCE_ID": obj_id,
+                "TASK": "cleanup_upload",
+            },
+        )
+
 
 @pytest.mark.django_db
 class TestDownloadDataSource:
+    model = "Url"
+
     def test_success(self, mocked_request, url_obj, dataset):
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.status == "queued.download"
         assert not url_obj.downloaded
 
-        download_data_source(url_obj.id, model="Url")
+        download_data_source(url_obj.id, model=self.model)
         url_obj = Url.objects.get(id=url_obj.id)
 
         assert url_obj.status == "queued.validation"
@@ -128,7 +163,7 @@ class TestDownloadDataSource:
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.status == "queued.download"
         assert not url_obj.downloaded
-        download_data_source(url_obj.id, model="Url")
+        download_data_source(url_obj.id, model=self.model)
 
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.status == "failed"
@@ -143,7 +178,7 @@ class TestDownloadDataSource:
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.status == "queued.download"
         assert not url_obj.downloaded
-        download_data_source(url_obj.id, model="Url")
+        download_data_source(url_obj.id, model=self.model)
 
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.status == "failed"
@@ -161,7 +196,7 @@ class TestDownloadDataSource:
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.status == "queued.download"
         assert not url_obj.downloaded
-        download_data_source(url_obj.id, model="Url")
+        download_data_source(url_obj.id, model=self.model)
 
         url_obj = Url.objects.get(id=url_obj.id)
         assert url_obj.status == "failed"
@@ -171,6 +206,20 @@ class TestDownloadDataSource:
         with open(url_obj.file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())
+
+    def test_not_found(self, mocker):
+        mocked_logger = mocker.patch("core.tasks.logger")
+        obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        download_data_source(obj_id, model=self.model)
+        mocked_logger.info.assert_called_once_with(
+            "Datasource %s %s not found" % (self.model, obj_id),
+            extra={
+                "MESSAGE_ID": "datasource_not_found",
+                "MODEL": self.model,
+                "DATASOURCE_ID": obj_id,
+                "TASK": "download_data_source",
+            },
+        )
 
 
 @pytest.mark.django_db
