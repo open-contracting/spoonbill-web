@@ -34,6 +34,7 @@ class TestUrl:
             "root_key",
             "selections",
             "status",
+            "unavailable_tables",
             "url",
             "validation",
         }

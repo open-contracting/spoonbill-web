@@ -8,9 +8,8 @@ from contextlib import contextmanager
 from zipfile import ZipFile
 
 import ijson
-from django.conf import settings
 from django.utils.translation import activate, get_language
-from spoonbill.common import ROOT_TABLES
+from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 
 from core.column_headings import headings
 
@@ -30,34 +29,35 @@ def export_directory_path(instance, filename):
     return "{0}/{1}".format(ds.id, filename.split("/")[-1])
 
 
-def retrieve_available_tables(analyzed_data):
+def retrieve_tables(analyzed_data):
+    table_keys = list(ROOT_TABLES.keys()) + list(COMBINED_TABLES.keys())
     tables = analyzed_data.get("tables", {})
     available_tables = []
-    for key in ROOT_TABLES:
-        if key not in tables:
+    unavailable_tables = []
+    for key in table_keys:
+        table = tables.get(key, {})
+        if table.get("total_rows", 0) == 0:
+            unavailable_tables.append(key)
             continue
-        root_table = tables.get(key)
-        if root_table.get("total_rows", 0) == 0:
-            continue
-        arrays_count = len([v for v in root_table.get("arrays", {}).values() if v > 0])
+        arrays_count = len([v for v in table.get("arrays", {}).values() if v > 0])
         available_table = {
-            "name": root_table.get("name"),
-            "rows": root_table.get("total_rows"),
+            "name": table.get("name"),
+            "rows": table.get("total_rows"),
             "arrays": {"count": arrays_count},
             "available_data": {
                 "columns": {
-                    "additional": list(root_table.get("additional_columns", {}).keys()),
-                    "total": len(root_table.get("columns", {}).keys()),
+                    "additional": list(table.get("additional_columns", {}).keys()),
+                    "total": len(table.get("columns", {}).keys()),
                 }
             },
         }
         available_cols = 0
-        for col in root_table.get("columns", {}).values():
+        for col in table.get("columns", {}).values():
             if col.get("hits", 0) > 0:
                 available_cols += 1
         available_table["available_data"]["columns"]["available"] = available_cols
         available_tables.append(available_table)
-    return available_tables
+    return available_tables, unavailable_tables
 
 
 def store_preview_csv(columns_key, rows_key, table_data, preview_path):
