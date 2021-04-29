@@ -28,7 +28,7 @@ from core.utils import (
     internationalization,
     is_record_package,
     is_release_package,
-    retrieve_available_tables,
+    retrieve_tables,
     zip_files,
 )
 from spoonbill_web.celery import app as celery_app
@@ -121,13 +121,17 @@ def validate_data(object_id, model=None, lang_code="en"):
                 temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
                 temp.seek(0)
                 datasource.analyzed_file = File(temp)
-                datasource.available_tables = retrieve_available_tables(analyzed_data)
-                datasource.save(update_fields=["analyzed_file", "available_tables"])
+                available_tables, unavailable_tables = retrieve_tables(analyzed_data)
+                datasource.available_tables = available_tables
+                datasource.unavailable_tables = unavailable_tables
+                datasource.save(update_fields=["analyzed_file", "available_tables", "unavailable_tables"])
         elif is_valid and datasource.analyzed_file:
             with open(datasource.analyzed_file.path) as f:
                 data = json.loads(f.read())
-                datasource.available_tables = retrieve_available_tables(data)
-                datasource.save(update_fields=["available_tables"])
+                available_tables, unavailable_tables = retrieve_tables(data)
+                datasource.available_tables = available_tables
+                datasource.unavailable_tables = unavailable_tables
+                datasource.save(update_fields=["available_tables", "unavailable_tables"])
 
         async_to_sync(channel_layer.group_send)(
             f"datasource_{datasource.id}",

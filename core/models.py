@@ -53,6 +53,7 @@ class Upload(models.Model):
     deleted = models.BooleanField(default=False)
     selections = models.ManyToManyField("DataSelection", blank=True)
     available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
+    unavailable_tables = ArrayField(models.CharField(max_length=50), default=list)
     root_key = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
@@ -94,6 +95,7 @@ class Url(models.Model):
     error = models.TextField(blank=True, null=True)
     selections = models.ManyToManyField("DataSelection", blank=True)
     available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
+    unavailable_tables = ArrayField(models.CharField(max_length=50), default=list)
     root_key = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:

@@ -32,6 +32,7 @@ class TestUpload:
             "root_key",
             "selections",
             "status",
+            "unavailable_tables",
             "validation",
         }
         assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
