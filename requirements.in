@@ -16,7 +16,7 @@ redis
 requests
 sentry-sdk
 sphinx
+sphinx_rtd_theme
 sqlalchemy
 transifex-client
--e git+https://github.com/open-contracting/standard_theme.git@open_contracting#egg=standard_theme
 -e git+https://github.com/open-contracting/spoonbill.git#egg=spoonbill
