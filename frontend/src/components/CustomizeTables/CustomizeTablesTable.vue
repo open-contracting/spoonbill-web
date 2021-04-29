@@ -28,7 +28,7 @@
         </v-row>
         <v-switch
             v-model="isSplit"
-            v-if="canBeSplit"
+            v-if="canBeSplit && table.include"
             inset
             hide-details
             color="darkest"
@@ -36,7 +36,7 @@
             :label="isSplit ? $gettext('Keep arrays in main table') : $gettext('Split arrays into separate tables')"
         ></v-switch>
         <v-skeleton-loader class="mt-8" v-if="loading" type="table-tbody"></v-skeleton-loader>
-        <div class="mt-8 tables container--full-width">
+        <div class="mt-8 tables container--full-width" v-if="table.include">
             <app-table
                 v-for="(table, idx) in tables"
                 :key="table.name"
@@ -51,6 +51,15 @@
                 @restore="changeIncludeStatus(table, true)"
             />
         </div>
+        <app-table
+            class="mt-8"
+            v-else-if="tables[0]"
+            :headers="tables[0].headers"
+            :name="tables[0].heading || tables[0].name"
+            :data="tables[0].data"
+            :include="false"
+            highlight-name
+        />
         <div class="mt-10 d-flex">
             <v-btn class="mr-6" color="gray-light" x-large @click="$emit('back')" v-if="isGoBackAvailable">
                 <translate>Go back</translate>
@@ -344,6 +353,18 @@ export default {
          */
         async changeIncludeStatus(table, value) {
             try {
+                let confirmed = true;
+                if (value === false) {
+                    confirmed = await this.$root.openConfirmDialog({
+                        title: this.$gettext('Are you sure?'),
+                        content: this.$gettext(
+                            'Removing this table will mean it will not be included in flattened Excel file'
+                        ),
+                        submitBtnText: this.$gettext('Yes, remove table and continue'),
+                        icon: require('@/assets/icons/remove.svg'),
+                    });
+                }
+                if (!confirmed) return;
                 await ApiService.changeIncludeStatus(
                     this.$store.state.uploadDetails.type + 's',
                     this.$store.state.uploadDetails.id,
@@ -362,15 +383,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.table {
-    &__name {
-        text-transform: capitalize;
-        font-size: 20px;
-        color: map-get($colors, 'primary');
-    }
-    .block-content {
-        font-weight: 300;
-    }
+.table-name {
+    color: map-get($colors, 'moody-blue');
+    font-weight: 700;
 }
 .tables {
     display: flex;

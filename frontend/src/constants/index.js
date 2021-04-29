@@ -25,4 +25,5 @@ export const EXPORT_FORMATS = {
 export const FLATTEN_STATUSES = {
     PROCESSING: 'processing',
     COMPLETED: 'completed',
+    FAILED: 'failed',
 };

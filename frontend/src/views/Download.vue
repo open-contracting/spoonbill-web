@@ -105,7 +105,8 @@ export default {
 
     watch: {
         flattens(v) {
-            const allCompleted = v && v.every((flatten) => flatten.status === FLATTEN_STATUSES.COMPLETED);
+            const allCompleted =
+                v && v.every((flatten) => [FLATTEN_STATUSES.COMPLETED, FLATTEN_STATUSES.FAILED].includes(flatten.status));
             if (allCompleted) {
                 this.$store.dispatch('closeConnection');
             }

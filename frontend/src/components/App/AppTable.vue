@@ -2,7 +2,7 @@
     <div class="app-table">
         <div class="d-flex align-center" :class="allowActions ? 'mb-1' : 'mb-3 mt-1'">
             <p class="mr-3 fw-300 mb-0">
-                Table:
+                <translate>Table</translate>:
                 <span :class="{ 'app-table__name--highlighted': highlightName }">
                     {{ name }}
                 </span>

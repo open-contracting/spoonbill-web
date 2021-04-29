@@ -153,10 +153,15 @@ export default {
     created() {
         if (!this.$store.state.uploadDetails) {
             this.$router.push('/upload-file');
+            return;
         }
-        const allTables = this.$store.state.uploadDetails?.available_tables || [];
-        this.availableTables = allTables.filter((table) => table.available_data);
-        this.unavailableTables = allTables.filter((table) => !table.available_data);
+        this.availableTables = [...this.$store.state.uploadDetails?.available_tables] || [];
+        this.unavailableTables =
+            this.$store.state.uploadDetails?.unavailable_tables?.map((table) => {
+                return {
+                    name: table,
+                };
+            }) || [];
     },
 
     methods: {

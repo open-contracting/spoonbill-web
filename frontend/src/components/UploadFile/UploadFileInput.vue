@@ -208,6 +208,7 @@ export default {
                 fileName: this.fileName || this.uploadDetails.id,
                 color: 'moody-blue',
             };
+            this.$store.commit('setDownloadProgress', -1);
         },
 
         /**

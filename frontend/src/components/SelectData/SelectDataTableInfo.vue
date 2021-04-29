@@ -1,6 +1,10 @@
 <template>
-    <div class="px-1 table-info" :class="{ 'table-info--selected': selected }" v-on="$listeners">
-        <v-icon color="error" v-if="unavailable">mdi-close</v-icon>
+    <div
+        class="px-1 table-info"
+        :class="{ 'table-info--selected': selected, 'table-info--unavailable': unavailable }"
+        v-on="$listeners"
+    >
+        <v-icon class="pb-1" color="error" v-if="unavailable">mdi-close</v-icon>
         <span class="table-info__name">
             {{ table.name }}
         </span>
@@ -58,6 +62,9 @@ export default {
     }
     &--selected {
         background-color: map-get($colors, 'accent');
+    }
+    &--unavailable {
+        cursor: default;
     }
 }
 </style>
