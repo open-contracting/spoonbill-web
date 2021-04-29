@@ -142,7 +142,7 @@ class Table(models.Model):
     name = models.CharField(max_length=120)
     split = models.BooleanField(default=False)
     include = models.BooleanField(default=True)
-    heading = models.CharField(max_length=120, blank=True, null=True)
+    heading = models.CharField(max_length=31, blank=True, null=True)
     array_tables = models.ManyToManyField("self", blank=True)
     column_headings = models.JSONField(default=dict, encoder=DjangoJSONEncoder, blank=True, null=True)
 
