@@ -74,7 +74,7 @@ export default {
                 this.$store.commit('setHeadingsType', value);
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                this.$error(e);
             }
         },
     },

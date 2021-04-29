@@ -11,13 +11,7 @@
             <translate tag="h2" class="page-title">Customize Tables</translate>
         </v-col>
         <v-col cols="12">
-            <customize-tables-table
-                v-if="currentTable"
-                :table="currentTable"
-                @remove="onRemoveClick"
-                @save="onContinueClick"
-                @back="onBackClick"
-            />
+            <customize-tables-table v-if="currentTable" :table="currentTable" @save="goToNext" @back="onBackClick" />
         </v-col>
     </v-row>
 </template>
@@ -37,6 +31,7 @@ export default {
         currentTableIndex() {
             return this.selections.tables.findIndex((table) => table.id === this.$route.params.id);
         },
+
         currentTable() {
             return this.selections?.tables[this.currentTableIndex];
         },
@@ -93,36 +88,6 @@ export default {
                     path: '/select-data',
                     query: this.$route.query,
                 });
-            }
-        },
-
-        /**
-         * Set true value for table's 'include' status and opens next table
-         */
-        async onContinueClick() {
-            await this.$store.dispatch('updateIncludeStatus', {
-                tableId: this.currentTable.id,
-                value: true,
-            });
-            this.goToNext();
-        },
-
-        /**
-         * Set false value for table's 'include' status and opens next table
-         */
-        async onRemoveClick() {
-            const confirmed = await this.$root.openConfirmDialog({
-                title: this.$gettext('Are you sure?'),
-                content: this.$gettext('Removing this table will mean it will not be included in flattened Excel file'),
-                submitBtnText: this.$gettext('Yes, remove table and continue'),
-                icon: require('@/assets/icons/remove.svg'),
-            });
-            if (confirmed) {
-                await this.$store.dispatch('updateIncludeStatus', {
-                    tableId: this.currentTable.id,
-                    value: false,
-                });
-                this.goToNext();
             }
         },
     },

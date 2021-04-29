@@ -115,7 +115,7 @@ export default {
                 table.heading = name;
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                this.$error(e);
             }
         },
     },
