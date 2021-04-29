@@ -291,7 +291,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                 store_preview_csv(COLUMNS, PREVIEW_ROWS, tables[table.name], preview_path)
             with open(preview_path) as csvfile:
                 preview = {
-                    "name": f"{tables[table.name]['name']}.csv",
+                    "name": tables[table.name]["name"],
                     "id": str(table.id),
                     "preview": csvfile.read(),
                     "heading": table.heading,
@@ -305,7 +305,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                 preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
                 with open(preview_path) as csvfile:
                     preview = {
-                        "name": f"{tables[child_table.name]['name']}.csv",
+                        "name": tables[child_table.name]["name"],
                         "id": str(child_table.id),
                         "preview": csvfile.read(),
                         "heading": child_table.heading,
@@ -319,7 +319,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                 store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
             with open(preview_path) as csvfile:
                 preview = {
-                    "name": f"{tables[table.name]['name']}.csv",
+                    "name": tables[table.name]["name"],
                     "id": str(table.id),
                     "preview": csvfile.read(),
                     "heading": table.heading,
