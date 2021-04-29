@@ -58,7 +58,9 @@
                             :class="{ highlighted: highlightedCols.includes(colIndex) }"
                             :key="colIndex"
                         >
-                            {{ col }}
+                            <div class="cell">
+                                {{ col }}
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -189,6 +191,13 @@ export default {
                 color: map-get($colors, 'darkest') !important;
                 max-width: 100px;
                 word-break: break-all;
+                .cell {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 5;
+                    -webkit-box-orient: vertical;
+                }
             }
             th {
                 min-width: 100px;

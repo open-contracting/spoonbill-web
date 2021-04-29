@@ -35,7 +35,7 @@ export default {
     computed: {
         details() {
             if (this.unavailable) {
-                return this.$gettext('no-data');
+                return this.$gettext('no data');
             } else {
                 const { rows, arrays } = this.table;
                 let result = this.$gettext('total row count: ') + rows;
