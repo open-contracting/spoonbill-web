@@ -13,7 +13,7 @@
                 editable-name
                 @change-name="updateTableHeading($event, table.id)"
                 :headings="table.headings"
-                show-first-row
+                :row-limit="1"
             />
         </div>
     </div>

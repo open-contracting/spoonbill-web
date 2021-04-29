@@ -16,7 +16,7 @@ describe('AppTable.vue', () => {
         expect(wrapper.vm.additionalColumns).toStrictEqual([]);
         expect(wrapper.vm.editableName).toBe(false);
         expect(wrapper.vm.headings).toBe(null);
-        expect(wrapper.vm.showFirstRow).toBe(false);
+        expect(wrapper.vm.rowLimit).toBe(3);
     });
 
     test("'highlightedCols' returns indexes of additional columns", async () => {
