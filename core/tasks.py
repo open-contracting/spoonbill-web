@@ -73,6 +73,7 @@ def validate_data(object_id, model=None, lang_code="en"):
             datasource = ds_model.objects.get(id=object_id)
         except ObjectDoesNotExist:
             logger_context["MODEL"] = model
+            logger_context["MESSAGE_ID"] = "datasource_not_found"
             logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
             return
 
@@ -148,6 +149,7 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
             datasource = ds_model.objects.get(id=object_id)
         except ObjectDoesNotExist:
             logger_context["MODEL"] = model
+            logger_context["MESSAGE_ID"] = "datasource_not_found"
             logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
             return
         if datasource.expired_at > timezone.now():
@@ -306,6 +308,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
             )
         except ObjectDoesNotExist:
             logger_context["MODEL"] = model
+            logger_context["MESSAGE_ID"] = "datasource_not_found"
             logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
             return
         except Exception as e:

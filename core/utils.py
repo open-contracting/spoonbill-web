@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 import os
 import re
 import uuid
@@ -12,6 +13,8 @@ from django.utils.translation import activate, get_language
 from spoonbill.common import ROOT_TABLES
 
 from core.column_headings import headings
+
+logger = logging.getLogger(__name__)
 
 
 def instance_directory_path(instance, filename):
@@ -34,6 +37,8 @@ def retrieve_available_tables(analyzed_data):
         if key not in tables:
             continue
         root_table = tables.get(key)
+        if root_table.get("total_rows", 0) == 0:
+            continue
         arrays_count = len([v for v in root_table.get("arrays", {}).values() if v > 0])
         available_table = {
             "name": root_table.get("name"),

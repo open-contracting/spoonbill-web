@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from datetime import timedelta
 
@@ -27,6 +28,8 @@ COLUMNS = "columns"
 COMBINED_COLUMNS = "combined_columns"
 COMBINED_PREVIEW_ROWS = "preview_rows_combined"
 PREVIEW_ROWS = "preview_rows"
+
+logger = logging.getLogger(__name__)
 
 
 class UploadViewSet(viewsets.GenericViewSet):
@@ -228,9 +231,7 @@ class TableViewSet(viewsets.ModelViewSet):
         table = Table.objects.get(id=kwargs["id"])
         with open(datasource.analyzed_file.path) as fd:
             data = json.loads(fd.read())
-        datasource_dir = os.path.dirname(datasource.file.path)
         tables = data["tables"]
-        root_table = tables.get(table.name, {})
         update_fields = []
         for key in ("split", "include", "heading"):
             if key in request.data:
@@ -240,13 +241,32 @@ class TableViewSet(viewsets.ModelViewSet):
             table.save(update_fields=update_fields)
         is_array_tables = len(table.array_tables.all())
         if "split" in request.data and request.data["split"] and not is_array_tables:
-            for table_key in root_table.get("child_tables", []):
-                child_table = Table.objects.create(name=table_key)
-                table.array_tables.add(child_table)
-                preview_path = f"{datasource_dir}/{table_key}_combined.csv"
-                store_preview_csv(COMBINED_COLUMNS, PREVIEW_ROWS, tables[table_key], preview_path)
+            child_tables = tables.get(table.name, {}).get("child_tables", [])
+            self._split_table(table, tables, datasource, child_tables)
         serializer = self.get_serializer_class()(table)
         return Response(serializer.data)
+
+    def _split_table(self, table, analyzed_tables, datasource, child_tables):
+        datasource_dir = os.path.dirname(datasource.file.path)
+        for child_table_key in child_tables:
+            analyzed_child_table = analyzed_tables.get(child_table_key, {})
+            if analyzed_child_table.get("total_rows", 0) == 0:
+                logger.debug(
+                    "Skip child table %s for datasource %s" % (child_table_key, datasource),
+                    extra={
+                        "MESSAGE_ID": "skip_child_table",
+                        "TABLE_KEY": child_table_key,
+                        "DATASOURCE_ID": str(datasource.id),
+                        "MODEL": datasource.__class__.__name__,
+                    },
+                )
+                continue
+            child_table = Table.objects.create(name=child_table_key)
+            table.array_tables.add(child_table)
+            preview_path = f"{datasource_dir}/{child_table_key}_combined.csv"
+            store_preview_csv(COMBINED_COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)
+            if analyzed_child_table.get("child_tables", []):
+                self._split_table(table, analyzed_tables, datasource, analyzed_child_table["child_tables"])
 
 
 class TablePreviewViewSet(viewsets.GenericViewSet):
