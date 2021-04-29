@@ -67,7 +67,7 @@ describe('EditHeadingsTables.vue', () => {
 
             jest.clearAllMocks();
             await wrapper.vm.getAllPreviews();
-            expect(ApiService.getTablePreview).toBeCalledTimes(4);
+            expect(ApiService.getTablePreview).toBeCalledTimes(3);
         });
 
         test("'getTablePreview' gets tables preview", async () => {

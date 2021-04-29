@@ -8,6 +8,7 @@ import { UPLOAD_TYPES } from '@/constants';
 
 const uploadDetails = {
     id: 'test',
+    unavailable_tables: ['test'],
     available_tables: [
         {
             name: 'parties',
@@ -65,7 +66,7 @@ describe('SelectData.vue', () => {
     });
 
     it('filter all tables once created', () => {
-        expect(wrapper.vm.availableTables.length).toBe(3);
+        expect(wrapper.vm.availableTables.length).toBe(4);
         expect(wrapper.vm.unavailableTables.length).toBe(1);
     });
 
@@ -78,10 +79,10 @@ describe('SelectData.vue', () => {
         test("'removeTables' moves checked tables to available", () => {
             wrapper.vm.checkedTables = ['tenders', 'awards'];
             wrapper.vm.addTables();
-            expect(wrapper.vm.availableTables.length).toBe(1);
+            expect(wrapper.vm.availableTables.length).toBe(2);
             wrapper.vm.checkedTables = ['tenders'];
             wrapper.vm.removeTables();
-            expect(wrapper.vm.availableTables.length).toBe(2);
+            expect(wrapper.vm.availableTables.length).toBe(3);
             expect(wrapper.vm.selectedTables.length).toBe(1);
         });
 

@@ -145,6 +145,7 @@ describe('CustomizeTablesTable.vue', () => {
             });
 
             const table = { id: 'test id', include: true };
+            wrapper.vm.$root.openConfirmDialog = jest.fn().mockImplementation(() => Promise.resolve(true));
             await wrapper.vm.changeIncludeStatus(table, false);
             expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(1);
             expect(table.include).toBe(false);

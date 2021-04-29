@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ApiService from '@/services/ApiService';
-import { TASK_TYPES, UPLOAD_TYPES } from '@/constants';
+import { FLATTEN_STATUSES, TASK_TYPES, UPLOAD_TYPES } from '@/constants';
 import router from '@/router';
 
 Vue.use(Vuex);
@@ -180,6 +180,12 @@ export default new Vuex.Store({
                     });
                 }
                 if (data.type === TASK_TYPES.FLATTEN) {
+                    if (data.flatten.status === FLATTEN_STATUSES.FAILED) {
+                        commit('openSnackbar', {
+                            text: data.flatten.error,
+                            color: 'error',
+                        });
+                    }
                     commit('setFlatten', data.flatten);
                 }
             };

@@ -56,9 +56,11 @@ export default {
         async getAllPreviews() {
             this.loading = true;
             const previews = await Promise.all(
-                this.$store.state.selections.tables.map(async (table) => {
-                    return await this.getTablePreview(table.id);
-                })
+                this.$store.state.selections.tables
+                    .filter((table) => table.include)
+                    .map(async (table) => {
+                        return await this.getTablePreview(table.id);
+                    })
             );
             this.tables = previews.reduce((acc, preview) => {
                 return acc.concat(preview);
