@@ -104,9 +104,9 @@ export default {
             type: Object,
             default: null,
         },
-        showFirstRow: {
-            type: Boolean,
-            default: false,
+        rowLimit: {
+            type: Number,
+            default: 3,
         },
         highlightName: {
             type: Boolean,
@@ -149,10 +149,11 @@ export default {
 
     methods: {
         calculateTableHeight() {
-            if (this.showFirstRow) {
+            if (this.$refs?.table?.$el && this.rowLimit < this.data.length) {
                 const table = this.$refs.table.$el.querySelector('.v-data-table__wrapper');
                 const theadHeight = table.querySelector('thead').getBoundingClientRect().height;
-                const tbodyFirstRowHeight = table.querySelector('tbody tr').getBoundingClientRect().height;
+                const rows = Array.from(table.querySelectorAll('tbody tr')).slice(0, this.rowLimit);
+                const tbodyFirstRowHeight = rows.reduce((acc, row) => acc + row.getBoundingClientRect().height, 0);
                 table.style.maxHeight = theadHeight + tbodyFirstRowHeight + 18 + 'px';
                 table.style.overflowY = 'auto';
             }
