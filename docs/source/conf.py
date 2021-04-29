@@ -10,20 +10,17 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
 import os
-from glob import glob
-from pathlib import Path
+import sys
 
-import standard_theme
+sys.path.insert(0, os.path.abspath(".."))
+
 
 # -- Project information -----------------------------------------------------
 
 project = "spoonbill-web"
-copyright = "2021, open-contracting"
-author = "open-contracting"
+copyright = "2021, Open Contracting Partnership"
+author = "Open Contracting Partnership"
 
 # The full version, including alpha/beta/rc tags
 release = "0.0.1"
@@ -34,7 +31,10 @@ release = "0.0.1"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -42,7 +42,18 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+
+# -- Extension configuration -------------------------------------------------
+
+# Needed for ReadTheDocs (Sphinx 1.8).
+master_doc = "index"
+
+autodoc_default_options = {
+    "members": None,
+}
+autodoc_member_order = "bysource"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -50,9 +61,16 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "standard_theme"
-html_theme_path = [standard_theme.get_html_theme_path()]
-html_favicon = "_static/favicon-16x16.ico"
+html_theme = "default"
+
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+
+if not on_rtd:  # only import and set the theme if we're building docs locally
+    import sphinx_rtd_theme
+
+    html_theme = "sphinx_rtd_theme"
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    html_favicon = "_static/favicon-16x16.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
