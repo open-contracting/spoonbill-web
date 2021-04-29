@@ -4,7 +4,7 @@ import Vuetify from 'vuetify';
 import ApiService from '@/services/ApiService';
 import store from '@/store';
 import router from '@/router';
-import { UPLOAD_TYPES } from '@/constants';
+import { UPLOAD_STATUSES, UPLOAD_TYPES } from '@/constants';
 
 const mockCancelTokenSource = {
     token: 'mocked',
@@ -108,7 +108,7 @@ describe('UploadFileInput.vue', () => {
             expect(store.state.uploadDetails).toBe(null);
         });
 
-        test("'processValidationStatus' changes loading status depends on validation status", () => {
+        test("'processValidationStatus' changes loading status depends on validation status", async () => {
             const wrapper = mount(UploadFileInput, {
                 localVue,
                 store,
@@ -139,6 +139,14 @@ describe('UploadFileInput.vue', () => {
             expect(wrapper.vm.loading.value).toBe(true);
             expect(store.state.uploadDetails).toBeTruthy();
             expect(store.state.downloadProgress).toBe(100);
+            expect(wrapper.vm.loader).toBe(true);
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 1500);
+            });
+            expect(wrapper.vm.loader).toBe(false);
+            expect(wrapper.vm.isValid).toBe(true);
 
             store.commit('setUploadDetails', {
                 id: 'test id',
@@ -150,6 +158,35 @@ describe('UploadFileInput.vue', () => {
 
             wrapper.vm.processValidationStatus();
             expect(store.state.uploadDetails).toBeTruthy();
+
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                status: UPLOAD_STATUSES.FAILED,
+            });
+
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.loading.value).toBe(false);
+
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                status: UPLOAD_STATUSES.DOWNLOADING,
+            });
+
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.loading.value).toBe(true);
+            expect(wrapper.vm.loading.status).toBe('Upload in progress');
+
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                status: UPLOAD_STATUSES.QUEUED_VALIDATION,
+            });
+
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.loading.value).toBe(true);
+            expect(wrapper.vm.loading.status).toBe('File is queued for validation...');
         });
     });
 });

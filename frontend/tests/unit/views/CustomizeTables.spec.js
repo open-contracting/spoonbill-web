@@ -21,6 +21,7 @@ describe('CustomizeTables.vue', () => {
         /** @type { Wrapper<Vue> }*/
         let wrapper;
         beforeEach(() => {
+            router.push = new VueRouter().push;
             store.commit('setUploadDetails', {
                 id: 'test id',
                 type: UPLOAD_TYPES.UPLOAD,
@@ -37,32 +38,16 @@ describe('CustomizeTables.vue', () => {
         test("'onBackClick' goes to previous table if exists", async () => {
             await store.dispatch('fetchSelections', 'test id');
             expect(wrapper.vm.currentTableIndex).toBe(0);
-            await wrapper.vm.onContinueClick();
-            expect(ApiService.changeIncludeStatus).toBeCalledTimes(1);
+            await wrapper.vm.goToNext();
             expect(wrapper.vm.currentTableIndex).toBe(1);
             wrapper.vm.onBackClick();
             expect(wrapper.vm.currentTableIndex).toBe(0);
-        });
-
-        test("'onContinueClick' changes include status of current table to true", async () => {
-            await store.dispatch('fetchSelections', 'test id');
-            await wrapper.vm.onContinueClick();
-            expect(ApiService.changeIncludeStatus).toBeCalledTimes(1);
-            expect(wrapper.vm.currentTableIndex).toBe(1);
-        });
-
-        test("'onRemoveClick' changes include status of current table to false", async () => {
-            wrapper.vm.$root.openConfirmDialog = jest.fn(() => Promise.resolve(false));
-            await store.dispatch('fetchSelections', 'test id');
-            const oldIndex = wrapper.vm.currentTableIndex;
-            await wrapper.vm.onRemoveClick();
-            expect(ApiService.changeIncludeStatus).toBeCalledTimes(0);
-            expect(wrapper.vm.currentTableIndex).toBe(oldIndex);
-
-            wrapper.vm.$root.openConfirmDialog = jest.fn(() => Promise.resolve(true));
-            await wrapper.vm.onRemoveClick();
-            expect(ApiService.changeIncludeStatus).toBeCalledTimes(1);
-            expect(wrapper.vm.currentTableIndex).toBe(oldIndex + 1);
+            router.push = jest.fn();
+            wrapper.vm.onBackClick();
+            expect(router.push).toBeCalledWith({
+                path: '/select-data',
+                query: {},
+            });
         });
 
         test("'goTo' opens specified table", async () => {

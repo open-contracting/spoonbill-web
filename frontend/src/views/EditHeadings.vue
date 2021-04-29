@@ -1,6 +1,6 @@
 <template>
     <v-row>
-        <v-col cols="12" md="8" xl="8">
+        <v-col cols="12" md="8">
             <translate tag="h2" class="page-title">Add friendly column headings</translate>
         </v-col>
 
@@ -27,30 +27,17 @@
 import EditHeadingOptions from '@/components/EditHeadings/EditHeadingOptions';
 import ApiService from '@/services/ApiService';
 import EditHeadingsTables from '@/components/EditHeadings/EditHeadingsTables';
-import getQueryParam from '@/utils/getQueryParam';
+import selectionsMixin from '@/mixins/selectionsMixin';
 
 export default {
     name: 'EditHeadings',
 
     components: { EditHeadingsTables, EditHeadingOptions },
 
-    computed: {
-        selections() {
-            return this.$store.state.selections;
-        },
-    },
+    mixins: [selectionsMixin],
 
     async created() {
-        const selectionsId = getQueryParam('selections');
-        if (selectionsId && !this.selections) {
-            await this.$store.dispatch('fetchSelections', selectionsId);
-            if (!this.selections) {
-                this.$router.push({
-                    path: '/upload-file',
-                    query: this.$route.query,
-                });
-            }
-        }
+        await this.getSelections();
     },
 
     mounted() {
@@ -87,7 +74,7 @@ export default {
                 this.$store.commit('setHeadingsType', value);
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                this.$error(e);
             }
         },
     },

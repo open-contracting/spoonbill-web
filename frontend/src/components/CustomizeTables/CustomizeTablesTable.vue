@@ -52,13 +52,25 @@
             />
         </div>
         <div class="mt-10 d-flex">
-            <v-btn class="mr-6" color="gray-light" x-large @click="$emit('back')" v-if="isSplit" key="back">
+            <v-btn class="mr-6" color="gray-light" x-large @click="$emit('back')" v-if="isGoBackAvailable">
                 <translate>Go back</translate>
             </v-btn>
 
-            <v-btn class="mr-6" color="accent" x-large @click="$emit('remove')" v-else key="remove">
-                <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
+            <v-btn
+                class="mr-6"
+                color="accent"
+                x-large
+                v-if="isInclude"
+                @click="changeIncludeStatus(table, false)"
+                key="remove"
+            >
+                <v-img height="24" width="24" class="mr-2" src="@/assets/icons/remove.svg" />
                 <translate>Remove table</translate>
+            </v-btn>
+
+            <v-btn class="mr-6" color="accent" x-large v-else @click="changeIncludeStatus(table, true)" key="restore">
+                <v-img height="24" width="24" class="mr-2" src="@/assets/icons/restore.svg" />
+                <translate>Restore table</translate>
             </v-btn>
 
             <v-btn color="accent" x-large @click="$emit('save')">
@@ -94,6 +106,10 @@ export default {
     },
 
     computed: {
+        isGoBackAvailable() {
+            return this.table.id !== this.$store.state.selections.tables[0].id;
+        },
+
         additionalInfo() {
             return this.$store.state.uploadDetails.available_tables.find((table) => table.name === this.table.name);
         },
@@ -111,8 +127,13 @@ export default {
             },
         },
 
+        isInclude() {
+            return this.$store.state.selections.tables.find((table) => table.id === this.table.id).include;
+        },
+
         aboutThisTable() {
             const name = this.table.name;
+            /* istanbul ignore next */
             switch (name) {
                 case 'awards':
                     return [
@@ -248,9 +269,9 @@ export default {
                 let translated = this.$ngettext(
                     'There is %{ n } column with additional data not part of OCDS',
                     'There are %{ n } columns with additional data not part of OCDS',
-                    additionalColumns
+                    additionalColumns.length
                 );
-                res.push(this.$gettextInterpolate(translated, { n: additionalColumns }));
+                res.push(this.$gettextInterpolate(translated, { n: additionalColumns.length }));
                 res.push(
                     additionalColumns.length === 1
                         ? this.$gettext('This column is highlighted in violet')
@@ -280,7 +301,7 @@ export default {
                 await this.getTablePreview(this.table.id);
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                this.$error(e);
             }
         },
 
@@ -318,7 +339,7 @@ export default {
 
         /**
          * Change include status of table
-         * @param { { include: boolean, id: string } } table
+         * @param { Object } table
          * @param { boolean } value
          */
         async changeIncludeStatus(table, value) {
@@ -333,7 +354,7 @@ export default {
                 table.include = value;
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                this.$error(e);
             }
         },
     },

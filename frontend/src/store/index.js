@@ -84,6 +84,17 @@ export default new Vuex.Store({
         setHeadingsType(state, value) {
             state.selections.headings_type = value;
         },
+
+        setFlatten(state, flatten) {
+            if (!flatten.status) return;
+            const index = state.selections.flattens.findIndex((f) => f.id === flatten.id);
+            if (index === -1) {
+                state.selections.flattens.push(flatten);
+            } else {
+                state.selections.flattens[index] = flatten;
+            }
+            state.selections.flattens = [...state.selections.flattens];
+        },
     },
     actions: {
         async fetchSelections({ state, commit }, id) {
@@ -154,7 +165,7 @@ export default new Vuex.Store({
             }
         },
 
-        setupConnection({ commit, dispatch }, { id, type }) {
+        setupConnection({ commit }, { id, type, onOpen }) {
             const connection = new WebSocket(`${process.env.VUE_APP_WEBSOCKET_URL}/${id}/`);
 
             connection.onmessage = (event) => {
@@ -168,6 +179,9 @@ export default new Vuex.Store({
                         type,
                     });
                 }
+                if (data.type === TASK_TYPES.FLATTEN) {
+                    commit('setFlatten', data.flatten);
+                }
             };
 
             connection.onerror = (e) => {
@@ -177,7 +191,7 @@ export default new Vuex.Store({
 
             connection.onopen = () => {
                 commit('setConnection', connection);
-                dispatch('fetchUploadDetails', { id, type });
+                onOpen && onOpen();
             };
         },
 

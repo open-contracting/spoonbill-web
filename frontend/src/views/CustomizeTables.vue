@@ -7,56 +7,40 @@
                 </v-tab>
             </v-tabs>
         </v-col>
-        <v-col class="pt-7" cols="12" md="8" xl="8">
+        <v-col class="pt-7" cols="12" md="8">
             <translate tag="h2" class="page-title">Customize Tables</translate>
         </v-col>
         <v-col cols="12">
-            <customize-tables-table
-                v-if="currentTable"
-                :table="currentTable"
-                @remove="onRemoveClick"
-                @save="onContinueClick"
-                @back="onBackClick"
-            />
+            <customize-tables-table v-if="currentTable" :table="currentTable" @save="goToNext" @back="onBackClick" />
         </v-col>
     </v-row>
 </template>
 
 <script>
 import CustomizeTablesTable from '@/components/CustomizeTables/CustomizeTablesTable';
-import getQueryParam from '@/utils/getQueryParam';
+import selectionsMixin from '@/mixins/selectionsMixin';
 
 export default {
     name: 'CustomizeTables',
 
     components: { CustomizeTablesTable },
 
+    mixins: [selectionsMixin],
+
     computed: {
         currentTableIndex() {
             return this.selections.tables.findIndex((table) => table.id === this.$route.params.id);
         },
+
         currentTable() {
             return this.selections?.tables[this.currentTableIndex];
-        },
-        selections() {
-            return this.$store.state.selections;
         },
     },
 
     async created() {
-        const selectionsId = getQueryParam('selections');
-        if (selectionsId && !this.selections) {
-            await this.$store.dispatch('fetchSelections', selectionsId);
-            if (!this.selections) {
-                this.$router.push({
-                    path: '/upload-file',
-                    query: this.$route.query,
-                });
-                return;
-            }
-        }
+        await this.getSelections();
         if (!this.$route.params.id) {
-            this.$router.push({
+            await this.$router.push({
                 path: '/customize-tables/' + this.$store.state.selections.tables[0].id,
                 query: this.$route.query,
             });
@@ -101,39 +85,9 @@ export default {
                 });
             } else {
                 this.$router.push({
-                    path: '/select-data/' + this.selections.tables[this.currentTableIndex - 1].id,
+                    path: '/select-data',
                     query: this.$route.query,
                 });
-            }
-        },
-
-        /**
-         * Set true value for table's 'include' status and opens next table
-         */
-        async onContinueClick() {
-            await this.$store.dispatch('updateIncludeStatus', {
-                tableId: this.currentTable.id,
-                value: true,
-            });
-            this.goToNext();
-        },
-
-        /**
-         * Set false value for table's 'include' status and opens next table
-         */
-        async onRemoveClick() {
-            const confirmed = await this.$root.openConfirmDialog({
-                title: this.$gettext('Are you sure?'),
-                content: this.$gettext('Removing this table will mean it will not be included in flattened Excel file'),
-                submitBtnText: this.$gettext('Yes, remove table and continue'),
-                icon: require('@/assets/icons/remove.svg'),
-            });
-            if (confirmed) {
-                await this.$store.dispatch('updateIncludeStatus', {
-                    tableId: this.currentTable.id,
-                    value: false,
-                });
-                this.goToNext();
             }
         },
     },

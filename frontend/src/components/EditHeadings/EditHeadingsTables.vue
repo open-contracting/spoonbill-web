@@ -83,11 +83,6 @@ export default {
                     const parsed = await Papa.parse(data[0].preview, {
                         skipEmptyLines: true,
                     });
-                    if (preview.column_headings) {
-                        preview.column_headings = preview.column_headings.reduce((acc, item) => {
-                            return { ...acc, ...item };
-                        }, {});
-                    }
                     return {
                         id: preview.id,
                         name: preview.name,
@@ -120,7 +115,7 @@ export default {
                 table.heading = name;
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                this.$error(e);
             }
         },
     },

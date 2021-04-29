@@ -15,7 +15,7 @@
             </div>
 
             <div class="p-relative">
-                <div class="d-flex align-center justify-center loader" v-if="loader">
+                <div class="d-flex align-center justify-center spin-loader" v-if="loader">
                     <v-img max-width="40" src="@/assets/icons/loader.svg" />
                 </div>
 
@@ -319,27 +319,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.loader {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 1;
-    .v-image {
-        animation: spin linear 2s infinite;
-    }
-    & + .select-data-loading-progress {
-        opacity: 0.3;
-    }
-}
-
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
 .options {
     .option {
         cursor: pointer;

@@ -52,6 +52,22 @@ jest.mock('@/services/ApiService', () => {
                             data: {
                                 id: 'test id',
                                 headings_type: 'ocds',
+                                flattens: [
+                                    {
+                                        id: 'flatten-1',
+                                        export_format: 'csv',
+                                        file: null,
+                                        status: 'processing',
+                                        error: '',
+                                    },
+                                    {
+                                        id: 'flatten-2',
+                                        export_format: 'xlsx',
+                                        file: 'https://link-to-somewhere.com',
+                                        status: 'completed',
+                                        error: '',
+                                    },
+                                ],
                                 tables: [
                                     {
                                         id: 'parties-table',
@@ -248,9 +264,20 @@ jest.mock('@/services/ApiService', () => {
                 }, 10);
             });
         }),
+
+        createFlatten: jest.fn(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 10);
+            });
+        }),
     };
 });
 
 Object.defineProperty(window, 'scroll', {
+    value: jest.fn(),
+});
+Object.defineProperty(window, 'open', {
     value: jest.fn(),
 });
