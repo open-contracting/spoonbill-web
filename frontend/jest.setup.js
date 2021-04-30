@@ -250,9 +250,13 @@ jest.mock('@/services/ApiService', () => {
 
         createFlatten: jest.fn(() => {
             return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve();
-                }, 10);
+                resolve();
+            });
+        }),
+
+        scheduleFlattenGeneration: jest.fn(() => {
+            return new Promise((resolve) => {
+                resolve();
             });
         }),
     };

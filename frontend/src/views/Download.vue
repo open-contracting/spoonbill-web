@@ -5,7 +5,7 @@
 
             <div class="mt-9 download-options justify-center justify-md-start">
                 <div class="download-option">
-                    <app-button text color="darkest" :disabled="!selections" @click="createFlatten(EXPORT_FORMATS.XLSX)">
+                    <app-button text color="darkest" :disabled="!selections" @click="generateFile(EXPORT_FORMATS.XLSX)">
                         <translate>Generate as a multi sheet XLSX</translate>
                     </app-button>
                     <div class="mt-7 download-block" :class="xlsxFlattenClasses">
@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="download-option">
-                    <app-button text color="darkest" :disabled="!selections" @click="createFlatten(EXPORT_FORMATS.CSV)">
+                    <app-button text color="darkest" :disabled="!selections" @click="generateFile(EXPORT_FORMATS.CSV)">
                         <translate>Generate tables as individual CSV files</translate>
                     </app-button>
                     <div class="mt-7 download-block" :class="csvFlattenClasses">
@@ -119,6 +119,50 @@ export default {
 
     methods: {
         /**
+         * Generate file
+         * @param { 'csv' | 'xlsx' } format - export format
+         */
+        generateFile(format) {
+            const flatten = this.flattens && this.flattens.find((f) => f.export_format === format);
+            if (flatten) {
+                if ([FLATTEN_STATUSES.FAILED, FLATTEN_STATUSES.COMPLETED].includes(flatten.status)) {
+                    this.scheduleFlattenGeneration(flatten.id);
+                }
+            } else {
+                this.createFlatten(format);
+            }
+        },
+
+        /**
+         * Schedule flatten generation
+         * @param { string } id - flatten id
+         */
+        async scheduleFlattenGeneration(id) {
+            try {
+                const { uploadDetails, selections } = this.$store.state;
+
+                await ApiService.scheduleFlattenGeneration(uploadDetails.type + 's', uploadDetails.id, selections.id, id);
+
+                await this.subscribeOnChanges();
+            } catch (e) {
+                /* istanbul ignore next */
+                this.$error(e);
+            }
+        },
+
+        async subscribeOnChanges() {
+            if (this.$store.state.connection) {
+                await this.$store.dispatch('fetchSelections', this.selections.id);
+            } else {
+                await this.$store.dispatch('setupConnection', {
+                    id: this.$store.state.uploadDetails.id,
+                    type: this.$store.state.uploadDetails.type,
+                    onOpen: () => this.$store.dispatch('fetchSelections', this.selections.id),
+                });
+            }
+        },
+
+        /**
          * Create flatten
          * @param { 'csv' | 'xlsx' } format - export format
          */
@@ -128,21 +172,10 @@ export default {
 
                 await ApiService.createFlatten(uploadDetails.type + 's', uploadDetails.id, selections.id, format);
 
-                if (this.$store.state.connection) {
-                    await this.$store.dispatch('fetchSelections', this.selections.id);
-                } else {
-                    await this.$store.dispatch('setupConnection', {
-                        id: this.$store.state.uploadDetails.id,
-                        type: this.$store.state.uploadDetails.type,
-                        onOpen: () => this.$store.dispatch('fetchSelections', this.selections.id),
-                    });
-                }
+                await this.subscribeOnChanges();
             } catch (e) {
-                console.error(e);
-                this.$store.commit('openSnackbar', {
-                    text: e.response.data.detail,
-                    color: 'error',
-                });
+                /* istanbul ignore next */
+                this.$error(e);
             }
         },
 
