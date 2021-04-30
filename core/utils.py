@@ -9,11 +9,22 @@ from zipfile import ZipFile
 
 import ijson
 from django.utils.translation import activate, get_language
-from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 
 from core.column_headings import headings
 
 logger = logging.getLogger(__name__)
+
+# DON'T CHANGE ORDER
+TABLES_ORDER = (
+    "parties",
+    "planning",
+    "tenders",
+    "awards",
+    "contracts",
+    "documents",
+    "milestones",
+    "amendments",
+)
 
 
 def instance_directory_path(instance, filename):
@@ -30,11 +41,10 @@ def export_directory_path(instance, filename):
 
 
 def retrieve_tables(analyzed_data):
-    table_keys = list(ROOT_TABLES.keys()) + list(COMBINED_TABLES.keys())
     tables = analyzed_data.get("tables", {})
     available_tables = []
     unavailable_tables = []
-    for key in table_keys:
+    for key in TABLES_ORDER:
         table = tables.get(key, {})
         if table.get("total_rows", 0) == 0:
             unavailable_tables.append(key)
