@@ -7,7 +7,7 @@
                         <v-img height="24" width="24" :src="options.icon" />
                     </v-col>
                     <v-col cols="11">
-                        <h3 class="pt-1 mb-6 card-title">{{ options.title }}</h3>
+                        <h3 v-if="options.title" class="pt-1 mb-6 card-title">{{ options.title }}</h3>
                         <p class="card-content">{{ options.content }}</p>
                     </v-col>
                 </v-row>
