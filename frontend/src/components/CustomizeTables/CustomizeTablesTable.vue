@@ -47,7 +47,7 @@
                 :allow-actions="idx !== 0"
                 :additional-columns="additionalColumns"
                 highlight-name
-                @remove="changeIncludeStatus(table, false)"
+                @remove="removeTable(table)"
                 @restore="changeIncludeStatus(table, true)"
             />
         </div>
@@ -65,14 +65,7 @@
                 <translate>Go back</translate>
             </v-btn>
 
-            <v-btn
-                class="mr-6"
-                color="accent"
-                x-large
-                v-if="isInclude"
-                @click="changeIncludeStatus(table, false)"
-                key="remove"
-            >
+            <v-btn class="mr-6" color="accent" x-large v-if="isInclude" @click="removeMainTable()" key="remove">
                 <v-img height="24" width="24" class="mr-2" src="@/assets/icons/remove.svg" />
                 <translate>Remove table</translate>
             </v-btn>
@@ -301,6 +294,52 @@ export default {
     },
 
     methods: {
+        /**
+         * Change include status of table
+         * @param { Object } table
+         */
+        async removeTable(table) {
+            const confirmed = await this.$root.openConfirmDialog({
+                title: this.$gettext('Are you sure?'),
+                content: this.$gettext('Removing this table will mean it will not be included in flattened Excel file'),
+                submitBtnText: this.$gettext('Yes, remove table and continue'),
+                icon: require('@/assets/icons/remove.svg'),
+            });
+            if (confirmed) {
+                await this.changeIncludeStatus(table, false);
+            }
+        },
+
+        /**
+         * Change include status of main table
+         */
+        async removeMainTable() {
+            const isLast = this.$store.state.selections.tables
+                .filter((table) => table.id !== this.table.id)
+                .every((table) => !table.include);
+            if (isLast) {
+                const confirmed = await this.$root.openConfirmDialog({
+                    content:
+                        this.$gettext('You cannot remove all of the tables. If you want to remove ') +
+                        this.table.name +
+                        this.$gettext(' then please restore one of the other tables or re-select available tables.'),
+                    submitBtnText: this.$gettext('Re-select available tables'),
+                    icon: require('@/assets/icons/remove.svg'),
+                });
+                if (confirmed) {
+                    await this.$router.push({
+                        name: 'select data',
+                        query: this.$route.query,
+                        params: {
+                            forced: true,
+                        },
+                    });
+                }
+            } else {
+                await this.removeTable(this.table);
+            }
+        },
+
         async onSplitSwitchChange() {
             try {
                 await this.$store.dispatch('updateSplitStatus', {
@@ -353,18 +392,6 @@ export default {
          */
         async changeIncludeStatus(table, value) {
             try {
-                let confirmed = true;
-                if (value === false) {
-                    confirmed = await this.$root.openConfirmDialog({
-                        title: this.$gettext('Are you sure?'),
-                        content: this.$gettext(
-                            'Removing this table will mean it will not be included in flattened Excel file'
-                        ),
-                        submitBtnText: this.$gettext('Yes, remove table and continue'),
-                        icon: require('@/assets/icons/remove.svg'),
-                    });
-                }
-                if (!confirmed) return;
                 await ApiService.changeIncludeStatus(
                     this.$store.state.uploadDetails.type + 's',
                     this.$store.state.uploadDetails.id,

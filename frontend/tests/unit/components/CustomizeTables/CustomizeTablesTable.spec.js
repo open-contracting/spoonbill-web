@@ -4,6 +4,7 @@ import store from '@/store';
 import Vuetify from 'vuetify';
 import ApiService from '@/services/ApiService';
 import { UPLOAD_TYPES } from '@/constants';
+import router from '@/router';
 
 const available_tables = [
     {
@@ -145,10 +146,83 @@ describe('CustomizeTablesTable.vue', () => {
             });
 
             const table = { id: 'test id', include: true };
-            wrapper.vm.$root.openConfirmDialog = jest.fn().mockImplementation(() => Promise.resolve(true));
             await wrapper.vm.changeIncludeStatus(table, false);
             expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(1);
             expect(table.include).toBe(false);
+        });
+
+        test("'removeTable' changes include status of table after confirmation", async () => {
+            jest.clearAllMocks();
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                available_tables,
+            });
+            await store.dispatch('fetchSelections', 'test id');
+            const wrapper = mount(CustomizeTablesTable, {
+                localVue,
+                vuetify,
+                store,
+                propsData: {
+                    table: {
+                        id: 'tenders-table',
+                        name: 'tenders',
+                    },
+                },
+            });
+
+            let table = { id: 'test id', include: true };
+            wrapper.vm.$root.openConfirmDialog = jest.fn().mockImplementation(() => Promise.resolve(true));
+            await wrapper.vm.removeTable(table);
+            expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(1);
+            expect(table.include).toBe(false);
+
+            table = { id: 'test id', include: true };
+            wrapper.vm.$root.openConfirmDialog = jest.fn().mockImplementation(() => Promise.resolve(false));
+            await wrapper.vm.removeTable(table);
+            expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(1);
+            expect(table.include).toBe(true);
+        });
+
+        test("'removeMainTable' changes include status of main table after confirmation", async () => {
+            jest.clearAllMocks();
+            router.push = jest.fn();
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                available_tables,
+            });
+            await store.dispatch('fetchSelections', 'test id');
+            const wrapper = mount(CustomizeTablesTable, {
+                localVue,
+                vuetify,
+                store,
+                router,
+                propsData: {
+                    table: {
+                        id: 'awards-table',
+                        name: 'awards',
+                    },
+                },
+            });
+            store.state.selections.tables.slice(1).forEach((table) => {
+                table.include = false;
+            });
+            wrapper.vm.$root.openConfirmDialog = jest.fn().mockImplementation(() => Promise.resolve(true));
+            await wrapper.vm.removeMainTable();
+            expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(0);
+            expect(router.push).toHaveBeenCalledTimes(1);
+
+            wrapper.vm.$root.openConfirmDialog = jest.fn().mockImplementation(() => Promise.resolve(false));
+            await wrapper.vm.removeMainTable();
+            expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(0);
+            expect(router.push).toHaveBeenCalledTimes(1);
+
+            wrapper.vm.$root.openConfirmDialog = jest.fn().mockImplementation(() => Promise.resolve(true));
+            store.state.selections.tables[1].include = true;
+            await wrapper.vm.removeMainTable();
+            expect(ApiService.changeIncludeStatus).toHaveBeenCalledTimes(1);
+            expect(router.push).toHaveBeenCalledTimes(1);
         });
     });
 });
