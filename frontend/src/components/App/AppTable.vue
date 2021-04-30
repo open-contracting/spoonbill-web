@@ -41,7 +41,7 @@
                 </v-btn>
             </div>
         </div>
-        <v-simple-table ref="table" v-if="include" :style="{ width: headers.length * 100 + 2 + 'px' }">
+        <v-simple-table ref="table" v-if="include">
             <template v-slot:default>
                 <thead>
                     <tr v-if="headings">
@@ -189,7 +189,6 @@ export default {
                 font-size: 14px !important;
                 font-weight: 300;
                 color: map-get($colors, 'darkest') !important;
-                max-width: 100px;
                 word-break: break-all;
                 .cell {
                     overflow: hidden;
