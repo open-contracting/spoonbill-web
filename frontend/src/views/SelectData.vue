@@ -289,7 +289,7 @@ export default {
     border: 1px solid map-get($colors, 'gray-dark');
     background-color: #ffffff;
     width: 100%;
-    height: 230px;
+    height: 261px;
     overflow-y: auto;
     .table-info:not(:last-child) {
         margin-bottom: 5px;
