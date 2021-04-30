@@ -48,15 +48,16 @@ class UploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Upload
         read_only_fields = (
-            "id",
             "analyzed_file",
-            "created_at",
-            "expired_at",
-            "deleted",
-            "status",
-            "validation",
             "available_tables",
+            "created_at",
+            "deleted",
+            "expired_at",
+            "id",
             "root_key",
+            "status",
+            "unavailable_tables",
+            "validation",
         )
         fields = "__all__"
 
@@ -68,17 +69,18 @@ class UrlSerializer(serializers.ModelSerializer):
     class Meta:
         model = Url
         read_only_fields = (
+            "analyzed_file",
             "available_tables",
-            "id",
             "created_at",
-            "expired_at",
             "deleted",
             "downloaded",
-            "status",
-            "analyzed_file",
-            "file",
-            "validation",
             "error",
+            "expired_at",
+            "file",
+            "id",
             "root_key",
+            "status",
+            "unavailable_tables",
+            "validation",
         )
         fields = "__all__"
