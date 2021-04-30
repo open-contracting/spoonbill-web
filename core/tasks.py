@@ -223,8 +223,11 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 for chunk in r.iter_content(chunk_size=chunk_size):
                     temp.write(chunk)
                     downloaded += chunk_size
-                    progress = (downloaded / size) * 100
-                    progress = progress if progress < 100 else 100
+                    if size != 0:
+                        progress = (downloaded / size) * 100
+                        progress = progress if progress < 100 else 100
+                    else:
+                        progress = size
                     async_to_sync(channel_layer.group_send)(
                         f"datasource_{object_id}",
                         {
