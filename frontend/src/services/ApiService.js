@@ -124,4 +124,17 @@ export default {
             export_format: format,
         });
     },
+
+    /**
+     * Schedule flatten generation
+     * @param { 'urls' | 'uploads' } type
+     * @param { string } uploadId - id of upload or URL
+     * @param { string } selectionsId - id of selection
+     * @param { string } flattenId
+     */
+    scheduleFlattenGeneration(type, uploadId, selectionsId, flattenId) {
+        return axios.patch(`${type}/${uploadId}/selections/${selectionsId}/flattens/${flattenId}/`, {
+            status: 'scheduled',
+        });
+    },
 };

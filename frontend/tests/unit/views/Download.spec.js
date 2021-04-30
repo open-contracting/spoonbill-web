@@ -40,19 +40,52 @@ describe('Download.vue', () => {
             expect(window.open).toBeCalledTimes(1);
         });
 
-        test("'createFlatten' sends request to create flatten and opens websocket connection if needed", async () => {
+        test("'createFlatten' sends request to create flatten", async () => {
             await store.dispatch('fetchSelections', 'test-id');
-            store.dispatch = jest.fn();
             await wrapper.vm.createFlatten('xlsx');
             expect(ApiService.createFlatten).toBeCalledTimes(1);
+        });
+
+        test("'scheduleFlattenGeneration' sends request to schedule flatten generation", async () => {
+            await store.dispatch('fetchSelections', 'test-id');
+            await wrapper.vm.scheduleFlattenGeneration('flatten id');
+            expect(ApiService.scheduleFlattenGeneration).toBeCalledTimes(1);
+        });
+
+        test("'subscribeOnChanges' opens websocket connection if needed", async () => {
+            await store.dispatch('fetchSelections', 'test-id');
+            store.dispatch = jest.fn();
+            await wrapper.vm.subscribeOnChanges();
             expect(store.dispatch).toBeCalledTimes(1);
 
             store.dispatch = jest.fn();
             store.commit('setConnection', {});
-            await wrapper.vm.createFlatten('xlsx');
-            expect(ApiService.createFlatten).toBeCalledTimes(2);
+            await wrapper.vm.subscribeOnChanges();
             expect(store.dispatch).toBeCalledWith('fetchSelections', store.state.selections.id);
             store.dispatch = actualDispatch;
+        });
+
+        test("'generateFile' creates new flatten or schedule existing", async () => {
+            await store.dispatch('fetchSelections', 'test-id');
+            wrapper.vm.generateFile('xlsx');
+            expect(ApiService.scheduleFlattenGeneration).toBeCalledTimes(1);
+            expect(ApiService.createFlatten).toBeCalledTimes(0);
+
+            store.commit('setSelections', {
+                ...store.state.selections,
+                flattens: [
+                    {
+                        id: 'flatten-1',
+                        export_format: 'csv',
+                        file: null,
+                        status: 'processing',
+                        error: '',
+                    },
+                ],
+            });
+            wrapper.vm.generateFile('xlsx');
+            expect(ApiService.scheduleFlattenGeneration).toBeCalledTimes(1);
+            expect(ApiService.createFlatten).toBeCalledTimes(1);
         });
     });
 
