@@ -202,7 +202,7 @@ export default {
                                 'might only be allowed as part of an amendment.'
                         ),
                     ];
-                case 'Documents':
+                case 'documents':
                     return [
                         this.$gettext(
                             'This table contains information on the documents available for the different ' +
