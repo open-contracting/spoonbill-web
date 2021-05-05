@@ -181,6 +181,8 @@ class DataSelectionViewSet(viewsets.ModelViewSet):
             elif url_id:
                 ds.url_set.add(url_id)
             return Response(self.get_serializer_class()(ds).data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, *args, url_id=None, upload_id=None):
         if url_id:

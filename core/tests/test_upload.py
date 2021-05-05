@@ -2,6 +2,7 @@ import shutil
 
 import pytest
 from django.conf import settings
+from rest_framework import status
 
 from core.models import DataSelection, Flatten, Upload
 from core.serializers import UploadSerializer
@@ -60,6 +61,15 @@ class TestUpload:
 
     def test_create_selections_successful(self, client, upload_obj):
         create_data_selection(client, upload_obj, self.url_prefix)
+
+    def test_create_selections_failed(self, client, upload_obj):
+        url = f"{self.url_prefix}{upload_obj.id}/selections/"
+        data = {"tables": "name"}
+        response = client.post(url, content_type="application/json", data=data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": {"tables": {"non_field_errors": ['Expected a list of items but got type "str".']}}
+        }
 
     def test_get_selections_successful(self, client, upload_obj):
         get_data_selections(client, upload_obj, self.url_prefix)
