@@ -38,6 +38,19 @@ class TestValidateDataTask(BaseUploadTestSuite):
         url_obj_w_files = Url.objects.get(id=url_obj_w_files.id)
         assert url_obj_w_files.validation.is_valid
         assert len(url_obj_w_files.available_tables) == 8
+        assert url_obj_w_files.available_tables[0]["name"] == "parties"
+        assert url_obj_w_files.available_tables[0]["rows"] == 8
+        assert url_obj_w_files.available_tables[0]["arrays"] == {}
+        assert url_obj_w_files.available_tables[0]["available_data"]["columns"]["total"] == 26
+        assert url_obj_w_files.available_tables[0]["available_data"]["columns"]["available"] == 21
+        assert url_obj_w_files.available_tables[0]["available_data"]["columns"]["additional"] == ["/parties/test"]
+        assert set(url_obj_w_files.available_tables[0]["available_data"]["columns"]["missing_data"]) == {
+            "/parties/identifier/uri",
+            "/parties/additionalIdentifiers/0/id",
+            "/parties/additionalIdentifiers/0/legalName",
+            "/parties/additionalIdentifiers/0/scheme",
+            "/parties/additionalIdentifiers/0/uri",
+        }
 
     # def test_json_w_records(self, upload_obj):
     #     with open(upload_obj.file.path, "w") as f:
