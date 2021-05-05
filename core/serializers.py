@@ -26,7 +26,7 @@ class FlattenSerializer(serializers.ModelSerializer):
 
 
 class DataSelectionSerializer(serializers.ModelSerializer):
-    tables = TablesSerializer(many=True)
+    tables = TablesSerializer(many=True, allow_empty=False)
     flattens = FlattenSerializer(read_only=True, many=True)
 
     class Meta:
