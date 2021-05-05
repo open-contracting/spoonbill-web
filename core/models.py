@@ -122,7 +122,7 @@ class DataSelection(models.Model):
         (ES_R_FRIENDLY, _("Apply Spanish R friendly headings to all tables")),
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    tables = models.ManyToManyField("Table", blank=True)
+    tables = models.ManyToManyField("Table")
     headings_type = models.CharField(max_length=30, choices=HEADING_TYPES, default=OCDS)
     flattens = models.ManyToManyField("Flatten", blank=True)
 

@@ -71,6 +71,11 @@ class TestUpload:
             "detail": {"tables": {"non_field_errors": ['Expected a list of items but got type "str".']}}
         }
 
+        data = {"tables": []}
+        response = client.post(url, content_type="application/json", data=data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {"detail": {"tables": {"non_field_errors": ["This list may not be empty."]}}}
+
     def test_get_selections_successful(self, client, upload_obj):
         get_data_selections(client, upload_obj, self.url_prefix)
 
