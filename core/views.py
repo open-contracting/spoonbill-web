@@ -163,11 +163,15 @@ class URLViewSet(viewsets.GenericViewSet):
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DataSelectionViewSet(viewsets.ModelViewSet):
+class DataSelectionViewSet(viewsets.GenericViewSet):
     serializer_class = DataSelectionSerializer
     queryset = DataSelection.objects.all()
     lookup_field = "id"
     http_method_names = ["get", "post", "patch", "head", "options", "trace"]
+
+    def retrieve(self, request, id=None, *args, **kwargs):
+        serializer = self.get_serializer_class()(self.get_object())
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, upload_id=None, url_id=None):
         serializer = self.get_serializer_class()(data=request.data or request.POST)
@@ -193,7 +197,7 @@ class DataSelectionViewSet(viewsets.ModelViewSet):
             serializer = DataSelectionSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def update(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         ds = DataSelection.objects.get(id=kwargs.get("id"))
         if "headings_type" in request.data and ds.headings_type != request.data["headings_type"]:
             types = [t[0] for t in ds.HEADING_TYPES]
