@@ -49,11 +49,11 @@ def retrieve_tables(analyzed_data):
         if table.get("total_rows", 0) == 0:
             unavailable_tables.append(key)
             continue
-        arrays_count = len([v for v in table.get("arrays", {}).values() if v > 0])
+        arrays = {k: v for k, v in table.get("arrays", {}).items() if v > 0}
         available_table = {
             "name": table.get("name"),
             "rows": table.get("total_rows"),
-            "arrays": {"count": arrays_count},
+            "arrays": arrays,
             "available_data": {
                 "columns": {
                     "additional": list(table.get("additional_columns", {}).keys()),
@@ -62,10 +62,15 @@ def retrieve_tables(analyzed_data):
             },
         }
         available_cols = 0
+        missing_columns_data = []
         for col in table.get("columns", {}).values():
             if col.get("hits", 0) > 0:
                 available_cols += 1
-        available_table["available_data"]["columns"]["available"] = available_cols
+            else:
+                missing_columns_data.append(col["id"])
+        available_table["available_data"]["columns"].update(
+            {"available": available_cols, "missing_data": missing_columns_data}
+        )
         available_tables.append(available_table)
     return available_tables, unavailable_tables
 
