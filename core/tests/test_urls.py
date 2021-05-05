@@ -171,3 +171,14 @@ class TestUrl:
         assert len(response.json()) == 3
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
+
+    def test_table_split_failed(self, client, url_obj_w_files):
+        selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
+        tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
+
+        response = client.patch(
+            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}",
+            data={"split": True},
+            content_type="application/json",
+        )
+        assert response.status_code == 404
