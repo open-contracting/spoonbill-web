@@ -165,7 +165,7 @@ LOCALE_PATHS = [f"{BASE_DIR}/core/locale", f"{BASE_DIR}/spoonbill_web/locale"]
 
 # Routes
 API_PREFIX = os.getenv("API_PREFIX", "")
-
+APPEND_SLASH = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
