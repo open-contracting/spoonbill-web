@@ -3,7 +3,7 @@
         <div class="rounded-box select-data-option">
             <translate tag="h3" class="select-data-option__title">Download OCDS Lite Data</translate>
             <translate tag="p" class="select-data-option__description">
-                Skip customization and download the most commonly used fields, as recommended by data analyst at OCP.
+                Skip customization and download the most commonly used fields, as recommended by the data analyst at OCP.
             </translate>
             <div class="d-flex justify-end">
                 <app-button text color="darkest" accent @click="selectOption('AUTO')">

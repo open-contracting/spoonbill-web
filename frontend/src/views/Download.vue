@@ -41,21 +41,56 @@
         <v-col class="mt-6 additional-resources" cols="12" md="8" lg="6">
             <translate class="additional-resources__title" tag="h3">Additional resources</translate>
             <translate class="mt-4 mb-3" tag="p">Analysing your data</translate>
-            <p class="fw-300">
-                <translate>Using the</translate>
-                <translate
-                    class="ml-1 text-link"
-                    tag="a"
-                    href="https://standard.open-contracting.org/latest/en/schema/release/"
-                    target="_blank"
-                    rel="noopener"
-                >
-                    release schema
-                </translate>
-                <translate>
-                    will further help to understand what the data in the OCDS fields means and how the tables are related.
-                </translate>
-            </p>
+            <ul class="app-list">
+                <li>
+                    <translate>You can find a full list of definitions of the different OCDS fields in the</translate>
+                    <translate
+                        class="text-link"
+                        tag="a"
+                        href="https://standard.open-contracting.org/latest/en/schema/release/"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        release schema
+                    </translate>
+                    <translate>or using the</translate>
+                    <translate
+                        class="text-link"
+                        tag="a"
+                        href="https://open-contracting.github.io/ocds-r-manual/#introduction"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        OCDS Glossary
+                    </translate>
+                </li>
+                <li class="my-3">
+                    <translate>You can learn more about how to analyse your Excel data using the following</translate>
+                    <translate
+                        class="text-link"
+                        tag="a"
+                        href="https://open-contracting.org/learn/use#analyze"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        video tutorials
+                    </translate>
+                </li>
+                <li>
+                    <translate>
+                        If you are experienced with R, our manual for how to use R to analyse OCDS data can be found
+                    </translate>
+                    <translate
+                        class="text-link"
+                        tag="a"
+                        href="https://open-contracting.github.io/ocds-r-manual/#introduction"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        here
+                    </translate>
+                </li>
+            </ul>
         </v-col>
     </v-row>
 </template>
