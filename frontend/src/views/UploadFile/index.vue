@@ -4,13 +4,13 @@
             <translate tag="h2" class="page-title">Select a JSON file to flatten</translate>
 
             <translate tag="p" class="page-description">
-                The Flatten tool converts JSON OCDS data to Excel (.xlsx) and helps users to understand what data is
-                contained in the file.
+                The Flatten Tool converts JSON OCDS data to Excel (.xlsx) and helps you to understand what data is contained
+                in the file.
             </translate>
 
             <translate tag="p" class="page-description">
-                The file size is very large and has multiple tables. It is recommended that you only flatten data that you
-                actually want to use.
+                If the file size you have uploaded is very large and has multiple tables, it is recommended that you only
+                select and flatten data that you actually want to use.
             </translate>
 
             <upload-file-input class="mt-7" />
@@ -30,12 +30,17 @@
                             href="https://flatten-tool.readthedocs.io/en/latest/usage-ocds/"
                             >Command-Line tool</translate
                         >.
+                        <br />
+                        <translate>
+                            Please note that the Command-Line Tool requires some knowledge of programming and is not-suited
+                            to non-technical users.
+                        </translate>
                     </p>
                     <v-divider class="my-5" />
                     <p class="mb-0">
                         <translate>
-                            The JSON data should be in OCDS 1.1 or 1.0, otherwise it may not be possible to flatten. If you
-                            are uncertain whether your data complies with OCDS, use the
+                            The JSON data you upload should be in OCDS 1.1 or 1.0, otherwise it may not be possible to
+                            flatten. If you are uncertain whether your data complies with OCDS, use the
                         </translate>
                         <translate
                             tag="a"

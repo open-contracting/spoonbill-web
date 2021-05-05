@@ -15,11 +15,11 @@ export default {
     },
 
     getUploadInfo(id) {
-        return axios.get('uploads/' + id);
+        return axios.get('uploads/' + id + '/');
     },
 
     getUploadInfoByUrl(id) {
-        return axios.get('urls/' + id);
+        return axios.get('urls/' + id + '/');
     },
 
     /**
@@ -54,7 +54,7 @@ export default {
      * @param { string } tableId - id of table
      */
     getTablePreview(type, uploadId, selectionsId, tableId) {
-        return axios.get(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/preview`);
+        return axios.get(`${type}/${uploadId}/selections/${selectionsId}/tables/${tableId}/preview/`);
     },
 
     /**
