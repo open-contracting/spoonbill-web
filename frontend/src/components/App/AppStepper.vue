@@ -33,7 +33,7 @@
                 step="4"
                 @click="navigateTo(4, '/edit-headings')"
             >
-                <translate :class="{ 'text-link': value > 4 }">Edit headings</translate>
+                <translate :class="{ 'text-link': value > 4 }">Edit tables</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 4, complete: value > 5 }"></v-divider>

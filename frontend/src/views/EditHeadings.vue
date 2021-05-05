@@ -1,7 +1,7 @@
 <template>
     <v-row>
         <v-col cols="12" md="8">
-            <translate tag="h2" class="page-title">Add friendly column headings</translate>
+            <translate tag="h2" class="page-title">Select column headings and edit table names</translate>
         </v-col>
 
         <v-col cols="12" v-if="$store.state.selections">
