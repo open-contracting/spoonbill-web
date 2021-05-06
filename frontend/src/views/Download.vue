@@ -61,8 +61,8 @@
                         target="_blank"
                         rel="noopener"
                     >
-                        OCDS Glossary
-                    </translate>
+                        OCDS Glossary</translate
+                    >.
                 </li>
                 <li class="my-3">
                     <translate>You can learn more about how to analyse your Excel data using the following</translate>
@@ -73,8 +73,8 @@
                         target="_blank"
                         rel="noopener"
                     >
-                        video tutorials
-                    </translate>
+                        video tutorials</translate
+                    >.
                 </li>
                 <li>
                     <translate>
@@ -87,8 +87,8 @@
                         target="_blank"
                         rel="noopener"
                     >
-                        here
-                    </translate>
+                        here</translate
+                    >.
                 </li>
             </ul>
         </v-col>
