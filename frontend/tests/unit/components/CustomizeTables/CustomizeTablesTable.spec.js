@@ -8,29 +8,25 @@ import router from '@/router';
 
 const available_tables = [
     {
-        arrays: {
-            count: 2,
-            threshold: 5,
-            below_threshold: ['parties/0/roles'],
-            above_threshold: ['tenderer'],
-        },
+        arrays: {},
         name: 'parties',
         rows: 5,
         available_data: { columns: { total: 22, available: 18, additional: ['parties/0/identifier/Name'] } },
     },
     {
-        arrays: { count: 7, threshold: 5, above_threshold: ['tender/items'] },
+        arrays: { one: 'one', two: 'two' },
         name: 'tenders',
         rows: 11,
         available_data: { columns: { total: 35, available: 34 } },
     },
     {
-        arrays: { count: 2, threshold: 5, above_threshold: ['awards/0/suppliers', 'awards/0/items'] },
+        arrays: { one: 'one', two: 'two' },
         available_data: { total: 16, available: 9 },
         name: 'awards',
         rows: 4,
     },
     {
+        arrays: {},
         available_data: {
             total: 10,
             available: 10,
@@ -87,7 +83,7 @@ describe('CustomizeTablesTable.vue', () => {
                 },
             });
             expect(wrapper.vm.availableData.length).toBe(0);
-            expect(wrapper.vm.arrays.length).toBe(0);
+            expect(wrapper.vm.arrays.length).toBe(1);
 
             await wrapper.setProps({
                 table: {
@@ -96,7 +92,7 @@ describe('CustomizeTablesTable.vue', () => {
                 },
             });
             expect(wrapper.vm.availableData.length).toBe(3);
-            expect(wrapper.vm.arrays.length).toBe(2);
+            expect(wrapper.vm.arrays.length).toBe(1);
         });
 
         test("'onSplitSwitchChange' changes split status of table", async () => {

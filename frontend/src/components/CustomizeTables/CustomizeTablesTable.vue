@@ -5,6 +5,30 @@
                 <div v-if="aboutThisTable">
                     <translate tag="p" class="mb-2">About this table</translate>
                     <p class="fw-300" v-for="(item, idx) in aboutThisTable" :key="idx">{{ item }}</p>
+                    <template v-if="missingData.length">
+                        <translate tag="p" class="mb-2">Missing data</translate>
+                        <v-menu
+                            v-model="missingDataMenu"
+                            content-class="missing-columns-menu"
+                            :close-on-content-click="false"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                                <p class="d-inline-block text-link" v-bind="attrs" v-on="on">
+                                    See column headings with missing data
+                                </p>
+                            </template>
+                            <v-card class="pa-4 d-flex">
+                                <div class="mr-2 missing-columns-list">
+                                    <span v-for="heading in missingData" class="missing-columns-list__item" :key="heading">
+                                        {{ heading }}
+                                    </span>
+                                </div>
+                                <v-btn icon color="darkest" @click="missingDataMenu = false">
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                            </v-card>
+                        </v-menu>
+                    </template>
                 </div>
             </v-col>
 
@@ -104,6 +128,7 @@ export default {
         return {
             loading: false,
             tables: [],
+            missingDataMenu: false,
         };
     },
 
@@ -215,40 +240,16 @@ export default {
         },
 
         arrays() {
-            const res = [];
-            const belowThreshold = this.additionalInfo.arrays?.below_threshold;
-            if (belowThreshold) {
-                let translated = this.$ngettext(
-                    'There is %{ n } array with',
-                    'There are %{ n } arrays with',
-                    belowThreshold.length
-                );
-                let belowThresholdString = this.$gettextInterpolate(translated, { n: belowThreshold.length }) + ' ';
-                translated = this.$ngettext(
-                    '%{ n } item or fewer',
-                    '%{ n } items or fewer',
-                    this.additionalInfo.arrays.threshold
-                );
-                belowThresholdString += this.$gettextInterpolate(translated, { n: this.additionalInfo.arrays.threshold });
-                res.push(belowThresholdString + ` (${belowThreshold.join(', ')})`);
-            }
-            const aboveThreshold = this.additionalInfo.arrays?.above_threshold;
-            if (aboveThreshold) {
-                let translated = this.$ngettext(
-                    'There is %{ n } array with more than',
-                    'There are %{ n } arrays with more than',
-                    aboveThreshold.length
-                );
-                let aboveThresholdString = this.$gettextInterpolate(translated, { n: aboveThreshold.length }) + ' ';
-                translated = this.$ngettext('%{ n } item ', '%{ n } items ', this.additionalInfo.arrays.threshold);
-                aboveThresholdString += this.$gettextInterpolate(translated, { n: this.additionalInfo.arrays.threshold });
-                res.push(
-                    aboveThresholdString +
-                        ` (${aboveThreshold.join(', ')}). ` +
-                        this.$gettext('This can be split into a separate table to make the data easier to work with')
-                );
-            }
-            return res;
+            let translated = this.$ngettext(
+                'There is %{ n } array in this tables',
+                'There are %{ n } arrays in this tables',
+                Object.keys(this.additionalInfo.arrays).length
+            );
+            return [this.$gettextInterpolate(translated, { n: Object.keys(this.additionalInfo.arrays).length })];
+        },
+
+        missingData() {
+            return this.additionalInfo?.available_data?.columns?.missing_data || [];
         },
 
         additionalColumns() {
@@ -260,11 +261,14 @@ export default {
             const availableColumns = this.additionalInfo.available_data?.columns?.available;
             if (availableColumns) {
                 let translated = this.$ngettext(
-                    'There is data for %{ n } column',
-                    'There are data for %{ n } of columns',
+                    'There is data for %{ n } column of the ',
+                    'There are data for %{ n } of columns of the ',
                     availableColumns
                 );
-                res.push(this.$gettextInterpolate(translated, { n: availableColumns }));
+                res.push(
+                    this.$gettextInterpolate(translated, { n: availableColumns }) +
+                        this.additionalInfo.available_data.columns.total
+                );
             }
             const additionalColumns = this.additionalInfo.available_data?.columns?.additional;
             if (additionalColumns?.length) {
@@ -418,5 +422,20 @@ export default {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+}
+.missing-columns-menu .v-btn {
+    margin-top: -14px;
+}
+
+.missing-columns-list {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 10px;
+    row-gap: 11px;
+    &__item {
+        padding: 3px 4px;
+        background-color: #ffdede;
+        font-size: 14px;
+    }
 }
 </style>

@@ -13,23 +13,24 @@ const uploadDetails = {
         {
             name: 'parties',
             rows: 5,
-            arrays: { count: 2, threshold: 5, above_threshold: ['tenderer'], below_threshold: ['parties/0/roles'] },
+            arrays: { one: 'one', two: 'two' },
             available_data: { columns: { total: 22, available: 18, additional: ['parties/0/identifier/Name'] } },
         },
         {
             name: 'tenders',
             rows: 11,
-            arrays: { count: 7, threshold: 5, above_threshold: ['tender/items'] },
+            arrays: {},
             available_data: { columns: { total: 35, available: 34 } },
         },
         {
             name: 'awards',
             rows: 4,
-            arrays: { count: 2, threshold: 5, above_threshold: ['awards/0/suppliers', 'awards/0/items'] },
+            arrays: { one: 'one' },
             available_data: { total: 16, available: 9 },
         },
         {
             name: 'documents',
+            arrays: {},
             rows: 5,
         },
     ],
