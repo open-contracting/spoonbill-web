@@ -38,9 +38,10 @@ export default {
                 return this.$gettext('no data');
             } else {
                 const { rows, arrays } = this.table;
+                const arraysLength = Object.keys(arrays).length;
                 let result = this.$gettext('total row count: ') + rows;
                 if (arrays) {
-                    result += `, ${arrays.count} ${arrays.count > 1 ? this.$gettext('arrays') : this.$gettext('array')}`;
+                    result += `, ${arraysLength} ${arraysLength > 1 ? this.$gettext('arrays') : this.$gettext('array')}`;
                 }
                 return result;
             }
