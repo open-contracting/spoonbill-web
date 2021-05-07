@@ -187,6 +187,16 @@ describe('UploadFileInput.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.vm.loading.value).toBe(true);
             expect(wrapper.vm.loading.status).toBe('File is queued for validation...');
+
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+                status: UPLOAD_STATUSES.QUEUED_DOWNLOAD,
+            });
+
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.loading.value).toBe(true);
+            expect(wrapper.vm.loading.status).toBe('File is queued for downloading...');
         });
     });
 });

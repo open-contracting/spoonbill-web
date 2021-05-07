@@ -1,5 +1,5 @@
 import store from '@/store';
-import { TASK_TYPES, UPLOAD_TYPES } from '@/constants';
+import { FLATTEN_STATUSES, TASK_TYPES, UPLOAD_TYPES } from '@/constants';
 import ApiService from '@/services/ApiService';
 import WS from 'jest-websocket-mock';
 
@@ -20,6 +20,7 @@ const testSelections = {
             include: false,
         },
     ],
+    flattens: [],
 };
 
 describe('store', () => {
@@ -95,6 +96,29 @@ describe('store', () => {
             store.commit('setSelections', testSelections);
             store.commit('setHeadingsType', 'r_friendly');
             expect(store.state.selections.headings_type).toBe('r_friendly');
+        });
+
+        test("'setFlatten' adds new flatten or updates existing", () => {
+            store.commit('setSelections', testSelections);
+            expect(store.state.selections.flattens.length).toBe(0);
+            store.commit('setFlatten', {
+                id: 'flatten-1',
+                export_format: 'csv',
+                status: 'processing',
+            });
+            expect(store.state.selections.flattens.length).toBe(1);
+            store.commit('setFlatten', {
+                id: 'flatten-1',
+                export_format: 'csv',
+                status: 'completed',
+            });
+            expect(store.state.selections.flattens.length).toBe(1);
+            store.commit('setFlatten', {
+                id: 'flatten-2',
+                export_format: 'xlsx',
+                status: 'completed',
+            });
+            expect(store.state.selections.flattens.length).toBe(2);
         });
     });
 
@@ -213,6 +237,22 @@ describe('store', () => {
                 })
             );
             expect(store.state.uploadDetails.id).toBe('received from socket');
+
+            await server.send(
+                JSON.stringify({
+                    type: TASK_TYPES.FLATTEN,
+                    flatten: {
+                        id: 'flatten-1',
+                        export_format: 'csv',
+                        status: FLATTEN_STATUSES.FAILED,
+                        error: 'test error message',
+                    },
+                })
+            );
+            expect(store.state.snackbar.text).toBe('test error message');
+            expect(store.state.selections.flattens.find((flatten) => flatten.id === 'flatten-1').error).toBe(
+                'test error message'
+            );
             await server.close();
         });
     });
