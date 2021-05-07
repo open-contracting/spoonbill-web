@@ -24,7 +24,12 @@ describe('AppTable.vue', () => {
             propsData: {
                 name: 'Test',
                 headers: ['h1', 'h2', 'h3', 'h4', 'h5'],
-                data: [['d1', 'd2', 'd3', 'd4', 'd5']],
+                data: [
+                    ['d1', 'd2', 'd3', 'd4', 'd5'],
+                    ['d1', 'd2', 'd3', 'd4', 'd5'],
+                    ['d1', 'd2', 'd3', 'd4', 'd5'],
+                ],
+                rowLimit: 1,
                 additionalColumns: ['h2', 'h3'],
                 showFirstRow: true,
             },
