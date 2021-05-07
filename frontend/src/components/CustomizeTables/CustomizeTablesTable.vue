@@ -13,9 +13,9 @@
                             :close-on-content-click="false"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                                <p class="d-inline-block text-link" v-bind="attrs" v-on="on">
+                                <translate tag="p" class="d-inline-block text-link" v-bind="attrs" v-on="on">
                                     See column headings with missing data
-                                </p>
+                                </translate>
                             </template>
                             <v-card class="pa-4 d-flex">
                                 <div class="mr-2 missing-columns-list">
