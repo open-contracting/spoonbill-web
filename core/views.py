@@ -14,6 +14,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
+from core.constants import OCDS_LITE_CONFIG
 from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
 from core.serializers import (
     DataSelectionSerializer,
@@ -193,10 +194,18 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, upload_id=None, url_id=None):
-        serializer = self.get_serializer_class()(data=request.data or request.POST)
+        data = request.data or request.POST
+        kind = data.get("kind", DataSelection.CUSTOM)
+        if kind == DataSelection.OCDS_LITE:
+            datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
+            tables = [
+                {"name": t["name"]} for t in datasource.available_tables if t["name"] in OCDS_LITE_CONFIG["tables"]
+            ]
+            data["tables"] = tables
+        serializer = self.get_serializer_class()(data=data)
         if serializer.is_valid():
-            ds = DataSelection.objects.create()
-            for table in request.data.get("tables", []):
+            ds = DataSelection.objects.create(kind=kind)
+            for table in serializer.data["tables"]:
                 tb = Table.objects.create(**table)
                 ds.tables.add(tb)
             if upload_id:

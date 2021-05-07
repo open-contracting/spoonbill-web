@@ -11,6 +11,7 @@ import ijson
 from django.utils.translation import activate, get_language
 
 from core.column_headings import headings
+from core.constants import OCDS_LITE_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -158,15 +159,46 @@ def zip_files(source_dir, zipfile, extension=None):
                     fzip.write(os.path.join(folder, file_), file_)
 
 
+def get_only_columns(table, analyzed_data):
+    only_columns = []
+    columns = (
+        analyzed_data["tables"][table.name]["columns"].keys()
+        if table.split
+        else analyzed_data["tables"][table.name]["combined_columns"].keys()
+    )
+    for col in columns:
+        non_index_based = re.sub(r"\d", "*", col)
+        if non_index_based in OCDS_LITE_CONFIG["tables"][table.name]["only"]:
+            only_columns.append(col)
+    return only_columns
+
+
 def get_flatten_options(selection):
     selections = {}
     exclude_tables_list = []
 
+    if selection.kind == selection.OCDS_LITE:
+        datasource = selection.url_set.all() or selection.upload_set.all()
+        with open(datasource[0].analyzed_file.path) as fd:
+            analyzed_data = json.loads(fd.read())
     for table in selection.tables.all():
         if not table.include:
             exclude_tables_list.append(table.name)
             continue
-        selections[table.name] = {"split": table.split}
+        if selection.kind == selection.OCDS_LITE and table.name in OCDS_LITE_CONFIG["tables"]:
+            selections[table.name] = {"split": table.split, "only": get_only_columns(table, analyzed_data)}
+        elif selection.kind == selection.OCDS_LITE and table.name not in OCDS_LITE_CONFIG["tables"]:
+            extra = {
+                "MESSAGE_ID": "skip_table_for_export_config",
+                "TABLE_ID": str(table.id),
+                "TABLE_NAME": table.name,
+                "SELECTION_ID": str(selection.id),
+                "SELECTION_KIND": selection.kind,
+            }
+            logger.info("Skip %s for flatten" % table, extra=extra)
+            continue
+        else:
+            selections[table.name] = {"split": table.split}
         if table.column_headings:
             selections[table.name]["headers"] = table.column_headings
         if table.heading:
