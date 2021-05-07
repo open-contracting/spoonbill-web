@@ -67,31 +67,29 @@ def validate_data(object_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "validate_data"}
         ds_model, serializer = get_serializer_by_model(model, logger_context)
-        if not ds_model:
-            return
-        try:
-            datasource = ds_model.objects.get(id=object_id)
-        except ObjectDoesNotExist:
-            logger_context["MODEL"] = model
-            logger_context["MESSAGE_ID"] = "datasource_not_found"
-            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
-            return
-
-        datasource.status = "validation"
-        datasource.save(update_fields=["status"])
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"datasource_{datasource.id}",
-            {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
-        )
-
-        logger.debug("Start validation for %s file" % object_id)
-
-        is_valid = False
-        with open(SCHEMA_PATH) as fd:
-            schema = json.loads(fd.read())
-        spec = DataPreprocessor(schema, ROOT_TABLES, combined_tables=COMBINED_TABLES)
+        if not ds_model:
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{object_id}",
+                {"type": "task.validate", "error": _("Model %s for datasource not found") % model},
+            )
+            return
         try:
+            is_valid = False
+            datasource = ds_model.objects.get(id=object_id)
+
+            datasource.status = "validation"
+            datasource.save(update_fields=["status"])
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
+            )
+
+            logger.debug("Start validation for %s file" % object_id)
+
+            with open(SCHEMA_PATH) as fd:
+                schema = json.loads(fd.read())
+            spec = DataPreprocessor(schema, ROOT_TABLES, combined_tables=COMBINED_TABLES)
             resource = ""
             if is_release_package(datasource.file.path):
                 resource = "releases"
@@ -105,38 +103,68 @@ def validate_data(object_id, model=None, lang_code="en"):
                     )
                 analyzed_data = spec.dump()
                 is_valid = True
+
+            datasource.validation.is_valid = is_valid
+            datasource.root_key = resource
+            datasource.validation.save(update_fields=["is_valid"])
+            datasource.save(update_fields=["root_key"])
+
+            if is_valid and not datasource.available_tables and not datasource.analyzed_file:
+                with TemporaryFile() as temp:
+                    temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
+                    temp.seek(0)
+                    datasource.analyzed_file = File(temp)
+                    available_tables, unavailable_tables = retrieve_tables(analyzed_data)
+                    datasource.available_tables = available_tables
+                    datasource.unavailable_tables = unavailable_tables
+                    datasource.save(update_fields=["analyzed_file", "available_tables", "unavailable_tables"])
+            elif is_valid and datasource.analyzed_file:
+                with open(datasource.analyzed_file.path) as f:
+                    data = json.loads(f.read())
+                    available_tables, unavailable_tables = retrieve_tables(data)
+                    datasource.available_tables = available_tables
+                    datasource.unavailable_tables = unavailable_tables
+                    datasource.save(update_fields=["available_tables", "unavailable_tables"])
+
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
+            )
+        except ObjectDoesNotExist:
+            logger_context["MODEL"] = model
+            logger_context["MESSAGE_ID"] = "datasource_not_found"
+            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{object_id}",
+                {"type": "task.validate", "error": _("Datasource %s not found") % object_id},
+            )
+            return
         except (ijson.JSONError, ijson.IncompleteJSONError) as e:
             logger.info(
                 "Error while validating data %s" % object_id,
                 extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
             )
-
-        datasource.validation.is_valid = is_valid
-        datasource.root_key = resource
-        datasource.validation.save(update_fields=["is_valid"])
-        datasource.save(update_fields=["root_key"])
-
-        if is_valid and not datasource.available_tables and not datasource.analyzed_file:
-            with TemporaryFile() as temp:
-                temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
-                temp.seek(0)
-                datasource.analyzed_file = File(temp)
-                available_tables, unavailable_tables = retrieve_tables(analyzed_data)
-                datasource.available_tables = available_tables
-                datasource.unavailable_tables = unavailable_tables
-                datasource.save(update_fields=["analyzed_file", "available_tables", "unavailable_tables"])
-        elif is_valid and datasource.analyzed_file:
-            with open(datasource.analyzed_file.path) as f:
-                data = json.loads(f.read())
-                available_tables, unavailable_tables = retrieve_tables(data)
-                datasource.available_tables = available_tables
-                datasource.unavailable_tables = unavailable_tables
-                datasource.save(update_fields=["available_tables", "unavailable_tables"])
-
-        async_to_sync(channel_layer.group_send)(
-            f"datasource_{datasource.id}",
-            {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
-        )
+            message = _("Error while validating data `%s`") % str(e)
+            datasource.validation.errors = message
+            datasource.validation.is_valid = is_valid
+            datasource.validation.save(update_fields=["errors", "is_valid"])
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.validate", "error": message},
+            )
+        except Exception as e:
+            logger.exception(
+                "Error while validating data %s" % object_id,
+                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+            )
+            message = _("Error while validating data `%s`") % str(e)
+            datasource.validation.errors = message
+            datasource.validation.is_valid = is_valid
+            datasource.validation.save(update_fields=["errors", "is_valid"])
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.validate", "error": message},
+            )
 
 
 @celery_app.task
@@ -173,8 +201,13 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
 def download_data_source(object_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "download_data_source"}
+        channel_layer = get_channel_layer()
         ds_model, serializer = get_serializer_by_model(model, logger_context)
         if not ds_model or not serializer:
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{object_id}",
+                {"type": "task.download_data_source", "error": _("Model %s for datasource not found") % model},
+            )
             return
         try:
             datasource = ds_model.objects.get(id=object_id)
@@ -182,7 +215,6 @@ def download_data_source(object_id, model=None, lang_code="en"):
             datasource.status = "downloading"
             datasource.save(update_fields=["status"])
 
-            channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{object_id}",
                 {
@@ -317,6 +349,10 @@ def download_data_source(object_id, model=None, lang_code="en"):
             logger_context["MODEL"] = model
             logger_context["MESSAGE_ID"] = "datasource_not_found"
             logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{object_id}",
+                {"type": "task.download_data_source", "error": _("Datasource %s not found") % object_id},
+            )
             return
         except Exception as e:
             logger.exception(
@@ -344,6 +380,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 def flatten_data(flatten_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
         logger_context = {"FLATTEN_ID": flatten_id, "TASK": "flatten_data"}
+        channel_layer = get_channel_layer()
         if model not in getters:
             extra = {
                 "MESSAGE_ID": "model_not_registered",
@@ -360,7 +397,6 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             datasource = getattr(selection, f"{model.lower()}_set").all()[0]
             flatten.status = "processing"
             flatten.save(update_fields=["status"])
-            channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",
                 {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
@@ -407,7 +443,7 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             extra["MESSAGE_ID"] = "flatten_not_found"
             logger.info("Flatten %s for %s model not found" % (flatten_id, model), extra=extra)
             return
-        except TypeError as e:
+        except (TypeError, Exception) as e:
             error_message = str(e)
             extra = deepcopy(logger_context)
             extra["MODEL"] = model

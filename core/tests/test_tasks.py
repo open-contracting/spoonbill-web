@@ -97,6 +97,16 @@ class TestValidateDataTask(BaseUploadTestSuite):
             },
         )
 
+    def test_handle_exception(self, upload_obj, mocker):
+        mocked_logger = mocker.patch("core.tasks.logger")
+        mocked_open = mocker.patch("core.tasks.open")
+        mocked_open.side_effect = Exception("Open fails")
+        validate_data(upload_obj.id, model=self.model)
+        assert mocked_logger.exception.call_count == 1
+        datasource = Upload.objects.get(id=upload_obj.id)
+        assert not datasource.validation.is_valid
+        assert datasource.validation.errors == f"Error while validating data `{str(mocked_open.side_effect)}`"
+
 
 @pytest.mark.django_db
 class TestCleanupUploadTask(BaseUploadTestSuite):
