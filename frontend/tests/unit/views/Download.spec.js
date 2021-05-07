@@ -89,6 +89,66 @@ describe('Download.vue', () => {
         });
     });
 
+    describe('watchers', () => {
+        test("'flattens' close connection if all flattens has completed/failed status", async () => {
+            store.commit('setUploadDetails', {
+                id: 'test id',
+                type: UPLOAD_TYPES.UPLOAD,
+            });
+            const wrapper = mount(Download, {
+                localVue,
+                vuetify,
+                store,
+                router,
+            });
+            await wrapper.vm.$nextTick();
+            jest.clearAllMocks();
+            store.dispatch = jest.fn();
+            store.commit('setSelections', {
+                ...store.state.selections,
+                flattens: [
+                    {
+                        id: 'flatten-1',
+                        export_format: 'csv',
+                        file: null,
+                        status: 'processing',
+                        error: '',
+                    },
+                    {
+                        id: 'flatten-2',
+                        export_format: 'xlsx',
+                        file: null,
+                        status: 'completed',
+                        error: '',
+                    },
+                ],
+            });
+            expect(store.dispatch).toBeCalledTimes(0);
+            store.commit('setSelections', {
+                ...store.state.selections,
+                flattens: [
+                    {
+                        id: 'flatten-1',
+                        export_format: 'csv',
+                        file: null,
+                        status: 'failed',
+                        error: '',
+                    },
+                    {
+                        id: 'flatten-2',
+                        export_format: 'xlsx',
+                        file: null,
+                        status: 'completed',
+                        error: '',
+                    },
+                ],
+            });
+            await wrapper.vm.$nextTick();
+            expect(store.dispatch).toHaveBeenCalled();
+            store.dispatch = actualDispatch;
+        });
+    });
+
     it('gets selections once created', async () => {
         jest.clearAllMocks();
         store.commit('setSelections', null);
