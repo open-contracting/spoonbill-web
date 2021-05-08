@@ -320,3 +320,19 @@ class TestFlattenDataTask:
         assert flatten.status == Flatten.COMPLETED
         assert flatten.file.path.startswith(settings.MEDIA_ROOT)
         assert flatten.file.path.endswith(".zip")
+
+    def test_flatten_csv_successful_lite(self, client, upload_obj_validated):
+        selection_id, flatten_id = create_flatten(
+            client, upload_obj_validated, prefix=self.url_prefix, export_format=Flatten.CSV, kind="ocds_lite"
+        )
+        selection = DataSelection.objects.get(id=selection_id)
+        assert selection.kind == selection.OCDS_LITE
+        tables = selection.tables.all()
+        assert len(tables) == 4
+
+        flatten_data(flatten_id, model=self.model)
+
+        flatten = Flatten.objects.get(id=flatten_id)
+        assert flatten.status == Flatten.COMPLETED
+        assert flatten.file.path.startswith(settings.MEDIA_ROOT)
+        assert flatten.file.path.endswith(".zip")

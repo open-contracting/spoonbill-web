@@ -62,6 +62,9 @@ class TestUpload:
     def test_create_selections_successful(self, client, upload_obj):
         create_data_selection(client, upload_obj, self.url_prefix)
 
+    def test_create_selections_successful_lite(self, client, upload_obj_validated):
+        create_data_selection(client, upload_obj_validated, self.url_prefix, kind="ocds_lite")
+
     def test_create_selections_failed(self, client, upload_obj):
         url = f"{self.url_prefix}{upload_obj.id}/selections/"
         data = {"tables": "name"}
@@ -317,3 +320,24 @@ class TestUpload:
         )
         assert response.status_code == 200
         assert response.json()["status"] == Flatten.SCHEDULED
+
+    def test_flatten_create_successful_lite(self, client, upload_obj_validated):
+        selection = create_data_selection(client, upload_obj_validated, self.url_prefix, kind="ocds_lite")
+        file_formats = ("xlsx", "csv")
+        for file_format in file_formats:
+            response = client.post(
+                f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/",
+                content_type="application/json",
+                data={"export_format": file_format},
+            )
+            assert response.status_code == 201
+            flatten_id = response.json()["id"]
+            response = client.get(
+                f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/{flatten_id}/",
+            )
+            flatten_data = response.json()
+            assert set(flatten_data.keys()) == {"id", "export_format", "file", "status", "error"}
+            assert flatten_data["export_format"] == file_format
+            assert flatten_data["file"] is None
+            assert flatten_data["status"] == "scheduled"
+            assert flatten_data["error"] == ""

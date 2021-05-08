@@ -114,6 +114,9 @@ class DataSelection(models.Model):
     EN_R_FRIENDLY = "en_r_friendly"
     ES_USER_FRIENDLY = "es_user_friendly"
     ES_R_FRIENDLY = "es_r_friendly"
+    CUSTOM = "custom"
+    OCDS_LITE = "ocds_lite"
+    KIND_CHOICES = [(CUSTOM, _("Custom")), (OCDS_LITE, _("OCDS Lite"))]
     HEADING_TYPES = [
         (OCDS, _("Apply OCDS headings only")),
         (EN_USER_FRIENDLY, _("Apply English user friendly headings to all tables")),
@@ -125,6 +128,7 @@ class DataSelection(models.Model):
     tables = models.ManyToManyField("Table")
     headings_type = models.CharField(max_length=30, choices=HEADING_TYPES, default=OCDS)
     flattens = models.ManyToManyField("Flatten", blank=True)
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES, default=CUSTOM)
 
     class Meta:
         db_table = "data_selections"
