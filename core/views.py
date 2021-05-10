@@ -214,6 +214,7 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
             elif "upload_id" in kwargs:
                 source = Upload.objects.get(id=kwargs["upload_id"])
             set_column_headings(ds, source.analyzed_file.path)
+            ds.flattens.all().delete()
         serializer = DataSelectionSerializer(ds)
         return Response(serializer.data)
 
@@ -250,6 +251,9 @@ class TableViewSet(viewsets.ModelViewSet):
             child_tables = tables.get(table.name, {}).get("child_tables", [])
             self._split_table(table, tables, datasource, child_tables)
         serializer = self.get_serializer_class()(table)
+        sources = table.dataselection_set.all() or table.array_tables.all()[0].dataselection_set.all()
+        if sources:
+            sources[0].flattens.all().delete()
         return Response(serializer.data)
 
     def _split_table(self, table, analyzed_tables, datasource, child_tables):
