@@ -88,6 +88,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    "django_transfer.TransferMiddleware",
 ]
 
 ROOT_URLCONF = "spoonbill_web.urls"
@@ -201,3 +202,9 @@ CHANNEL_LAYERS = {
 
 # SSL
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Django transfer: https://pypi.org/project/django-transfer/
+TRANSFER_SERVER = os.getenv("TRANSFER_SERVER", "")
+TRANSFER_MAPPINGS = {
+    MEDIA_ROOT[:-1]: MEDIA_URL[:-1],
+}
