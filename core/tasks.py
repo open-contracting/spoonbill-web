@@ -189,12 +189,12 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
                 "Skip datasource cleanup %s, expired_at in future %s"
                 % (datasource.id, datasource.expired_at.isoformat())
             )
+            cleanup_upload.apply_async((datasource.id, model, lang_code), eta=datasource.expired_at)
             return
         datasource_path = os.path.dirname(datasource.file.path)
         shutil.rmtree(datasource_path, ignore_errors=True)
-        datasource.deleted = True
-        datasource.save(update_fields=["deleted"])
-        logger.debug("Remove all data from %s%s" % (settings.MEDIA_ROOT, datasource.id))
+        datasource.delete()
+        logger.debug("Remove all data from %s" % (datasource_path))
 
 
 @celery_app.task
