@@ -61,3 +61,4 @@ jobs:
             diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=${{ secrets.COVERAGE_PERCENT }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: True
