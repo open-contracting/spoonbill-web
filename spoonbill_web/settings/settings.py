@@ -55,7 +55,7 @@ logging.config.dictConfig(LOGGING)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "v3ry$3cr3tk3yf0rdj@ng0")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.getenv("DEBUG", True))
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 if "ALLOWED_HOSTS" in os.environ:

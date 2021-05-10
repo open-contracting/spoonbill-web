@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import shutil
+import uuid
 from copy import deepcopy
 from datetime import timedelta
 from tempfile import TemporaryFile
@@ -86,7 +87,6 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
 
             logger.debug("Start validation for %s file" % object_id)
-
             with open(SCHEMA_PATH) as fd:
                 schema = json.loads(fd.read())
             spec = DataPreprocessor(schema, ROOT_TABLES, combined_tables=COMBINED_TABLES)
@@ -113,7 +113,9 @@ def validate_data(object_id, model=None, lang_code="en"):
                 with TemporaryFile() as temp:
                     temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
                     temp.seek(0)
-                    datasource.analyzed_file = File(temp)
+                    f = File(temp)
+                    f.name = uuid.uuid4().hex
+                    datasource.analyzed_file = f
                     available_tables, unavailable_tables = retrieve_tables(analyzed_data)
                     datasource.available_tables = available_tables
                     datasource.unavailable_tables = unavailable_tables
@@ -270,7 +272,9 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     )
 
                 temp.seek(0)
-                datasource.file = File(temp)
+                file_ = File(temp)
+                file_.name = uuid.uuid4().hex
+                datasource.file = file_
                 datasource.save(update_fields=["file"])
 
             if datasource.analyzed_data_url:
@@ -314,7 +318,9 @@ def download_data_source(object_id, model=None, lang_code="en"):
                             },
                         )
                     temp.seek(0)
-                    datasource.analyzed_file = File(temp)
+                    file_ = File(temp)
+                    file_.name = uuid.uuid4().hex
+                    datasource.analyzed_file = file_
                     datasource.save(update_fields=["analyzed_file"])
             datasource.status = "queued.validation"
             datasource.downloaded = True
@@ -422,14 +428,18 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
                 target_file = f"{export_dir}/{datasource.id}.zip"
                 zip_files(export_dir, target_file, extension="csv")
                 with open(target_file, "rb") as fd:
-                    flatten.file = File(fd)
+                    file_ = File(fd)
+                    file_.name = f"{datasource.id}.zip"
+                    flatten.file = file_
                     flatten.status = "completed"
                     flatten.save(update_fields=["file", "status"])
                 os.remove(fd.name)
             else:
                 target_file = f"{export_dir}/result.xlsx"
                 with open(target_file, "rb") as fd:
-                    flatten.file = File(fd)
+                    file_ = File(fd)
+                    file_.name = "result.xlsx"
+                    flatten.file = file_
                     flatten.status = "completed"
                     flatten.save(update_fields=["file", "status"])
                 os.remove(fd.name)

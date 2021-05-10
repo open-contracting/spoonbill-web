@@ -1,5 +1,6 @@
 import os
 import shutil
+import uuid
 
 import pytest
 from django.conf import settings
@@ -56,6 +57,7 @@ def validation_obj():
 @pytest.fixture
 def upload_obj(validation_obj, dataset):
     file_ = File(dataset)
+    file_.name = uuid.uuid4().hex
     obj = Upload.objects.create(file=file_, validation=validation_obj, expired_at=timezone.now())
     yield obj
 
@@ -65,6 +67,7 @@ def upload_obj(validation_obj, dataset):
 @pytest.fixture
 def upload_obj_validated(upload_obj, analyzed):
     file_ = File(analyzed)
+    file_.name = uuid.uuid4().hex
     upload_obj.analyzed_file = file_
     upload_obj.save(update_fields=["analyzed_file"])
     yield upload_obj
@@ -84,8 +87,12 @@ def url_obj(validation_obj, dataset):
 
 @pytest.fixture
 def url_obj_w_files(url_obj, dataset, analyzed):
-    url_obj.file = File(dataset)
-    url_obj.analyzed_file = File(analyzed)
+    file_ = File(dataset)
+    file_.name = uuid.uuid4().hex
+    analyzed_file_ = File(analyzed)
+    analyzed_file_.name = uuid.uuid4().hex
+    url_obj.file = file_
+    url_obj.analyzed_file = analyzed_file_
     url_obj.save(update_fields=["file", "analyzed_file"])
 
     yield url_obj
