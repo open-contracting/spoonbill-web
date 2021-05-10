@@ -117,8 +117,8 @@ class TestCleanupUploadTask(BaseUploadTestSuite):
         assert not upload_obj.deleted
 
         cleanup_upload(upload_obj.id, model=self.model)
-        upload_obj = Upload.objects.get(id=upload_obj.id)
-        assert upload_obj.deleted
+        with pytest.raises(Upload.DoesNotExist):
+            Upload.objects.get(id=upload_obj.id)
 
     def test_skip_cleanup(self, upload_obj):
         expired_at = timezone.now() + timedelta(minutes=1)
