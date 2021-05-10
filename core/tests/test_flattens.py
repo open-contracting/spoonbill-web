@@ -123,3 +123,37 @@ class TestFlattenViews:
         response = self.client.get(flatten_url)
         assert response.status_code == 200
         assert response.json()["status"] == Flatten.SCHEDULED
+
+    def test_clear_flattens_after_update_dataselection(self):
+        selection_id, flatten_id = create_flatten(self.client, self.datasource, self.url_prefix, self.selection_id)
+        response = self.client.get(self.flattens_url)
+        assert response.status_code == 200
+        assert len(response.json()) == 1
+
+        url = f"{self.prefix}{self.datasource.id}/selections/{selection_id}/"
+        response = self.client.patch(url, content_type="application/json", data={"headings_type": "es_r_friendly"})
+        assert response.status_code == 200
+
+        response = self.client.get(self.flattens_url)
+        assert response.status_code == 200
+        assert len(response.json()) == 0
+
+    def test_clear_flattens_after_update_table(self):
+        selection_id, flatten_id = create_flatten(self.client, self.datasource, self.url_prefix, self.selection_id)
+        response = self.client.get(self.flattens_url)
+        assert response.status_code == 200
+        assert len(response.json()) == 1
+
+        url = f"{self.prefix}{self.datasource.id}/selections/{selection_id}/"
+        response = self.client.get(url)
+        assert response.status_code == 200
+        selection = response.json()
+        table_id = selection["tables"][0]["id"]
+        url = f"{self.prefix}{self.datasource.id}/selections/{selection_id}/tables/{table_id}/"
+
+        response = self.client.patch(url, content_type="application/json", data={"heading": "New heading"})
+        assert response.status_code == 200
+
+        response = self.client.get(self.flattens_url)
+        assert response.status_code == 200
+        assert len(response.json()) == 0
