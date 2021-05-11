@@ -365,6 +365,7 @@ class TestFlattenDataTask:
         )
         selection = DataSelection.objects.get(id=selection_id)
         assert selection.kind == selection.OCDS_LITE
+        assert selection.headings_type == selection.EN_USER_FRIENDLY
         tables = selection.tables.all()
         assert len(tables) == 4
 

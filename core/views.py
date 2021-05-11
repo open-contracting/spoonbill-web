@@ -196,7 +196,10 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
     def create(self, request, *args, upload_id=None, url_id=None):
         data = request.data or request.POST
         kind = data.get("kind", DataSelection.CUSTOM)
+        headings_type = DataSelection.OCDS
         if kind == DataSelection.OCDS_LITE:
+            lang_code = get_language()
+            headings_type = f"{lang_code}_user_friendly"
             datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
             tables = [
                 {"name": t["name"]} for t in datasource.available_tables if t["name"] in OCDS_LITE_CONFIG["tables"]
@@ -204,7 +207,7 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
             data["tables"] = tables
         serializer = self.get_serializer_class()(data=data)
         if serializer.is_valid():
-            ds = DataSelection.objects.create(kind=kind)
+            ds = DataSelection.objects.create(kind=kind, headings_type=headings_type)
             for table in serializer.data["tables"]:
                 tb = Table.objects.create(**table)
                 ds.tables.add(tb)
@@ -212,6 +215,8 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
                 ds.upload_set.add(upload_id)
             elif url_id:
                 ds.url_set.add(url_id)
+            if kind == DataSelection.OCDS_LITE:
+                set_column_headings(ds, datasource.analyzed_file.path)
             return Response(self.get_serializer_class()(ds).data, status=status.HTTP_201_CREATED)
         else:
             return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

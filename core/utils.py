@@ -107,18 +107,18 @@ def get_column_headings(datasource, tables, table):
     return column_headings
 
 
-def set_column_headings(datasource, analyzed_file_path):
+def set_column_headings(selection, analyzed_file_path):
     current_language_code = get_language()
     with open(analyzed_file_path) as fd:
         tables = json.loads(fd.read())["tables"]
-    if datasource.headings_type.startswith("es"):
+    if selection.headings_type.startswith("es"):
         activate("es")
-    for table in datasource.tables.all():
-        table.column_headings = get_column_headings(datasource, tables, table)
+    for table in selection.tables.all():
+        table.column_headings = get_column_headings(selection, tables, table)
         table.save(update_fields=["column_headings"])
         if table.split:
             for a_table in table.array_tables.all():
-                a_table.column_headings = get_column_headings(datasource, tables, a_table)
+                a_table.column_headings = get_column_headings(selection, tables, a_table)
                 a_table.save(update_fields=["column_headings"])
     activate(current_language_code)
 
