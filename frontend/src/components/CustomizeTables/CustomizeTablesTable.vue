@@ -142,7 +142,7 @@ export default {
         },
 
         canBeSplit() {
-            return this.additionalInfo.arrays?.above_threshold;
+            return Object.values(this.additionalInfo.arrays).some((value) => value >= 5);
         },
 
         isSplit: {
