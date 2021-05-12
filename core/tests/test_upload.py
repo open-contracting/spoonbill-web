@@ -41,9 +41,9 @@ class TestUpload:
         assert not upload["deleted"]
 
         upload_obj = Upload.objects.get(id=upload["id"])
-        validation_task.delay.assert_called_once_with(upload_obj.id, model="Upload", lang_code="en")
+        validation_task.delay.assert_called_once_with(upload_obj.id, model="Upload", lang_code="en-us")
         cleanup_upload_task.apply_async.assert_called_once_with(
-            (upload_obj.id, "Upload", "en"), eta=upload_obj.expired_at
+            (upload_obj.id, "Upload", "en-us"), eta=upload_obj.expired_at
         )
 
         # cleanup test data

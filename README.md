@@ -90,8 +90,9 @@ python manage.py makemessages --all --keep-pot
 tx push -st
 ```
 
-### Pull translations
+### Pull translations and compile message files
 
 ```shell
 tx pull -a
+django-admin compilemessages
 ```
