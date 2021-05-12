@@ -199,7 +199,8 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
         headings_type = DataSelection.OCDS
         if kind == DataSelection.OCDS_LITE:
             lang_code = get_language()
-            headings_type = f"{lang_code}_user_friendly"
+            lang_prefix = lang_code.split("-")[0]
+            headings_type = f"{lang_prefix}_user_friendly"
             datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
             tables = [
                 {"name": t["name"]} for t in datasource.available_tables if t["name"] in OCDS_LITE_CONFIG["tables"]
