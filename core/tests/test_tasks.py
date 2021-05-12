@@ -1,3 +1,4 @@
+import errno
 import json
 from datetime import timedelta
 
@@ -107,6 +108,19 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert not datasource.validation.is_valid
         assert datasource.validation.errors == f"Error while validating data `{str(mocked_open.side_effect)}`"
 
+    def test_no_left_space(self, upload_obj, mocker):
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert upload_obj.validation.is_valid is None
+        assert not upload_obj.available_tables
+
+        mocked_dumps = mocker.patch("core.tasks.json.dumps")
+        mocked_dumps.side_effect = OSError(errno.ENOSPC, "No left space.")
+        validate_data(upload_obj.id, model="Upload")
+
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert not upload_obj.validation.is_valid
+        assert upload_obj.validation.errors == "Currently, the space limit was reached. Please try again later."
+
 
 @pytest.mark.django_db
 class TestCleanupUploadTask(BaseUploadTestSuite):
@@ -156,13 +170,13 @@ class TestDownloadDataSource:
 
     def test_success(self, mocked_request, url_obj, dataset):
         url_obj = Url.objects.get(id=url_obj.id)
-        assert url_obj.status == "queued.download"
+        assert url_obj.status == Url.QUEUED_DOWNLOAD
         assert not url_obj.downloaded
 
         download_data_source(url_obj.id, model=self.model)
         url_obj = Url.objects.get(id=url_obj.id)
 
-        assert url_obj.status == "queued.validation"
+        assert url_obj.status == Url.QUEUED_VALIDATION
         assert url_obj.downloaded
 
         test_dataset = json.loads(dataset.read())
@@ -184,7 +198,7 @@ class TestDownloadDataSource:
         mocked_request.get.side_effect = [response]
 
         url_obj = Url.objects.get(id=url_obj.id)
-        assert url_obj.status == "queued.download"
+        assert url_obj.status == Url.QUEUED_DOWNLOAD
         assert not url_obj.downloaded
         download_data_source(url_obj.id, model=self.model)
 
@@ -199,7 +213,7 @@ class TestDownloadDataSource:
         mocked_request.get.side_effect = [success_response, response]
 
         url_obj = Url.objects.get(id=url_obj.id)
-        assert url_obj.status == "queued.download"
+        assert url_obj.status == Url.QUEUED_DOWNLOAD
         assert not url_obj.downloaded
         download_data_source(url_obj.id, model=self.model)
 
@@ -217,7 +231,7 @@ class TestDownloadDataSource:
         mocked_request.get.side_effect = [success_response, Exception("Some error from remote host")]
 
         url_obj = Url.objects.get(id=url_obj.id)
-        assert url_obj.status == "queued.download"
+        assert url_obj.status == Url.QUEUED_DOWNLOAD
         assert not url_obj.downloaded
         download_data_source(url_obj.id, model=self.model)
 
@@ -243,6 +257,20 @@ class TestDownloadDataSource:
                 "TASK": "download_data_source",
             },
         )
+
+    def test_no_left_space(self, mocked_request, url_obj, dataset, mocker):
+        url_obj = Url.objects.get(id=url_obj.id)
+        assert url_obj.status == Url.QUEUED_DOWNLOAD
+        assert not url_obj.downloaded
+
+        mocked_request.get.return_value.iter_content = mocker.MagicMock()
+        mocked_request.get.return_value.iter_content.side_effect = OSError(errno.ENOSPC, "No left space.")
+
+        download_data_source(url_obj.id, model=self.model)
+        url_obj = Url.objects.get(id=url_obj.id)
+
+        assert url_obj.status == Url.FAILED
+        assert url_obj.error == "Currently, the space limit was reached. Please try again later."
 
 
 @pytest.mark.django_db
@@ -320,3 +348,13 @@ class TestFlattenDataTask:
         assert flatten.status == Flatten.COMPLETED
         assert flatten.file.path.startswith(settings.MEDIA_ROOT)
         assert flatten.file.path.endswith(".zip")
+
+    def test_no_left_space(self, client, upload_obj_validated, mocker):
+        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        mocked_flattener = mocker.patch("core.tasks.FileFlattener.flatten_file")
+        mocked_flattener.side_effect = OSError(errno.ENOSPC, "No left space.")
+        flatten_data(flatten_id, model=self.model)
+
+        flatten = Flatten.objects.get(id=flatten_id)
+        assert flatten.status == Flatten.FAILED
+        assert flatten.error == "Currently, the space limit was reached. Please try again later."

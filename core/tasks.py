@@ -140,7 +140,6 @@ def validate_data(object_id, model=None, lang_code="en"):
                 f"datasource_{object_id}",
                 {"type": "task.validate", "error": _("Datasource %s not found") % object_id},
             )
-            return
         except (ijson.JSONError, ijson.IncompleteJSONError) as e:
             logger.info(
                 "Error while validating data %s" % object_id,
@@ -148,7 +147,20 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
             message = _("Error while validating data `%s`") % str(e)
             datasource.validation.errors = message
-            datasource.validation.is_valid = is_valid
+            datasource.validation.is_valid = False
+            datasource.validation.save(update_fields=["errors", "is_valid"])
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.validate", "error": message},
+            )
+        except OSError as e:
+            logger.exception(
+                "Error while validating data %s" % object_id,
+                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+            )
+            message = _("Currently, the space limit was reached. Please try again later.")
+            datasource.validation.errors = message
+            datasource.validation.is_valid = False
             datasource.validation.save(update_fields=["errors", "is_valid"])
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",
@@ -161,7 +173,7 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
             message = _("Error while validating data `%s`") % str(e)
             datasource.validation.errors = message
-            datasource.validation.is_valid = is_valid
+            datasource.validation.is_valid = False
             datasource.validation.save(update_fields=["errors", "is_valid"])
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",
@@ -359,7 +371,26 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 f"datasource_{object_id}",
                 {"type": "task.download_data_source", "error": _("Datasource %s not found") % object_id},
             )
-            return
+        except OSError as e:
+            logger.info(
+                "Error while download datasource %s" % object_id,
+                extra={
+                    "MESSAGE_ID": "download_no_left_space",
+                    "DATASOURCE_ID": object_id,
+                    "MODEL": model,
+                    "ERROR": str(e),
+                },
+            )
+            datasource.error = _("Currently, the space limit was reached. Please try again later.")
+            datasource.status = "failed"
+            datasource.save(update_fields=["status", "error"])
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{object_id}",
+                {
+                    "type": "task.download_data_source",
+                    "datasource": serializer.to_representation(instance=datasource),
+                },
+            )
         except Exception as e:
             logger.exception(
                 "Error while download datasource %s" % object_id,
@@ -385,7 +416,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 @celery_app.task
 def flatten_data(flatten_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
-        logger_context = {"FLATTEN_ID": flatten_id, "TASK": "flatten_data"}
+        logger_context = {"FLATTEN_ID": flatten_id, "TASK": "flatten_data", "MODEL": model}
         channel_layer = get_channel_layer()
         if model not in getters:
             extra = {
@@ -449,14 +480,24 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             )
         except ObjectDoesNotExist:
             extra = deepcopy(logger_context)
-            extra["MODEL"] = model
             extra["MESSAGE_ID"] = "flatten_not_found"
             logger.info("Flatten %s for %s model not found" % (flatten_id, model), extra=extra)
-            return
+        except OSError as e:
+            extra = deepcopy(logger_context)
+            extra.update(
+                {"MESSAGE_ID": "flatten_no_left_space", "DATASOURCE_ID": str(datasource.id), "ERROR_MSG": str(e)}
+            )
+            logger.info("Flatten %s for %s model failed: %s" % (flatten_id, model, e), extra=extra)
+            flatten.status = "failed"
+            flatten.error = _("Currently, the space limit was reached. Please try again later.")
+            flatten.save(update_fields=["error", "status"])
+            async_to_sync(channel_layer.group_send)(
+                f"datasource_{datasource.id}",
+                {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
+            )
         except (TypeError, Exception) as e:
             error_message = str(e)
             extra = deepcopy(logger_context)
-            extra["MODEL"] = model
             extra["MESSAGE_ID"] = "flatten_failed"
             extra["ERROR_MESSAGE"] = error_message
             logger.info("Flatten %s for %s datasource %s failed" % (flatten_id, model, datasource.id), extra=extra)

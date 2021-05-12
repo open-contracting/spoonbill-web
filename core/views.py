@@ -1,3 +1,4 @@
+import errno
 import json
 import logging
 import os
@@ -48,24 +49,43 @@ class UploadViewSet(viewsets.GenericViewSet):
         try:
             if not request.FILES.get("file"):
                 return Response({"detail": _("File is required")}, status=status.HTTP_400_BAD_REQUEST)
-            file_ = File(request.FILES["file"])
-            validation_obj = Validation.objects.create()
-            upload_obj = Upload.objects.create(file=file_, validation=validation_obj)
             lang_code = get_language()
+            validation_obj = Validation.objects.create()
+            expired_at = timezone.now() + timedelta(days=settings.JOB_FILES_TIMEOUT)
+            upload_obj = Upload.objects.create(expired_at=expired_at, validation=validation_obj)
+            cleanup_upload.apply_async((upload_obj.id, "Upload", lang_code), eta=upload_obj.expired_at)
+
+            file_ = File(request.FILES["file"])
+            upload_obj.file = file_
+            upload_obj.save(update_fields=["file"])
+
             task = validate_data.delay(upload_obj.id, model="Upload", lang_code=lang_code)
             validation_obj.task_id = task.id
             validation_obj.save(update_fields=["task_id"])
 
             upload_obj.validation = validation_obj
-            upload_obj.expired_at = timezone.now() + timedelta(days=settings.JOB_FILES_TIMEOUT)
-            upload_obj.save(update_fields=["validation", "expired_at"])
-            cleanup_upload.apply_async((upload_obj.id, "Upload", lang_code), eta=upload_obj.expired_at)
+            upload_obj.save(update_fields=["validation"])
             return Response(
                 self.get_serializer_class()(upload_obj).data,
                 status=status.HTTP_201_CREATED,
             )
-        except ValidationError as error:
-            return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
+        except (OSError, Exception) as error:
+            extra = {"MESSAGE_ID": "receiving_file_failed", "ERROR_MSG": str(error), "UPLOAD_ID": str(upload_obj.id)}
+            if hasattr(error, "errno") and error.errno == errno.ENOSPC:
+                logger.info("Error while receiving file %s" % str(error), extra=extra)
+                return Response(
+                    {"detail": _("Currently, the space limit was reached. Please try again later.")},
+                    status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                )
+            else:
+                logger.exception("Error while receiving file %s" % str(error), extra=extra)
+                return Response(
+                    {
+                        "detail": _("Error while receiving file. Contact our support service. RequestID: %s")
+                        % upload_obj.id
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
 
 class URLViewSet(viewsets.GenericViewSet):
@@ -231,30 +251,43 @@ class TableViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        if "url_id" in kwargs:
-            datasource = Url.objects.get(id=kwargs["url_id"])
-        elif "upload_id" in kwargs:
-            datasource = Upload.objects.get(id=kwargs["upload_id"])
-        table = Table.objects.get(id=kwargs["id"])
-        with open(datasource.analyzed_file.path) as fd:
-            data = json.loads(fd.read())
-        tables = data["tables"]
-        update_fields = []
-        for key in ("split", "include", "heading"):
-            if key in request.data:
-                setattr(table, key, request.data[key])
-                update_fields.append(key)
-        if update_fields:
-            table.save(update_fields=update_fields)
-        is_array_tables = len(table.array_tables.all())
-        if "split" in request.data and request.data["split"] and not is_array_tables:
-            child_tables = tables.get(table.name, {}).get("child_tables", [])
-            self._split_table(table, tables, datasource, child_tables)
-        serializer = self.get_serializer_class()(table)
-        sources = table.dataselection_set.all() or table.array_tables.all()[0].dataselection_set.all()
-        if sources:
-            sources[0].flattens.all().delete()
-        return Response(serializer.data)
+        try:
+            if "url_id" in kwargs:
+                datasource = Url.objects.get(id=kwargs["url_id"])
+            elif "upload_id" in kwargs:
+                datasource = Upload.objects.get(id=kwargs["upload_id"])
+            table = Table.objects.get(id=kwargs["id"])
+            with open(datasource.analyzed_file.path) as fd:
+                data = json.loads(fd.read())
+            tables = data["tables"]
+            update_fields = []
+            for key in ("split", "include", "heading"):
+                if key in request.data:
+                    setattr(table, key, request.data[key])
+                    update_fields.append(key)
+            if update_fields:
+                table.save(update_fields=update_fields)
+            is_array_tables = len(table.array_tables.all())
+            if "split" in request.data and request.data["split"] and not is_array_tables:
+                child_tables = tables.get(table.name, {}).get("child_tables", [])
+                self._split_table(table, tables, datasource, child_tables)
+            serializer = self.get_serializer_class()(table)
+            sources = table.dataselection_set.all() or table.array_tables.all()[0].dataselection_set.all()
+            if sources:
+                sources[0].flattens.all().delete()
+            return Response(serializer.data)
+        except OSError as e:
+            extra = {
+                "MESSAGE_ID": "update_table_failed",
+                "DATASOURCE_ID": str(datasource.id),
+                "TABLE_ID": kwargs["id"],
+                "ERROR_MSG": str(e),
+            }
+            logger.info("Error while update table %s" % str(e), extra=extra)
+            return Response(
+                {"detail": _("Currently, the space limit was reached. Please try again later.")},
+                status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            )
 
     def _split_table(self, table, analyzed_tables, datasource, child_tables):
         datasource_dir = os.path.dirname(datasource.file.path)
@@ -295,49 +328,62 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
             analyzed_data = json.loads(fd.read())
         tables = analyzed_data["tables"]
         data = []
-        if table.split:
-            preview_path = f"{datasource_dir}/{table.name}.csv"
-            if not os.path.exists(preview_path):
-                store_preview_csv(COLUMNS, PREVIEW_ROWS, tables[table.name], preview_path)
-            with open(preview_path) as csvfile:
-                preview = {
-                    "name": tables[table.name]["name"],
-                    "id": str(table.id),
-                    "preview": csvfile.read(),
-                    "heading": table.heading,
-                }
-                if selection.headings_type != selection.OCDS:
-                    preview["column_headings"] = table.column_headings
-            data.append(preview)
-            for child_table in table.array_tables.all():
-                if not child_table.include:
-                    continue
-                preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
+        try:
+            if table.split:
+                preview_path = f"{datasource_dir}/{table.name}.csv"
+                if not os.path.exists(preview_path):
+                    store_preview_csv(COLUMNS, PREVIEW_ROWS, tables[table.name], preview_path)
                 with open(preview_path) as csvfile:
                     preview = {
-                        "name": tables[child_table.name]["name"],
-                        "id": str(child_table.id),
+                        "name": tables[table.name]["name"],
+                        "id": str(table.id),
                         "preview": csvfile.read(),
-                        "heading": child_table.heading,
+                        "heading": table.heading,
                     }
                     if selection.headings_type != selection.OCDS:
-                        preview["column_headings"] = child_table.column_headings
+                        preview["column_headings"] = table.column_headings
                 data.append(preview)
-        else:
-            preview_path = f"{datasource_dir}/{table.name}_combined.csv"
-            if not os.path.exists(preview_path):
-                store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
-            with open(preview_path) as csvfile:
-                preview = {
-                    "name": tables[table.name]["name"],
-                    "id": str(table.id),
-                    "preview": csvfile.read(),
-                    "heading": table.heading,
-                }
-                if selection.headings_type != selection.OCDS:
-                    preview["column_headings"] = table.column_headings
-                data.append(preview)
-        return Response(data)
+                for child_table in table.array_tables.all():
+                    if not child_table.include:
+                        continue
+                    preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
+                    with open(preview_path) as csvfile:
+                        preview = {
+                            "name": tables[child_table.name]["name"],
+                            "id": str(child_table.id),
+                            "preview": csvfile.read(),
+                            "heading": child_table.heading,
+                        }
+                        if selection.headings_type != selection.OCDS:
+                            preview["column_headings"] = child_table.column_headings
+                    data.append(preview)
+            else:
+                preview_path = f"{datasource_dir}/{table.name}_combined.csv"
+                if not os.path.exists(preview_path):
+                    store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
+                with open(preview_path) as csvfile:
+                    preview = {
+                        "name": tables[table.name]["name"],
+                        "id": str(table.id),
+                        "preview": csvfile.read(),
+                        "heading": table.heading,
+                    }
+                    if selection.headings_type != selection.OCDS:
+                        preview["column_headings"] = table.column_headings
+                    data.append(preview)
+            return Response(data)
+        except OSError as e:
+            extra = {
+                "MESSAGE_ID": "create_preview_failed",
+                "DATASOURCE_ID": str(datasource.id),
+                "TABLE_ID": table_id,
+                "ERROR_MSG": str(e),
+            }
+            logger.info("Error while create preview %s" % str(e), extra=extra)
+            return Response(
+                {"detail": _("Currently, the space limit was reached. Please try again later.")},
+                status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            )
 
 
 class FlattenViewSet(viewsets.GenericViewSet):
