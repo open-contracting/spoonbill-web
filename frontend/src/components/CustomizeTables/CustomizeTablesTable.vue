@@ -7,27 +7,18 @@
                     <p class="fw-300" v-for="(item, idx) in aboutThisTable" :key="idx">{{ item }}</p>
                     <template v-if="missingData.length">
                         <translate tag="p" class="mb-2">Missing data</translate>
-                        <v-menu
-                            v-model="missingDataMenu"
-                            content-class="missing-columns-menu"
-                            :close-on-content-click="false"
+                        <translate
+                            tag="p"
+                            class="d-inline-block text-link"
+                            @click.native="showMissingDataList = !showMissingDataList"
                         >
-                            <template v-slot:activator="{ on, attrs }">
-                                <translate tag="p" class="d-inline-block text-link" v-bind="attrs" v-on="on">
-                                    See column headings with missing data
-                                </translate>
-                            </template>
-                            <v-card class="pa-4 d-flex">
-                                <div class="mr-2 missing-columns-list">
-                                    <span v-for="heading in missingData" class="missing-columns-list__item" :key="heading">
-                                        {{ heading }}
-                                    </span>
-                                </div>
-                                <v-btn icon color="darkest" @click="missingDataMenu = false">
-                                    <v-icon>mdi-close</v-icon>
-                                </v-btn>
-                            </v-card>
-                        </v-menu>
+                            See column headings with missing data
+                        </translate>
+                        <div class="p-relative overflow-hidden">
+                            <transition name="roll-down" mode="in-out">
+                                <p v-if="showMissingDataList">{{ missingDataStr }}</p>
+                            </transition>
+                        </div>
                     </template>
                 </div>
             </v-col>
@@ -129,6 +120,7 @@ export default {
             loading: false,
             tables: [],
             missingDataMenu: false,
+            showMissingDataList: false,
         };
     },
 
@@ -252,6 +244,10 @@ export default {
             return this.additionalInfo?.available_data?.columns?.missing_data || [];
         },
 
+        missingDataStr() {
+            return this.missingData.join(', ');
+        },
+
         additionalColumns() {
             return this.additionalInfo.available_data?.columns?.additional || [];
         },
@@ -260,15 +256,24 @@ export default {
             const res = [];
             const availableColumns = this.additionalInfo.available_data?.columns?.available;
             if (availableColumns) {
-                let translated = this.$ngettext(
-                    'There is data for %{ n } column of the ',
-                    'There are data for %{ n } of columns of the ',
+                let translatedFirstPart = this.$ngettext(
+                    'There is data for %{ n } of the ',
+                    'There are data for %{ n } of the ',
                     availableColumns
                 );
-                res.push(
-                    this.$gettextInterpolate(translated, { n: availableColumns }) +
-                        this.additionalInfo.available_data.columns.total
+                let translatedSecondPart = this.$ngettext(
+                    '%{ total } column',
+                    '%{ total } columns',
+                    this.additionalInfo.available_data.columns.total
                 );
+                let result =
+                    this.$gettextInterpolate(translatedFirstPart, {
+                        n: availableColumns,
+                    }) +
+                    this.$gettextInterpolate(translatedSecondPart, {
+                        total: this.additionalInfo.available_data.columns.total,
+                    });
+                res.push(result);
             }
             const additionalColumns = this.additionalInfo.available_data?.columns?.additional;
             if (additionalColumns?.length) {
@@ -423,19 +428,22 @@ export default {
     flex-wrap: wrap;
     gap: 12px;
 }
-.missing-columns-menu .v-btn {
-    margin-top: -14px;
+
+.roll-down-enter-active,
+.roll-down-leave-active {
+    transition: margin-top 0.2s;
 }
 
-.missing-columns-list {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: 10px;
-    row-gap: 11px;
-    &__item {
-        padding: 3px 4px;
-        background-color: #ffdede;
-        font-size: 14px;
-    }
+.roll-down-enter-active {
+    transition-timing-function: ease-out;
+}
+
+.roll-down-leave-active {
+    transition-timing-function: ease-in;
+}
+
+.roll-down-enter,
+.roll-down-leave-to {
+    margin-top: -120px;
 }
 </style>
