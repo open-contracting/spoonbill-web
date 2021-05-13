@@ -9,12 +9,14 @@ import translations from '@/translations/translations.json';
 import * as Sentry from '@sentry/vue';
 
 const selectedLanguage = localStorage.getItem('lang');
+const availableLanguages = {
+    en_US: 'English',
+    es: 'Español',
+};
+const languagesArray = Object.keys(availableLanguages);
 Vue.use(GetTextPlugin, {
-    availableLanguages: {
-        en: 'British English',
-        es: 'Español',
-    },
-    defaultLanguage: ['en', 'es'].includes(selectedLanguage) ? selectedLanguage : 'en',
+    availableLanguages,
+    defaultLanguage: languagesArray.includes(selectedLanguage) ? selectedLanguage : languagesArray[0],
     translations,
     silent: true,
 });

@@ -4,7 +4,7 @@
             <v-img max-width="175" contain src="@/assets/images/ocp-logo.svg" />
             <div class="lang-selector" style="cursor: pointer">
                 <div class="d-flex lang-selector__option">
-                    <translate tag="div" class="lang" v-if="isEnglish" key="en">English</translate>
+                    <translate tag="div" class="lang" v-if="isEnglish" key="en_US">English</translate>
                     <translate tag="div" class="lang" v-else key="sp">Spanish</translate>
                     <svg
                         class="ml-2"
@@ -25,7 +25,7 @@
                 </div>
                 <div class="lang-selector__option lang-selector__option--inactive" @click="changeLanguage">
                     <translate tag="div" class="lang" v-if="isEnglish" key="sp">Spanish</translate>
-                    <translate tag="div" class="lang" v-else key="en">English</translate>
+                    <translate tag="div" class="lang" v-else key="en_US">English</translate>
                 </div>
             </div>
         </v-container>
@@ -40,13 +40,13 @@ export default {
 
     computed: {
         isEnglish() {
-            return this.$language.current === 'en';
+            return this.$language.current === 'en_US';
         },
     },
 
     methods: {
         changeLanguage() {
-            Vue.config.language = this.isEnglish ? 'es' : 'en';
+            Vue.config.language = this.isEnglish ? 'es' : 'en_US';
             localStorage.setItem('lang', Vue.config.language);
         },
     },

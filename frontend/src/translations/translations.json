@@ -4,6 +4,11 @@
     "English": "English",
     "Spanish": "Spanish"
   },
+  "en_US": {
+    "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
+    "English": "English",
+    "Spanish": "Spanish"
+  },
   "es": {
     "Convert your OCDS JSON data into Excel": "Convierta sus datos OCDS JSON a Excel",
     "English": "Ingl\u00e9s",
