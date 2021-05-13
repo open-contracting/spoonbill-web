@@ -16,11 +16,11 @@ describe('LayoutHeader.vue', () => {
 
     describe('methods', () => {
         test("'changeLanguage' changes current language", () => {
-            wrapper.vm.$language.current = 'en';
+            wrapper.vm.$language.current = 'en_US';
             wrapper.vm.changeLanguage();
             expect(wrapper.vm.$language.current).toBe('es');
             wrapper.vm.changeLanguage();
-            expect(wrapper.vm.$language.current).toBe('en');
+            expect(wrapper.vm.$language.current).toBe('en_US');
         });
     });
 });
