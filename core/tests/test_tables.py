@@ -194,3 +194,34 @@ class TestTableViews:
             )
         assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
         assert response.json() == {"detail": "Currently, the space limit was reached. Please try again later."}
+
+    def test_table_split_file_not_found(self):
+        selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
+        tables = self.client.get(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+        ).json()
+        mocked_open = self.mocker.patch("core.views.open")
+        mocked_open.return_value.__enter__.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
+
+        response = self.client.patch(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            data={"split": True},
+            content_type="application/json",
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {"detail": "Datasource expired."}
+
+    def test_table_preview_file_not_found(self):
+        selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
+        tables = self.client.get(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+        ).json()
+
+        mocked_open = self.mocker.patch("core.views.open")
+        mocked_open.return_value.__enter__.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
+
+        response = self.client.get(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {"detail": "Datasource expired."}
