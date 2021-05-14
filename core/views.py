@@ -276,6 +276,16 @@ class TableViewSet(viewsets.ModelViewSet):
             if sources:
                 sources[0].flattens.all().delete()
             return Response(serializer.data)
+        except FileNotFoundError as e:
+            extra = {
+                "MESSAGE_ID": "update_table_failed",
+                "DATASOURCE_ID": str(datasource.id),
+                "TABLE_ID": kwargs["id"],
+                "ERROR_MSG": str(e),
+                "EXPIRED_AT": datasource.expired_at.isoformat(),
+            }
+            logger.info("Error while update table %s" % str(e), extra=extra)
+            return Response({"detail": _("Datasource expired.")}, status=status.HTTP_404_NOT_FOUND)
         except OSError as e:
             extra = {
                 "MESSAGE_ID": "update_table_failed",
@@ -324,11 +334,11 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
             datasource = Upload.objects.get(id=upload_id)
         datasource_dir = os.path.dirname(datasource.file.path)
         selection = DataSelection.objects.get(id=selection_id)
-        with open(datasource.analyzed_file.path) as fd:
-            analyzed_data = json.loads(fd.read())
-        tables = analyzed_data["tables"]
-        data = []
         try:
+            with open(datasource.analyzed_file.path) as fd:
+                analyzed_data = json.loads(fd.read())
+            tables = analyzed_data["tables"]
+            data = []
             if table.split:
                 preview_path = f"{datasource_dir}/{table.name}.csv"
                 if not os.path.exists(preview_path):
@@ -372,6 +382,16 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         preview["column_headings"] = table.column_headings
                     data.append(preview)
             return Response(data)
+        except FileNotFoundError as e:
+            extra = {
+                "MESSAGE_ID": "get_preview_failed",
+                "DATASOURCE_ID": str(datasource.id),
+                "TABLE_ID": table_id,
+                "ERROR_MSG": str(e),
+                "EXPIRED_AT": datasource.expired_at.isoformat(),
+            }
+            logger.info("Error while get table preview %s" % str(e), extra=extra)
+            return Response({"detail": _("Datasource expired.")}, status=status.HTTP_404_NOT_FOUND)
         except OSError as e:
             extra = {
                 "MESSAGE_ID": "create_preview_failed",
