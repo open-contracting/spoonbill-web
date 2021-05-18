@@ -13,7 +13,7 @@
                                 key="downloadXls"
                                 class="mt-6"
                                 large
-                                color="gray-light"
+                                color="accent"
                                 @click="download(EXPORT_FORMATS.XLSX)"
                             >
                                 <translate>Download XLSX</translate>
@@ -24,7 +24,7 @@
                                 :disabled="!selections"
                                 class="mt-6"
                                 large
-                                color="gray-light"
+                                color="accent"
                                 @click="generateFile(EXPORT_FORMATS.XLSX)"
                             >
                                 <translate>Generate XLSX</translate>
@@ -44,7 +44,7 @@
                                 key="downloadCsv"
                                 class="mt-6"
                                 large
-                                color="gray-light"
+                                color="accent"
                                 @click="download(EXPORT_FORMATS.CSV)"
                             >
                                 <translate>Download CSV</translate>
@@ -55,7 +55,7 @@
                                 key="generateCsv"
                                 class="mt-6"
                                 large
-                                color="gray-light"
+                                color="accent"
                                 @click="generateFile(EXPORT_FORMATS.CSV)"
                             >
                                 <translate>Generate CSV</translate>
