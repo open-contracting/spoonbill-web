@@ -1,18 +1,33 @@
 <template>
     <v-row>
         <v-col cols="12">
-            <translate tag="h2" class="page-title">Download your tables</translate>
+            <translate :key="heading" tag="h2" class="page-title">{{ heading }}</translate>
 
-            <div class="mt-9 download-options justify-center justify-md-start">
+            <div class="mt-7 download-options justify-center justify-md-start">
                 <div class="download-option">
-                    <app-button text color="darkest" :disabled="!selections" @click="generateFile(EXPORT_FORMATS.XLSX)">
-                        <translate>Generate as a multi sheet XLSX</translate>
-                    </app-button>
-                    <div class="mt-7 download-block" :class="xlsxFlattenClasses">
+                    <div class="download-block" :class="xlsxFlattenClasses">
                         <div class="rounded-box">
                             <v-img max-height="60" contain src="@/assets/icons/xls.svg" />
-                            <v-btn class="mt-6" large color="gray-light" @click="download(EXPORT_FORMATS.XLSX)">
-                                <translate>Download</translate>
+                            <v-btn
+                                v-if="xlsxFlattenClasses.completed"
+                                key="downloadXls"
+                                class="mt-6"
+                                large
+                                color="gray-light"
+                                @click="download(EXPORT_FORMATS.XLSX)"
+                            >
+                                <translate>Download XLSX</translate>
+                            </v-btn>
+                            <v-btn
+                                v-else
+                                key="generateXls"
+                                :disabled="!selections"
+                                class="mt-6"
+                                large
+                                color="gray-light"
+                                @click="generateFile(EXPORT_FORMATS.XLSX)"
+                            >
+                                <translate>Generate XLSX</translate>
                             </v-btn>
                         </div>
                         <div class="d-flex align-center justify-center spin-loader" v-if="xlsxFlattenClasses.processing">
@@ -21,14 +36,29 @@
                     </div>
                 </div>
                 <div class="download-option">
-                    <app-button text color="darkest" :disabled="!selections" @click="generateFile(EXPORT_FORMATS.CSV)">
-                        <translate>Generate tables as individual CSV files</translate>
-                    </app-button>
-                    <div class="mt-7 download-block" :class="csvFlattenClasses">
+                    <div class="download-block" :class="csvFlattenClasses">
                         <div class="rounded-box">
                             <v-img max-height="60" contain src="@/assets/icons/csv.svg" />
-                            <v-btn class="mt-6" large color="gray-light" @click="download(EXPORT_FORMATS.CSV)">
-                                <translate>Download</translate>
+                            <v-btn
+                                v-if="csvFlattenClasses.completed"
+                                key="downloadCsv"
+                                class="mt-6"
+                                large
+                                color="gray-light"
+                                @click="download(EXPORT_FORMATS.CSV)"
+                            >
+                                <translate>Download CSV</translate>
+                            </v-btn>
+                            <v-btn
+                                v-else
+                                :disabled="!selections"
+                                key="generateCsv"
+                                class="mt-6"
+                                large
+                                color="gray-light"
+                                @click="generateFile(EXPORT_FORMATS.CSV)"
+                            >
+                                <translate>Generate CSV</translate>
                             </v-btn>
                         </div>
                         <div class="d-flex align-center justify-center spin-loader" v-if="csvFlattenClasses.processing">
@@ -96,7 +126,6 @@
 </template>
 
 <script>
-import AppButton from '@/components/App/AppButton';
 import { EXPORT_FORMATS, FLATTEN_STATUSES } from '@/constants';
 import ApiService from '@/services/ApiService';
 import selectionsMixin from '@/mixins/selectionsMixin';
@@ -104,19 +133,31 @@ import selectionsMixin from '@/mixins/selectionsMixin';
 export default {
     name: 'Download',
 
-    components: { AppButton },
-
     mixins: [selectionsMixin],
 
     data() {
         return {
             EXPORT_FORMATS,
+            completed: [],
         };
     },
 
     computed: {
+        heading() {
+            let text = 'Select how to generate your tables';
+            if (this.lastGeneratedFormat === this.EXPORT_FORMATS.XLSX) {
+                text = 'Download your XLSX';
+            } else if (this.lastGeneratedFormat === this.EXPORT_FORMATS.CSV) {
+                text = 'Download your CSV';
+            }
+            return text;
+        },
         flattens() {
             return this.$store.state.selections?.flattens;
+        },
+
+        lastGeneratedFormat() {
+            return this.completed.length && this.completed[this.completed.length - 1];
         },
 
         xlsxFlattenClasses() {
@@ -140,6 +181,13 @@ export default {
 
     watch: {
         flattens(v) {
+            if (v) {
+                v.forEach((flatten) => {
+                    if (!this.completed.includes(flatten.export_format) && flatten.status === FLATTEN_STATUSES.COMPLETED) {
+                        this.completed.push(flatten.export_format);
+                    }
+                });
+            }
             const allCompleted =
                 v && v.every((flatten) => [FLATTEN_STATUSES.COMPLETED, FLATTEN_STATUSES.FAILED].includes(flatten.status));
             if (allCompleted) {
@@ -234,10 +282,9 @@ export default {
     row-gap: 36px;
     .download-block {
         position: relative;
-        pointer-events: none;
-        &.completed:not(.processing) .rounded-box {
-            opacity: 1;
-            pointer-events: auto;
+        &.processing:not(.completed) .rounded-box {
+            opacity: 0.2;
+            pointer-events: none;
         }
     }
     .rounded-box {
@@ -250,7 +297,6 @@ export default {
         border: 1px solid map-get($colors, 'gray-dark');
         width: 257px;
         height: 199px;
-        opacity: 0.2;
     }
 }
 .additional-resources {
