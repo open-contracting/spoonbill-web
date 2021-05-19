@@ -171,7 +171,7 @@ export default new Vuex.Store({
             connection.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.progress) {
-                    commit('setDownloadProgress', data.progress);
+                    commit('setDownloadProgress', data.progress.percentage);
                 }
                 if ([TASK_TYPES.VALIDATE, TASK_TYPES.DOWNLOAD_DATA_SOURCE].includes(data.type)) {
                     commit('setUploadDetails', {

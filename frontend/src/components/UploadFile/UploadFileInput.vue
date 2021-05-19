@@ -103,7 +103,7 @@ export default {
         },
 
         downloadProgress() {
-            return this.$store.state.downloadProgress;
+            return Math.round(this.$store.state.downloadProgress);
         },
     },
 
