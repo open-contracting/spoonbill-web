@@ -76,9 +76,9 @@ def retrieve_tables(analyzed_data):
 
 
 def store_preview_csv(columns_key, rows_key, table_data, preview_path):
-    headers = set()
-    for row in table_data[rows_key]:
-        headers |= set(row.keys())
+    headers = [header for header, col in table_data[columns_key].items() if col["hits"] > 0]
+    if not columns_key.startswith("combined"):
+        headers.append("parentTable")
     with open(preview_path, "w", newline="\n") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()

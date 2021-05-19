@@ -317,7 +317,7 @@ class TableViewSet(viewsets.ModelViewSet):
             child_table = Table.objects.create(name=child_table_key)
             table.array_tables.add(child_table)
             preview_path = f"{datasource_dir}/{child_table_key}_combined.csv"
-            store_preview_csv(COMBINED_COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)
+            store_preview_csv(COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)
             if analyzed_child_table.get("child_tables", []):
                 self._split_table(table, analyzed_tables, datasource, analyzed_child_table["child_tables"])
 
