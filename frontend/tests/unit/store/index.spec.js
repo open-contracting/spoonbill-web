@@ -223,7 +223,9 @@ describe('store', () => {
 
             await server.send(
                 JSON.stringify({
-                    progress: 90,
+                    progress: {
+                        percentage: 90
+                    },
                 })
             );
             expect(store.state.downloadProgress).toBe(90);
