@@ -13,6 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: spoonbillpwd
+          POSTGRES_USER: spoonbilluser
+          POSTGRES_DB: spoonbill
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: checkout
         uses: actions/checkout@v2
