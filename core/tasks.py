@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import pathlib
 import shutil
 import uuid
 from copy import deepcopy
@@ -16,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from spoonbill import FileFlattener
+from spoonbill import FileAnalyzer, FileFlattener
 from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 from spoonbill.flatten import FlattenOptions
 from spoonbill.stats import DataPreprocessor
@@ -89,19 +90,33 @@ def validate_data(object_id, model=None, lang_code="en"):
             logger.debug("Start validation for %s file" % object_id)
             with open(SCHEMA_PATH) as fd:
                 schema = json.loads(fd.read())
-            spec = DataPreprocessor(schema, ROOT_TABLES, combined_tables=COMBINED_TABLES)
             resource = ""
             if is_release_package(datasource.file.path):
                 resource = "releases"
             elif is_record_package(datasource.file.path):
                 resource = "records"
             if resource:
-                for count in spec.process_items(iter_file(datasource.file.path, resource), with_preview=True):
+                path = pathlib.Path(datasource.file.path)
+                workdir = path.parent
+                filename = path.name
+                total = path.stat().st_size
+                analyzer = FileAnalyzer(
+                    workdir, schema=schema, root_key=resource, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES
+                )
+                for read, count in analyzer.analyze_file(filename, with_preview=True):
                     async_to_sync(channel_layer.group_send)(
                         f"datasource_{datasource.id}",
-                        {"type": "task.validate", "datasource": {"id": str(datasource.id)}, "processed_rows": count},
+                        {
+                            "type": "task.validate",
+                            "datasource": {"id": str(datasource.id)},
+                            "progress": {
+                                "rows": count,
+                                "percentage": (read / total) * 100 if total else 0,
+                                "size": total,
+                                "read": read,
+                            },
+                        },
                     )
-                analyzed_data = spec.dump()
                 is_valid = True
 
             datasource.validation.is_valid = is_valid
@@ -110,6 +125,7 @@ def validate_data(object_id, model=None, lang_code="en"):
             datasource.save(update_fields=["root_key"])
 
             if is_valid and not datasource.available_tables and not datasource.analyzed_file:
+                analyzed_data = analyzer.spec.dump()
                 with TemporaryFile() as temp:
                     temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
                     temp.seek(0)
@@ -440,6 +456,7 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             )
             with open(datasource.analyzed_file.path) as fd:
                 analyzed_data = json.loads(fd.read())
+            total_rows = analyzed_data.get("total_items", 0)
             spec = DataPreprocessor.restore(analyzed_data)
             opt = get_flatten_options(selection)
             options = FlattenOptions(**opt)
@@ -453,7 +470,15 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             for count in flattener.flatten_file(datasource.file.path):
                 async_to_sync(channel_layer.group_send)(
                     f"datasource_{datasource.id}",
-                    {"type": "task.flatten", "flatten": {"id": str(flatten.id)}, "processed_rows": count},
+                    {
+                        "type": "task.flatten",
+                        "flatten": {"id": str(flatten.id)},
+                        "progress": {
+                            "total_rows": total_rows,
+                            "processed": count,
+                            "percentage": (count / total_rows) * 100 if total_rows else total_rows,
+                        },
+                    },
                 )
             if flatten.export_format == flatten.CSV:
                 target_file = f"{export_dir}/{datasource.id}.zip"
