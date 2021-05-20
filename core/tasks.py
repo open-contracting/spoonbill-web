@@ -3,6 +3,7 @@ import logging
 import os
 import pathlib
 import shutil
+import time
 import uuid
 from copy import deepcopy
 from datetime import timedelta
@@ -103,7 +104,10 @@ def validate_data(object_id, model=None, lang_code="en"):
                 analyzer = FileAnalyzer(
                     workdir, schema=schema, root_key=resource, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES
                 )
+                timestamp = time.time()
                 for read, count in analyzer.analyze_file(filename, with_preview=True):
+                    if (time.time() - timestamp) <= 1:
+                        continue
                     async_to_sync(channel_layer.group_send)(
                         f"datasource_{datasource.id}",
                         {
@@ -117,6 +121,7 @@ def validate_data(object_id, model=None, lang_code="en"):
                             },
                         },
                     )
+                    timestamp = time.time()
                 is_valid = True
 
             datasource.validation.is_valid = is_valid
@@ -282,6 +287,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
             downloaded = 0
             chunk_size = 10240
             with TemporaryFile() as temp:
+                timestamp = time.time()
                 for chunk in r.iter_content(chunk_size=chunk_size):
                     temp.write(chunk)
                     downloaded += chunk_size
@@ -290,6 +296,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
                         progress = progress if progress < 100 else 100
                     else:
                         progress = size
+                    if (time.time() - timestamp) <= 1:
+                        continue
                     async_to_sync(channel_layer.group_send)(
                         f"datasource_{object_id}",
                         {
@@ -298,6 +306,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                             "progress": int(progress),
                         },
                     )
+                    timestamp = time.time()
 
                 temp.seek(0)
                 file_ = File(temp)
@@ -332,11 +341,14 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 datasource.status = "analyzed_data.downloading"
                 datasource.save(update_fields=["status"])
                 with TemporaryFile() as temp:
+                    timestamp = time.time()
                     for chunk in r.iter_content(chunk_size=chunk_size):
                         temp.write(chunk)
                         downloaded += chunk_size
                         progress = (downloaded / size) * 100
                         progress = progress if progress < 100 else 100
+                        if (time.time() - timestamp) <= 1:
+                            continue
                         async_to_sync(channel_layer.group_send)(
                             f"datasource_{object_id}",
                             {
@@ -345,6 +357,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                                 "progress": int(progress),
                             },
                         )
+                        timestamp = time.time()
                     temp.seek(0)
                     file_ = File(temp)
                     file_.name = uuid.uuid4().hex
@@ -467,7 +480,10 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             formats = {"csv": False, "xlsx": False}
             formats[flatten.export_format] = True
             flattener = FileFlattener(export_dir, options, spec.tables, root_key=datasource.root_key, **formats)
+            timestamp = time.time()
             for count in flattener.flatten_file(datasource.file.path):
+                if (time.time() - timestamp) <= 1:
+                    continue
                 async_to_sync(channel_layer.group_send)(
                     f"datasource_{datasource.id}",
                     {
@@ -480,6 +496,7 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
                         },
                     },
                 )
+                timestamp = time.time()
             if flatten.export_format == flatten.CSV:
                 target_file = f"{export_dir}/{datasource.id}.zip"
                 zip_files(export_dir, target_file, extension="csv")
