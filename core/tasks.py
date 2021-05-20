@@ -471,15 +471,16 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 },
             )
             options = FlattenOptions(**opt)
-            datasource_dir = os.path.dirname(datasource.file.path)
-            export_dir = f"{datasource_dir}/export"
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
-            kwargs = {"csv": False, "xlsx": False}
-            kwargs[flatten.export_format] = True
-            lang = selection.headings_type.split("_")[0]
-            kwargs["language"] = lang
-            flattener = FileFlattener(export_dir, options, spec.tables, root_key=datasource.root_key, **kwargs)
+            workdir = pathlib.Path(datasource.file.path).parent
+            formats = {"csv": None, "xlsx": None}
+            if flatten.export_format == flatten.CSV:
+                workdir = workdir / "export"
+                if not workdir.exists():
+                    os.makedirs(workdir)
+                formats[flatten.export_format] = workdir
+            else:
+                formats[flatten.export_format] = "result.xlsx"
+            flattener = FileFlattener(workdir, options, spec.tables, root_key=datasource.root_key, **formats)
             timestamp = time.time()
             for count in flattener.flatten_file(datasource.file.path):
                 if (time.time() - timestamp) <= 1:
@@ -498,8 +499,8 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 )
                 timestamp = time.time()
             if flatten.export_format == flatten.CSV:
-                target_file = f"{export_dir}/{datasource.id}.zip"
-                zip_files(export_dir, target_file, extension="csv")
+                target_file = f"{workdir}/{datasource.id}.zip"
+                zip_files(workdir, target_file, extension="csv")
                 with open(target_file, "rb") as fd:
                     file_ = File(fd)
                     file_.name = f"{datasource.id}.zip"
@@ -508,7 +509,7 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                     flatten.save(update_fields=["file", "status"])
                 os.remove(fd.name)
             else:
-                target_file = f"{export_dir}/result.xlsx"
+                target_file = f"{workdir}/result.xlsx"
                 with open(target_file, "rb") as fd:
                     file_ = File(fd)
                     file_.name = "result.xlsx"
