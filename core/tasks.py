@@ -443,7 +443,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 
 
 @celery_app.task
-def flatten_data(flatten_id, model=None, lang_code="en"):
+def flatten_data(flatten_id, model=None, lang_code="en_US"):
     with internationalization(lang_code=lang_code):
         logger_context = {"FLATTEN_ID": flatten_id, "TASK": "flatten_data", "MODEL": model}
         channel_layer = get_channel_layer()
@@ -472,14 +472,27 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             total_rows = analyzed_data.get("total_items", 0)
             spec = DataPreprocessor.restore(analyzed_data)
             opt = get_flatten_options(selection)
+            logger.debug(
+                "Generate options for export",
+                extra={
+                    "MESSAGE_ID": "generate_flatten_options",
+                    "DATASOURCE_ID": str(datasource.id),
+                    "MODEL": model,
+                    "SELECTION_ID": str(selection.id),
+                    "FLATTEN_ID": str(flatten.id),
+                    "OPTIONS": opt,
+                },
+            )
             options = FlattenOptions(**opt)
             datasource_dir = os.path.dirname(datasource.file.path)
             export_dir = f"{datasource_dir}/export"
             if not os.path.exists(export_dir):
                 os.makedirs(export_dir)
-            formats = {"csv": False, "xlsx": False}
-            formats[flatten.export_format] = True
-            flattener = FileFlattener(export_dir, options, spec.tables, root_key=datasource.root_key, **formats)
+            kwargs = {"csv": False, "xlsx": False}
+            kwargs[flatten.export_format] = True
+            lang = selection.headings_type.split("_")[0]
+            kwargs["language"] = lang
+            flattener = FileFlattener(export_dir, options, spec.tables, root_key=datasource.root_key, **kwargs)
             timestamp = time.time()
             for count in flattener.flatten_file(datasource.file.path):
                 if (time.time() - timestamp) <= 1:

@@ -367,7 +367,7 @@ class TestFlattenDataTask:
         assert selection.kind == selection.OCDS_LITE
         assert selection.headings_type == selection.EN_USER_FRIENDLY
         tables = selection.tables.all()
-        assert len(tables) == 4
+        assert len(tables) == 3
 
         flatten_data(flatten_id, model=self.model)
 
