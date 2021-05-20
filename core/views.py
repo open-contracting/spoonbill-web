@@ -145,8 +145,10 @@ class URLViewSet(viewsets.GenericViewSet):
         "downloaded": False,
         "error": None
     }
-
     ```
+
+    After receiving this response you need to redirect user to the following URL: `https://<spoonbill-web.host>/#/upload-file?url=<received-id>`
+    e.g. `https://<spoonbill-web.host>/#/upload-file?url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412`
     """
 
     permissions_classes = permissions.AllowAny
