@@ -70,7 +70,7 @@ class UploadViewSet(viewsets.GenericViewSet):
                 status=status.HTTP_201_CREATED,
             )
         except (OSError, Exception) as error:
-            extra = {"MESSAGE_ID": "receiving_file_failed", "ERROR_MSG": str(error), "UPLOAD_ID": str(upload_obj.id)}
+            extra = {"MESSAGE_ID": "receiving_file_failed", "ERROR_MSG": str(error)}
             if hasattr(error, "errno") and error.errno == errno.ENOSPC:
                 logger.info("Error while receiving file %s" % str(error), extra=extra)
                 return Response(
@@ -80,10 +80,7 @@ class UploadViewSet(viewsets.GenericViewSet):
             else:
                 logger.exception("Error while receiving file %s" % str(error), extra=extra)
                 return Response(
-                    {
-                        "detail": _("Error while receiving file. Contact our support service. RequestID: %s")
-                        % upload_obj.id
-                    },
+                    {"detail": _("Error while receiving file. Contact our support service")},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
 
