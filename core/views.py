@@ -14,6 +14,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
+from core.constants import OCDS_LITE_CONFIG
 from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
 from core.serializers import (
     DataSelectionSerializer,
@@ -193,19 +194,52 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, upload_id=None, url_id=None):
-        serializer = self.get_serializer_class()(data=request.data or request.POST)
-        if serializer.is_valid():
-            ds = DataSelection.objects.create()
-            for table in request.data.get("tables", []):
-                tb = Table.objects.create(**table)
-                ds.tables.add(tb)
-            if upload_id:
-                ds.upload_set.add(upload_id)
-            elif url_id:
-                ds.url_set.add(url_id)
-            return Response(self.get_serializer_class()(ds).data, status=status.HTTP_201_CREATED)
+        data = request.data or request.POST
+        kind = data.get("kind", DataSelection.CUSTOM)
+        headings_type = DataSelection.OCDS
+
+        if kind != DataSelection.OCDS_LITE:
+            serializer = self.get_serializer_class()(data=data)
+            if serializer.is_valid():
+                datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
+                selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
+                for table in serializer.data["tables"]:
+                    _table = Table.objects.create(**table)
+                    selection.tables.add(_table)
+                datasource.selections.add(selection)
+                return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
+            if not datasource.available_tables:
+                return Response(
+                    {"detail": _("Datasource without available tables")}, status=status.HTTP_400_BAD_REQUEST
+                )
+            lang_code = get_language()
+            lang_prefix = lang_code.split("-")[0]
+            headings_type = f"{lang_prefix}_user_friendly"
+            selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
+            with open(datasource.analyzed_file.path) as fd:
+                analyzed_data = json.loads(fd.read())
+            for available_table in datasource.available_tables:
+                if available_table["name"] in OCDS_LITE_CONFIG["tables"]:
+                    _name = available_table["name"]
+                    _split = OCDS_LITE_CONFIG["tables"][_name].get("split", False)
+                    _table = Table.objects.create(name=_name, split=_split)
+                    child_tables_data = analyzed_data["tables"][_name].get("child_tables", [])
+                    if _split and child_tables_data:
+                        for child_table in child_tables_data:
+                            _include = (
+                                False
+                                if child_table not in OCDS_LITE_CONFIG["tables"][_name].get("child_tables", {})
+                                else True
+                            )
+                            _child_table = Table.objects.create(name=child_table, include=_include)
+                            _table.array_tables.add(_child_table)
+                    selection.tables.add(_table)
+            datasource.selections.add(selection)
+            return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
 
     def list(self, request, *args, url_id=None, upload_id=None):
         if url_id:

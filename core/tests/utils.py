@@ -1,6 +1,8 @@
 import json
 import uuid
 
+from core.constants import OCDS_LITE_CONFIG
+
 
 class Task:
     @property
@@ -41,15 +43,29 @@ class Response:
 data_selection = {"tables": [{"name": "tenders"}, {"name": "parties"}]}
 
 
-def create_data_selection(client, parent, prefix=None):
+def create_data_selection(client, parent, prefix=None, kind=None):
     url = f"{prefix}{parent.id}/selections/"
-    response = client.post(url, content_type="application/json", data=data_selection)
+    if kind and kind == "ocds_lite":
+        data = {"kind": kind}
+    else:
+        data = data_selection
+    response = client.post(url, content_type="application/json", data=data)
     assert response.status_code == 201
     json_data = response.json()
-    assert set(json_data.keys()) == {"id", "tables", "headings_type", "flattens"}
-    for i, table in enumerate(json_data["tables"]):
+    assert set(json_data.keys()) == {"id", "tables", "headings_type", "flattens", "kind"}
+    if kind:
+        assert json_data["kind"] == "ocds_lite"
+    else:
+        assert json_data["kind"] == "custom"
+    if kind and kind == "ocds_lite":
+        tables = OCDS_LITE_CONFIG["tables"].keys()
+    else:
+        tables = [t["name"] for t in data_selection["tables"]]
+
+    assert len(json_data["tables"]) == len(tables)
+    for table in json_data["tables"]:
         assert "id" in table
-        assert table["name"] == data_selection["tables"][i]["name"]
+        assert table["name"] in tables
     return json_data
 
 
@@ -72,9 +88,9 @@ def get_data_selections(client, parent, prefix=None):
     assert json_resp == json_data
 
 
-def create_flatten(client, parent, prefix=None, selection_id=None, export_format="xlsx"):
+def create_flatten(client, parent, prefix=None, selection_id=None, export_format="xlsx", kind=None):
     if not selection_id:
-        selection = create_data_selection(client, parent, prefix)
+        selection = create_data_selection(client, parent, prefix, kind=kind)
         selection_id = selection["id"]
 
     url = f"{prefix}{parent.id}/selections/{selection_id}/flattens/"

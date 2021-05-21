@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import uuid
@@ -8,15 +9,19 @@ from django.core.files import File
 from django.utils import timezone
 
 from core.models import Upload, Url, Validation
+from core.utils import retrieve_tables
 
 from .utils import Response, Task
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 
+ANALYZED_DATA_PATH = f"{DATA_DIR}/analyzed.json"
+SAMPLE_DATA_PATH = f"{DATA_DIR}/sample-dataset.json"
+
 
 @pytest.fixture
 def dataset():
-    file_ = open(f"{DATA_DIR}/sample-dataset.json")
+    file_ = open(SAMPLE_DATA_PATH)
     yield file_
 
     file_.close()
@@ -24,10 +29,18 @@ def dataset():
 
 @pytest.fixture
 def analyzed():
-    file_ = open(f"{DATA_DIR}/analyzed.json")
+    file_ = open(ANALYZED_DATA_PATH)
     yield file_
 
     file_.close
+
+
+@pytest.fixture
+def available_tables():
+    with open(ANALYZED_DATA_PATH) as fd:
+        data = json.loads(fd.read())
+    _available_tables, unavailable_tables = retrieve_tables(data)
+    return _available_tables, unavailable_tables
 
 
 @pytest.fixture
@@ -65,11 +78,14 @@ def upload_obj(validation_obj, dataset):
 
 
 @pytest.fixture
-def upload_obj_validated(upload_obj, analyzed):
+def upload_obj_validated(upload_obj, analyzed, available_tables):
     file_ = File(analyzed)
     file_.name = uuid.uuid4().hex
+    _available_tables, unavailable_tables = available_tables
     upload_obj.analyzed_file = file_
-    upload_obj.save(update_fields=["analyzed_file"])
+    upload_obj.available_tables = _available_tables
+    upload_obj.unavailable_tables = unavailable_tables
+    upload_obj.save(update_fields=["analyzed_file", "available_tables", "unavailable_tables"])
     yield upload_obj
 
     shutil.rmtree(f"{settings.MEDIA_ROOT}{upload_obj.id}", ignore_errors=True)
