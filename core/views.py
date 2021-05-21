@@ -98,7 +98,9 @@ class URLViewSet(viewsets.GenericViewSet):
     **Example (data from some cloud):**
     ```python
     >>> import requests
-    >>> response = request.post('/urls/', {'url': 'https://<filehosting.host>/<json-file>'})
+    >>> response = request.post('/urls/',
+                                {'url': 'https://<filehosting.host>/<json-file>'},
+                                headers={'Accept-Language': 'en_US|es'})
     >>> response.json()
     {
         "id": "96224033-73ef-430a-bc46-67cd205f249f",
@@ -124,8 +126,10 @@ class URLViewSet(viewsets.GenericViewSet):
 
     **Example (data from OCDS data registry):**
     ```python
-    >>> response = request.post('/urls/', {'url': 'https://<data-registry.host>/<dataset-query>',
-                                           'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>'})
+    >>> response = request.post('/urls/',
+                                {'url': 'https://<data-registry.host>/<dataset-query>',
+                                 'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>'},
+                                headers={'Accept-Language': 'en_US|es'})
     >>> response.json()
     {
         "id": "cb82da20-1aa2-4574-a8f7-3fbe92c7b412",
@@ -148,8 +152,8 @@ class URLViewSet(viewsets.GenericViewSet):
     }
     ```
 
-    After receiving this response you need to redirect user to the following URL: `https://<spoonbill-web.host>/#/upload-file?url=<received-id>`
-    e.g. `https://<spoonbill-web.host>/#/upload-file?url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412`
+    After receiving this response you need to redirect user to the following URL: `https://<spoonbill-web.host>/#/upload-file?lang=<lang-code>&url=<received-id>`
+    e.g. `https://<spoonbill-web.host>/#/upload-file?lang=en_US|es&url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412`
     """
 
     permissions_classes = permissions.AllowAny
