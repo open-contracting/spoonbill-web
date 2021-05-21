@@ -4,10 +4,8 @@ import os
 import pathlib
 import shutil
 import time
-import uuid
 from copy import deepcopy
 from datetime import timedelta
-from tempfile import TemporaryFile
 
 import ijson
 import requests
@@ -16,13 +14,13 @@ from channels.layers import get_channel_layer
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from spoonbill import FileAnalyzer, FileFlattener
 from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 from spoonbill.flatten import FlattenOptions
 from spoonbill.stats import DataPreprocessor
-from spoonbill.utils import iter_file
 
 from core.models import Flatten, Upload, Url
 from core.serializers import FlattenSerializer, UploadSerializer, UrlSerializer
@@ -131,16 +129,12 @@ def validate_data(object_id, model=None, lang_code="en"):
 
             if is_valid and not datasource.available_tables and not datasource.analyzed_file:
                 analyzed_data = analyzer.spec.dump()
-                with TemporaryFile() as temp:
-                    temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
-                    temp.seek(0)
-                    f = File(temp)
-                    f.name = uuid.uuid4().hex
-                    datasource.analyzed_file = f
-                    available_tables, unavailable_tables = retrieve_tables(analyzed_data)
-                    datasource.available_tables = available_tables
-                    datasource.unavailable_tables = unavailable_tables
-                    datasource.save(update_fields=["analyzed_file", "available_tables", "unavailable_tables"])
+                _file = ContentFile(json.dumps(analyzed_data, default=str).encode("utf-8"))
+                datasource.analyzed_file.save("new", _file)
+                available_tables, unavailable_tables = retrieve_tables(analyzed_data)
+                datasource.available_tables = available_tables
+                datasource.unavailable_tables = unavailable_tables
+                datasource.save(update_fields=["available_tables", "unavailable_tables"])
             elif is_valid and datasource.analyzed_file:
                 with open(datasource.analyzed_file.path) as f:
                     data = json.loads(f.read())
@@ -286,10 +280,12 @@ def download_data_source(object_id, model=None, lang_code="en"):
             size = int(r.headers.get("Content-Length", 0))
             downloaded = 0
             chunk_size = 10240
-            with TemporaryFile() as temp:
+            _file = ContentFile(b"")
+            datasource.file.save("new", _file)
+            with open(datasource.file.path, "wb") as fd:
                 timestamp = time.time()
                 for chunk in r.iter_content(chunk_size=chunk_size):
-                    temp.write(chunk)
+                    fd.write(chunk)
                     downloaded += chunk_size
                     if size != 0:
                         progress = (downloaded / size) * 100
@@ -307,13 +303,6 @@ def download_data_source(object_id, model=None, lang_code="en"):
                         },
                     )
                     timestamp = time.time()
-
-                temp.seek(0)
-                file_ = File(temp)
-                file_.name = uuid.uuid4().hex
-                datasource.file = file_
-                datasource.save(update_fields=["file"])
-
             if datasource.analyzed_data_url:
                 r = requests.get(datasource.analyzed_data_url, stream=True)
                 if r.status_code != 200:
@@ -340,10 +329,12 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 downloaded = 0
                 datasource.status = "analyzed_data.downloading"
                 datasource.save(update_fields=["status"])
-                with TemporaryFile() as temp:
+                _file = ContentFile(b"")
+                datasource.analyzed_file.save("new", _file)
+                with open(datasource.analyzed_file.path, "wb") as fd:
                     timestamp = time.time()
                     for chunk in r.iter_content(chunk_size=chunk_size):
-                        temp.write(chunk)
+                        fd.write(chunk)
                         downloaded += chunk_size
                         progress = (downloaded / size) * 100
                         progress = progress if progress < 100 else 100
@@ -358,11 +349,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                             },
                         )
                         timestamp = time.time()
-                    temp.seek(0)
-                    file_ = File(temp)
-                    file_.name = uuid.uuid4().hex
-                    datasource.analyzed_file = file_
-                    datasource.save(update_fields=["analyzed_file"])
+
             datasource.status = "queued.validation"
             datasource.downloaded = True
             expired_at = timezone.now() + timedelta(days=settings.JOB_FILES_TIMEOUT)
