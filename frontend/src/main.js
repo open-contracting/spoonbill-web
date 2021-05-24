@@ -3,24 +3,35 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
+import getQueryParam from '@/utils/getQueryParam';
 import axios from 'axios';
 import GetTextPlugin from 'vue-gettext';
 import translations from '@/translations/translations.json';
 import * as Sentry from '@sentry/vue';
 
-const selectedLanguage = localStorage.getItem('lang');
+const langFromQueryParam = getQueryParam('lang');
+const langFromLocalStorage = localStorage.getItem('lang');
 const availableLanguages = {
     en_US: 'English',
     es: 'Español',
 };
 const languagesArray = Object.keys(availableLanguages);
+let defaultLanguage;
+if (langFromQueryParam && languagesArray.includes(langFromQueryParam)) {
+    defaultLanguage = langFromQueryParam;
+} else if (langFromLocalStorage && languagesArray.includes(langFromLocalStorage)) {
+    defaultLanguage = langFromLocalStorage;
+} else {
+    defaultLanguage = languagesArray[0];
+}
 Vue.use(GetTextPlugin, {
     availableLanguages,
-    defaultLanguage: languagesArray.includes(selectedLanguage) ? selectedLanguage : languagesArray[0],
+    defaultLanguage,
     translations,
     silent: true,
 });
 
+axios.defaults.headers.common['Accept-Language'] = defaultLanguage;
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.interceptors.response.use(
     function (response) {
