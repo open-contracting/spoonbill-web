@@ -47,7 +47,6 @@ export default {
     methods: {
         changeLanguage() {
             Vue.config.language = this.isEnglish ? 'es' : 'en_US';
-            localStorage.setItem('lang', Vue.config.language);
         },
     },
 };

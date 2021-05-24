@@ -39,6 +39,7 @@ import getQueryParam from '@/utils/getQueryParam';
 import { UPLOAD_TYPES } from '@/constants';
 import AppConfirmDialog from '@/components/App/AppConfirmDialog';
 import LayoutInfo from '@/components/Layout/LayoutInfo';
+import axios from 'axios';
 
 export default {
     name: 'App',
@@ -59,6 +60,9 @@ export default {
         uploadDetails() {
             return this.$store.state.uploadDetails;
         },
+        lang() {
+            return this.$language.current;
+        },
     },
 
     watch: {
@@ -77,11 +81,21 @@ export default {
             },
             immediate: true,
         },
+        lang: {
+            handler(val) {
+                localStorage && localStorage.setItem('lang', val);
+                axios.defaults.headers.common['Accept-Language'] = val;
+                this.updateLangQueryParam(val);
+            },
+        },
     },
 
     async created() {
         const urlId = getQueryParam('url');
         const uploadId = getQueryParam('upload');
+        const query = {
+            lang: this.lang,
+        };
         if (urlId || uploadId) {
             this.loading = true;
             const type = urlId ? UPLOAD_TYPES.URL : UPLOAD_TYPES.UPLOAD;
@@ -97,6 +111,7 @@ export default {
                         params: {
                             forced: 'true',
                         },
+                        query,
                     })
                     .catch(() => {});
                 this.loading = false;
@@ -111,9 +126,21 @@ export default {
                     params: {
                         forced: 'true',
                     },
+                    query,
                 })
                 .catch(() => {});
         }
+    },
+    methods: {
+        updateLangQueryParam(lang) {
+            this.$router.push({
+                path: this.$route.path,
+                query: {
+                    ...this.$route.query,
+                    lang,
+                },
+            });
+        },
     },
 };
 </script>
