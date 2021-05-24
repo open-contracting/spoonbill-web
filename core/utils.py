@@ -193,6 +193,7 @@ def get_options_for_table(selections, exclude_tables_list, selection, tables, pa
         if table.heading:
             selections[table.name]["name"] = table.heading
         if selection.kind == selection.OCDS_LITE:
+            selections[table.name]["pretty_headers"] = True
             lite_table_config = (
                 OCDS_LITE_CONFIG["tables"].get(table.name, {})
                 if not parent
