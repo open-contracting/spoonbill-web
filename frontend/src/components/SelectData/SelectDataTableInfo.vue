@@ -5,7 +5,7 @@
         v-on="$listeners"
     >
         <v-icon class="pb-1" color="error" v-if="unavailable">mdi-close</v-icon>
-        <span class="table-info__name">
+        <span class="table-info__name" data-qa-id="{{table.name}}">
             {{ table.name }}
         </span>
         -
