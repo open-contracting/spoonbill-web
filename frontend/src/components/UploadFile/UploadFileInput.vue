@@ -239,7 +239,15 @@ export default {
                     type: UPLOAD_TYPES.UPLOAD,
                 });
                 this.$store.commit('increaseNumberOfUploads');
-                this.$router.push(`/upload-file?upload=${data.id}`).catch(() => {});
+                this.$router
+                    .push({
+                        path: '/upload-file',
+                        query: {
+                            ...this.$route.query,
+                            upload: data.id,
+                        },
+                    })
+                    .catch(() => {});
             } catch (e) {
                 /* istanbul ignore next */
                 console.error(e);
@@ -289,7 +297,15 @@ export default {
                     type: UPLOAD_TYPES.URL,
                 });
                 this.$store.commit('increaseNumberOfUploads');
-                this.$router.push(`/upload-file?url=${data.id}`).catch(() => {});
+                this.$router
+                    .push({
+                        path: '/upload-file',
+                        query: {
+                            ...this.$route.query,
+                            url: data.id,
+                        },
+                    })
+                    .catch(() => {});
             } catch (e) {
                 /* istanbul ignore next */
                 console.error(e);
@@ -312,7 +328,13 @@ export default {
          */
         onOptionSelect(option) {
             if (option === 'MANUAL') {
-                this.$router.push(`/select-data/?${this.uploadDetails.type.toLowerCase()}=${this.uploadDetails.id}`);
+                this.$router.push({
+                    path: 'select-data',
+                    query: {
+                        ...this.$route.query,
+                        [this.uploadDetails.type.toLowerCase()]: this.uploadDetails.id,
+                    },
+                });
             }
         },
     },
