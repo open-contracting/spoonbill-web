@@ -37,6 +37,17 @@ export default {
     },
 
     /**
+     * Sends POST request to create selections with OCDS Lite
+     * @param type { 'urls' | 'uploads' } type
+     * @param id { string } id - id of upload or URL
+     */
+    createOcdsLiteSelections(type, id) {
+        return axios.post(`${type}/${id}/selections/`, {
+            kind: 'ocds_lite',
+        });
+    },
+
+    /**
      * Get selections
      * @param { 'urls' | 'uploads' } type
      * @param { string } uploadId - id of upload or URL
