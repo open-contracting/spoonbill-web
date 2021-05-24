@@ -310,9 +310,27 @@ export default {
          * Handle option select
          * @param { 'AUTO' | 'MANUAL' } option
          */
-        onOptionSelect(option) {
+        async onOptionSelect(option) {
             if (option === 'MANUAL') {
                 this.$router.push(`/select-data/?${this.uploadDetails.type.toLowerCase()}=${this.uploadDetails.id}`);
+            } else {
+                try {
+                    const { data: selections } = await ApiService.createOcdsLiteSelections(
+                        this.$store.state.uploadDetails.type === 'url' ? 'urls' : 'uploads',
+                        this.$store.state.uploadDetails.id
+                    );
+                    this.$store.commit('setSelections', selections);
+                    this.$router.push({
+                        path: '/download',
+                        query: {
+                            ...this.$route.query,
+                            selections: selections.id,
+                        },
+                    });
+                } catch (e) {
+                    /* istanbul ignore next */
+                    console.error(e);
+                }
             }
         },
     },
