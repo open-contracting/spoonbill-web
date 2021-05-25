@@ -11,14 +11,6 @@ services:
       - ./:/letsencrypt
     networks:
       - main
-    # labels:
-    #   - 'traefik.enable=true'
-    #   - 'traefik.http.routers.api.rule=Host(`traefik.$DOMAIN`)'
-    #   - 'traefik.http.routers.api.entrypoints=http,https'
-    #   - 'traefik.http.routers.api.service=api@internal'
-    #   - 'traefik.http.routers.api.tls=true'
-    #   - 'traefik.http.routers.api.tls.certresolver=acmec'
-    #   - 'traefik.http.routers.api.tls.options=default'
     ports:
       - 80:80
       - 443:443
@@ -56,7 +48,7 @@ services:
       - redis
       - traefik
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     hostname: app
     env_file:
       - .env
@@ -70,7 +62,7 @@ services:
     networks:
       - main
     volumes:
-      - temporary-data:/tmp
+      - ${DATA_DIR:-temporary-data}:/tmp
     restart: on-failure
   postgres:
     container_name: postgres
@@ -106,7 +98,7 @@ services:
       - postgres
       - redis
     volumes:
-      - temporary-data:/tmp
+      - ${DATA_DIR:-temporary-data}:/tmp
     hostname: celery_worker
     networks:
       - main
@@ -139,16 +131,8 @@ services:
       - 'traefik.http.routers.site.tls=true'
       - 'traefik.http.routers.site.tls.certresolver=acmec'
       - 'traefik.http.routers.site.tls.options=default'
-      - 'traefik.http.middlewares.redirect.redirectregex.regex=^https://$OLD_DOMAIN/(.*)'
-      - 'traefik.http.middlewares.redirect.redirectregex.replacement=https://$DOMAIN/$${1}'
-      - 'traefik.http.routers.oldsite.rule=Host(`$OLD_DOMAIN`)'
-      - 'traefik.http.routers.oldsite.entrypoints=http,https'
-      - 'traefik.http.routers.oldsite.tls=true'
-      - 'traefik.http.routers.oldsite.tls.certresolver=acmec'
-      - 'traefik.http.routers.oldsite.tls.options=default'
-      - 'traefik.http.routers.oldsite.middlewares=redirect@docker'
     ports:
-      - "88:88"
+      - "127.0.0.1:88:88"
     env_file:
       - .env
     depends_on:
