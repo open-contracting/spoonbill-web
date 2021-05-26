@@ -7,6 +7,8 @@ from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
@@ -48,7 +50,7 @@ class UploadViewSet(viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
-            if not request.FILES.get("file"):
+            if "file" not in request.FILES:
                 return Response({"detail": _("File is required")}, status=status.HTTP_400_BAD_REQUEST)
             lang_code = get_language()
             validation_obj = Validation.objects.create()
@@ -56,9 +58,17 @@ class UploadViewSet(viewsets.GenericViewSet):
             upload_obj = Upload.objects.create(expired_at=expired_at, validation=validation_obj)
             cleanup_upload.apply_async((upload_obj.id, "Upload", lang_code), eta=upload_obj.expired_at)
 
-            file_ = File(request.FILES["file"])
-            upload_obj.file = file_
-            upload_obj.save(update_fields=["file"])
+            if isinstance(request.FILES["file"], TemporaryUploadedFile):
+                _empty_file = ContentFile(b"")
+                upload_obj.file.save("new", _empty_file)
+                _file = request.FILES["file"]
+                initial_path = _file.file.name
+                os.rename(initial_path, upload_obj.file.path)
+                _file.close()
+            else:
+                file_ = File(request.FILES["file"])
+                upload_obj.file = file_
+                upload_obj.save(update_fields=["file"])
 
             task = validate_data.delay(upload_obj.id, model="Upload", lang_code=lang_code)
             validation_obj.task_id = task.id
