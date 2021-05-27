@@ -113,8 +113,8 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert upload_obj.validation.is_valid is None
         assert not upload_obj.available_tables
 
-        mocked_dumps = mocker.patch("core.tasks.json.dumps")
-        mocked_dumps.side_effect = OSError(errno.ENOSPC, "No left space.")
+        mocked_dump = mocker.patch("core.tasks.FileAnalyzer")
+        mocked_dump().spec.dump.side_effect = OSError(errno.ENOSPC, "No left space.")
         validate_data(upload_obj.id, model="Upload")
 
         upload_obj = Upload.objects.get(id=upload_obj.id)

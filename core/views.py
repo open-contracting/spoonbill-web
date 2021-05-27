@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from spoonbill.stats import DataPreprocessor
 
 from core.constants import OCDS_LITE_CONFIG
 from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
@@ -234,14 +235,13 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
             lang_prefix = lang_code.split("-")[0]
             headings_type = f"{lang_prefix}_user_friendly"
             selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
-            with open(datasource.analyzed_file.path) as fd:
-                analyzed_data = json.loads(fd.read())
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             for available_table in datasource.available_tables:
                 if available_table["name"] in OCDS_LITE_CONFIG["tables"]:
                     _name = available_table["name"]
                     _split = OCDS_LITE_CONFIG["tables"][_name].get("split", False)
                     _table = Table.objects.create(name=_name, split=_split)
-                    child_tables_data = analyzed_data["tables"][_name].get("child_tables", [])
+                    child_tables_data = spec.tables[_name].child_tables
                     if _split and child_tables_data:
                         for child_table in child_tables_data:
                             _include = (
@@ -304,9 +304,7 @@ class TableViewSet(viewsets.ModelViewSet):
             elif "upload_id" in kwargs:
                 datasource = Upload.objects.get(id=kwargs["upload_id"])
             table = Table.objects.get(id=kwargs["id"])
-            with open(datasource.analyzed_file.path) as fd:
-                data = json.loads(fd.read())
-            tables = data["tables"]
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             update_fields = []
             for key in ("split", "include", "heading"):
                 if key in request.data:
@@ -316,8 +314,8 @@ class TableViewSet(viewsets.ModelViewSet):
                 table.save(update_fields=update_fields)
             is_array_tables = len(table.array_tables.all())
             if "split" in request.data and request.data["split"] and not is_array_tables:
-                child_tables = tables.get(table.name, {}).get("child_tables", [])
-                self._split_table(table, tables, datasource, child_tables)
+                child_tables = spec.tables[table.name].child_tables
+                self._split_table(table, spec.tables, datasource, child_tables)
             serializer = self.get_serializer_class()(table)
             sources = table.dataselection_set.all() or table.array_tables.all()[0].dataselection_set.all()
             if sources:
@@ -350,7 +348,7 @@ class TableViewSet(viewsets.ModelViewSet):
         datasource_dir = os.path.dirname(datasource.file.path)
         for child_table_key in child_tables:
             analyzed_child_table = analyzed_tables.get(child_table_key, {})
-            if analyzed_child_table.get("total_rows", 0) == 0:
+            if analyzed_child_table.total_rows == 0:
                 logger.debug(
                     "Skip child table %s for datasource %s" % (child_table_key, datasource),
                     extra={
@@ -365,8 +363,8 @@ class TableViewSet(viewsets.ModelViewSet):
             table.array_tables.add(child_table)
             preview_path = f"{datasource_dir}/{child_table_key}_combined.csv"
             store_preview_csv(COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)
-            if analyzed_child_table.get("child_tables", []):
-                self._split_table(table, analyzed_tables, datasource, analyzed_child_table["child_tables"])
+            if analyzed_child_table.child_tables:
+                self._split_table(table, analyzed_tables, datasource, analyzed_child_table.child_tables)
 
 
 class TablePreviewViewSet(viewsets.GenericViewSet):
@@ -382,17 +380,15 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
         datasource_dir = os.path.dirname(datasource.file.path)
         selection = DataSelection.objects.get(id=selection_id)
         try:
-            with open(datasource.analyzed_file.path) as fd:
-                analyzed_data = json.loads(fd.read())
-            tables = analyzed_data["tables"]
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             data = []
             if table.split:
                 preview_path = f"{datasource_dir}/{table.name}.csv"
                 if not os.path.exists(preview_path):
-                    store_preview_csv(COLUMNS, PREVIEW_ROWS, tables[table.name], preview_path)
+                    store_preview_csv(COLUMNS, PREVIEW_ROWS, spec.tables[table.name], preview_path)
                 with open(preview_path) as csvfile:
                     preview = {
-                        "name": tables[table.name]["name"],
+                        "name": spec.tables[table.name].name,
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,
@@ -406,7 +402,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                     preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
                     with open(preview_path) as csvfile:
                         preview = {
-                            "name": tables[child_table.name]["name"],
+                            "name": spec.tables[child_table.name].name,
                             "id": str(child_table.id),
                             "preview": csvfile.read(),
                             "heading": child_table.heading,
@@ -417,10 +413,10 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
             else:
                 preview_path = f"{datasource_dir}/{table.name}_combined.csv"
                 if not os.path.exists(preview_path):
-                    store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
+                    store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, spec.tables[table.name], preview_path)
                 with open(preview_path) as csvfile:
                     preview = {
-                        "name": tables[table.name]["name"],
+                        "name": spec.tables[table.name].name,
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,
