@@ -27,7 +27,7 @@
                 step="3"
                 @click="navigateTo(3, '/customize-tables', isOcdsLite)"
             >
-                <translate :class="{ 'text-link': value > 3 }">Customize tables</translate>
+                <translate :class="{ 'text-link': value > 3 }">Preview tables</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 3, complete: value > 4 }"></v-divider>
@@ -38,7 +38,7 @@
                 step="4"
                 @click="navigateTo(4, '/edit-headings', isOcdsLite)"
             >
-                <translate :class="{ 'text-link': value > 4 }">Edit tables</translate>
+                <translate :class="{ 'text-link': value > 4 }">Edit headings</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 4, complete: value > 5 }"></v-divider>

@@ -197,7 +197,7 @@ export default {
                     this.loader = false;
                     this.$store.commit('openSnackbar', {
                         color: 'moody-blue',
-                        text: this.$gettext('Now your file is analyzed and ready to use.'),
+                        text: this.$gettext('Your file has been checked and is ready to use.'),
                     });
                 }, 1000);
                 return;
