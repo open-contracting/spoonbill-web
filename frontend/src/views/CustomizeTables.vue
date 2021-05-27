@@ -8,7 +8,7 @@
             </v-tabs>
         </v-col>
         <v-col class="pt-7" cols="12" md="8">
-            <translate tag="h2" class="page-title">Customize Tables</translate>
+            <translate tag="h2" class="page-title">Preview tables</translate>
         </v-col>
         <v-col cols="12">
             <customize-tables-table v-if="currentTable" :table="currentTable" @save="goToNext" @back="onBackClick" />
