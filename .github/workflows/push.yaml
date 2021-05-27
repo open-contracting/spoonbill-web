@@ -144,7 +144,7 @@ jobs:
               docker-compose -f docker-compose.test.yaml logs app
               docker ps
               cd ./test
-              DOMAIN_URL=http://127.0.0.1/api SITE_URL=http://127.0.0.1 POSTGRES_HOST=127.0.0.1 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot -s queue tests/
+              DOMAIN_URL=http://127.0.0.1/api SITE_URL=http://127.0.0.1 POSTGRES_HOST=127.0.0.1 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot tests
       - uses: actions/upload-artifact@v2
         with:
           name: Tests result
