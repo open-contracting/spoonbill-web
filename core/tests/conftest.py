@@ -1,22 +1,33 @@
 import json
 import os
+import pathlib
 import shutil
 import uuid
 
 import pytest
 from django.conf import settings
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.utils import timezone
+from spoonbill.stats import DataPreprocessor
 
 from core.models import Upload, Url, Validation
 from core.utils import retrieve_tables
 
 from .utils import Response, Task
 
-DATA_DIR = os.path.dirname(__file__) + "/data"
+DATA_DIR = pathlib.Path(os.path.dirname(__file__)) / "data"
 
-ANALYZED_DATA_PATH = f"{DATA_DIR}/analyzed.json"
-SAMPLE_DATA_PATH = f"{DATA_DIR}/sample-dataset.json"
+ANALYZED_DATA_PATH = DATA_DIR / "analyzed.dump"
+SAMPLE_DATA_PATH = DATA_DIR / "sample-dataset.json"
+
+
+@pytest.fixture
+def schema():
+    path = DATA_DIR.parent.parent / "data/schema.json"
+    with open(path) as fd:
+        data = json.loads(fd.read())
+    return data
 
 
 @pytest.fixture
@@ -29,7 +40,7 @@ def dataset():
 
 @pytest.fixture
 def analyzed():
-    file_ = open(ANALYZED_DATA_PATH)
+    file_ = open(ANALYZED_DATA_PATH, "rb")
     yield file_
 
     file_.close
@@ -37,9 +48,10 @@ def analyzed():
 
 @pytest.fixture
 def available_tables():
-    with open(ANALYZED_DATA_PATH) as fd:
-        data = json.loads(fd.read())
-    _available_tables, unavailable_tables = retrieve_tables(data)
+    spec = DataPreprocessor.restore(ANALYZED_DATA_PATH)
+    # with open(ANALYZED_DATA_PATH) as fd:
+    #     data = json.loads(fd.read())
+    _available_tables, unavailable_tables = retrieve_tables(spec)
     return _available_tables, unavailable_tables
 
 
@@ -79,13 +91,14 @@ def upload_obj(validation_obj, dataset):
 
 @pytest.fixture
 def upload_obj_validated(upload_obj, analyzed, available_tables):
-    file_ = File(analyzed)
-    file_.name = uuid.uuid4().hex
+    # file_ = File(analyzed)
+    file_ = ContentFile(analyzed.read())
+    # file_.name = uuid.uuid4().hex
     _available_tables, unavailable_tables = available_tables
-    upload_obj.analyzed_file = file_
+    upload_obj.analyzed_file.save("new", file_)
     upload_obj.available_tables = _available_tables
     upload_obj.unavailable_tables = unavailable_tables
-    upload_obj.save(update_fields=["analyzed_file", "available_tables", "unavailable_tables"])
+    upload_obj.save(update_fields=["available_tables", "unavailable_tables"])
     yield upload_obj
 
     shutil.rmtree(f"{settings.MEDIA_ROOT}{upload_obj.id}", ignore_errors=True)

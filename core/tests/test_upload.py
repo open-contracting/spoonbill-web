@@ -16,7 +16,7 @@ from core.tests.utils import create_data_selection, get_data_selections
 from .utils import Task
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
-ANALYZED_DATA_PATH = f"{DATA_DIR}/analyzed.json"
+DATASET_PATH = f"{DATA_DIR}/sample-dataset.json"
 
 
 @pytest.mark.django_db
@@ -125,7 +125,7 @@ class TestUploadViewsUnit(TestCase):
     def test_create_selections_successful(self, mocked_cleanup, mocked_validation):
         settings.FILE_UPLOAD_MAX_MEMORY_SIZE = 100
         mocked_validation.delay.return_value = Task()
-        with open(ANALYZED_DATA_PATH) as _file:
+        with open(DATASET_PATH) as _file:
             response = self.client.post(self.url_prefix, {"file": _file})
         assert response.status_code == 201
         upload = response.json()

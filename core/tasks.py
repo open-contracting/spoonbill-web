@@ -128,20 +128,19 @@ def validate_data(object_id, model=None, lang_code="en"):
             datasource.save(update_fields=["root_key"])
 
             if is_valid and not datasource.available_tables and not datasource.analyzed_file:
-                analyzed_data = analyzer.spec.dump()
-                _file = ContentFile(json.dumps(analyzed_data, default=str).encode("utf-8"))
+                _file = ContentFile(b"")
                 datasource.analyzed_file.save("new", _file)
-                available_tables, unavailable_tables = retrieve_tables(analyzed_data)
+                analyzer.spec.dump(datasource.analyzed_file.path)
+                available_tables, unavailable_tables = retrieve_tables(analyzer.spec)
                 datasource.available_tables = available_tables
                 datasource.unavailable_tables = unavailable_tables
                 datasource.save(update_fields=["available_tables", "unavailable_tables"])
             elif is_valid and datasource.analyzed_file:
-                with open(datasource.analyzed_file.path) as f:
-                    data = json.loads(f.read())
-                    available_tables, unavailable_tables = retrieve_tables(data)
-                    datasource.available_tables = available_tables
-                    datasource.unavailable_tables = unavailable_tables
-                    datasource.save(update_fields=["available_tables", "unavailable_tables"])
+                spec = DataPreprocessor.restore(datasource.analyzed_file.path)
+                available_tables, unavailable_tables = retrieve_tables(spec)
+                datasource.available_tables = available_tables
+                datasource.unavailable_tables = unavailable_tables
+                datasource.save(update_fields=["available_tables", "unavailable_tables"])
 
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",
@@ -454,10 +453,8 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 f"datasource_{datasource.id}",
                 {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
             )
-            with open(datasource.analyzed_file.path) as fd:
-                analyzed_data = json.loads(fd.read())
-            total_rows = analyzed_data.get("total_items", 0)
-            spec = DataPreprocessor.restore(analyzed_data)
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
+            total_rows = spec.total_items
             opt = get_flatten_options(selection)
             logger.debug(
                 "Generate options for export",
@@ -543,7 +540,11 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
             extra = deepcopy(logger_context)
             extra["MESSAGE_ID"] = "flatten_failed"
             extra["ERROR_MESSAGE"] = error_message
-            logger.info("Flatten %s for %s datasource %s failed" % (flatten_id, model, datasource.id), extra=extra)
+            logger.error(
+                "Flatten %s for %s datasource %s failed" % (flatten_id, model, datasource.id),
+                extra=extra,
+                exc_info=True,
+            )
             flatten.status = "failed"
             flatten.error = error_message
             flatten.save(update_fields=["error", "status"])
