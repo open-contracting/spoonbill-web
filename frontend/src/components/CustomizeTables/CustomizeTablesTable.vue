@@ -16,7 +16,11 @@
                         </translate>
                         <div class="p-relative overflow-hidden">
                             <transition name="roll-down" mode="in-out">
-                                <p v-if="showMissingDataList">{{ missingDataStr }}</p>
+                                <ul class="missing-data-list" v-if="showMissingDataList">
+                                    <li v-for="item in missingData" :key="item">
+                                        {{ item }}
+                                    </li>
+                                </ul>
                             </transition>
                         </div>
                     </template>
@@ -244,10 +248,6 @@ export default {
             return this.additionalInfo?.available_data?.columns?.missing_data || [];
         },
 
-        missingDataStr() {
-            return this.missingData.join(', ');
-        },
-
         additionalColumns() {
             return this.additionalInfo.available_data?.columns?.additional || [];
         },
@@ -431,7 +431,7 @@ export default {
 
 .roll-down-enter-active,
 .roll-down-leave-active {
-    transition: margin-top 0.2s;
+    transition: margin-top 0.2s !important;
 }
 
 .roll-down-enter-active {
@@ -444,6 +444,12 @@ export default {
 
 .roll-down-enter,
 .roll-down-leave-to {
-    margin-top: -120px;
+    margin-top: -120px !important;
+}
+
+.missing-data-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 </style>
