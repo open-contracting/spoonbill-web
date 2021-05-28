@@ -63,8 +63,8 @@ export default {
                 title: this.$gettext('What are R friendly headings?'),
                 content: this.$gettext(
                     'R is a coding language that is used for data visualization, statistical analysis and data science.' +
-                        'Users that work with R prefer to have the column headings to be provided in a' +
-                        'certain way so that the manual work to make the data ready for analysis is reduced.'
+                        ' Users that work with R prefer to have the column headings to be provided in a' +
+                        ' certain way so that the manual work to make the data ready for analysis is reduced.'
                 ),
             },
         };
