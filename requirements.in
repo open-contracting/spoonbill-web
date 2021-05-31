@@ -21,4 +21,4 @@ sphinx
 sphinx_rtd_theme
 sqlalchemy
 transifex-client
--e git+git://github.com/open-contracting/spoonbill.git@6884c2f443cf036b60c50464ba00afc107dade80#egg=spoonbill
+-e git+git://github.com/open-contracting/spoonbill.git@44f715e47d5807a449b30d333030a85af4c00717#egg=spoonbill
