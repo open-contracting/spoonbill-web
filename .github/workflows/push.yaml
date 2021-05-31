@@ -135,6 +135,11 @@ jobs:
             pull_sources: false
             push_translations: false
             push_sources: false
+      - name: Copy translate file for Tests
+        run: |
+              cp  core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
+              cp  spoonbill_web/locale/es/LC_MESSAGES/django.po  test/resources/backend_es.po
+              cp  frontend/locale/es/lang.po test/resources/front_es.po
       - name: Run tests docker-compose
         run: |
               docker-compose -f docker-compose.test.yaml build
