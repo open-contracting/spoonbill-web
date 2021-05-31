@@ -151,6 +151,7 @@ jobs:
               cd ./test
               DOMAIN_URL=http://127.0.0.1/api SITE_URL=http://127.0.0.1 POSTGRES_HOST=127.0.0.1 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot tests
       - uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: Tests result
           path: |
@@ -195,7 +196,7 @@ jobs:
               echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
               echo "API_DOMAIN=${{ secrets.API_DOMAIN }}" >> .env
               echo "ACME_EMAIL=${{ secrets.ACME_EMAIL }}" >> .env
-              echo "OLD_DOMAIN=${{ secrets.OLD_DOMAIN }}" >> .env
+              echo "DATA_DIR="/data" >> .env
               echo "API_PREFIX=api/" >> .env
       - name: Copy .env
         uses: garygrossgarten/github-action-scp@release
