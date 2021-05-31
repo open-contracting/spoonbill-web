@@ -14,6 +14,7 @@ services:
     ports:
       - 80:80
       - 443:443
+    restart: unless-stopped
     command:
       - '--api'
       # - '--api.insecure=true'
@@ -34,7 +35,7 @@ services:
   app:
     image: ${IMAGE}
     pull_policy: if_not_present
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
+    command: sh -c "mkdir -p /data/django /data/tmp && python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
     container_name: app
     labels:
       - 'traefik.enable=true'
@@ -59,11 +60,13 @@ services:
       - DB_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
+      - FILE_UPLOAD_TEMP_DIR=/data/tmp/
+      - MEDIA_ROOT=/data/django/
     networks:
       - main
     volumes:
-      - ${DATA_DIR:-temporary-data}:/tmp
-    restart: on-failure
+      - ${DATA_DIR:-temporary-data}:/data
+    restart: unless-stopped
   postgres:
     container_name: postgres
     hostname: postgres
@@ -72,7 +75,7 @@ services:
       - .env
     networks:
       - main
-    restart: on-failure
+    restart: unless-stopped
     volumes:
       - postgresql-data:/var/lib/postgresql/data
   redis:
@@ -81,7 +84,7 @@ services:
     image: redis:latest
     networks:
       - main
-    restart: on-failure
+    restart: unless-stopped
   celery_worker:
     image:  ${IMAGE}
     command: celery -A spoonbill_web worker -l INFO --concurrency=4
@@ -93,16 +96,18 @@ services:
       - DB_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
+      - FILE_UPLOAD_TEMP_DIR=/data/tmp/
+      - MEDIA_ROOT=/data/django/
     depends_on:
       - app
       - postgres
       - redis
     volumes:
-      - ${DATA_DIR:-temporary-data}:/tmp
+      - ${DATA_DIR:-temporary-data}:/data
     hostname: celery_worker
     networks:
       - main
-    restart: on-failure
+    restart: unless-stopped
   celery_beat:
     image: ${IMAGE}
     command: celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
@@ -120,7 +125,7 @@ services:
     hostname: celery_beat
     networks:
       - main
-    restart: on-failure
+    restart: unless-stopped
   front:
     image: ${FRONT_IMAGE}
     container_name: front
@@ -140,7 +145,7 @@ services:
     hostname: front
     networks:
       - main
-    restart: on-failure
+    restart: unless-stopped
 
 networks:
   main:
