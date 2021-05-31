@@ -37,6 +37,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
       - uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
@@ -57,10 +61,17 @@ jobs:
             pytest --cov-fail-under=${{ secrets.COVERAGE_PERCENT }}
         env:
           DEBUG: True
+      - name: Test frontend
+        run: |
+              cd ./frontend
+              gem install coveralls-lcov
+              npm install
+              npm run test:unit
+              coveralls-lcov -v -n ./coverage/lcov.info > coverage.json
       - name: Upload to coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github
+        run: coveralls --service=github --merge=./frontend/coverage.json
       - name: Install gettext
         run: sudo apt-get install gettext
       - name: Create traslate files
@@ -124,6 +135,11 @@ jobs:
             pull_sources: false
             push_translations: false
             push_sources: false
+      - name: Copy translate file for Tests
+        run: |
+              cp  core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
+              cp  spoonbill_web/locale/es/LC_MESSAGES/django.po  test/resources/backend_es.po
+              cp  frontend/locale/es/lang.po test/resources/front_es.po
       - name: Run tests docker-compose
         run: |
               docker-compose -f docker-compose.test.yaml build
@@ -133,8 +149,9 @@ jobs:
               docker-compose -f docker-compose.test.yaml logs app
               docker ps
               cd ./test
-              DOMAIN_URL=http://127.0.0.1/api SITE_URL=http://127.0.0.1 POSTGRES_HOST=127.0.0.1 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot -s queue tests/
+              DOMAIN_URL=http://127.0.0.1/api SITE_URL=http://127.0.0.1 POSTGRES_HOST=127.0.0.1 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot tests
       - uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: Tests result
           path: |
@@ -179,7 +196,7 @@ jobs:
               echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
               echo "API_DOMAIN=${{ secrets.API_DOMAIN }}" >> .env
               echo "ACME_EMAIL=${{ secrets.ACME_EMAIL }}" >> .env
-              echo "OLD_DOMAIN=${{ secrets.OLD_DOMAIN }}" >> .env
+              echo "DATA_DIR="/data" >> .env
               echo "API_PREFIX=api/" >> .env
       - name: Copy .env
         uses: garygrossgarten/github-action-scp@release

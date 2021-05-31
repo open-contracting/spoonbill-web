@@ -103,7 +103,7 @@ export default {
         },
 
         downloadProgress() {
-            return this.$store.state.downloadProgress;
+            return Math.round(this.$store.state.downloadProgress);
         },
     },
 
@@ -197,7 +197,7 @@ export default {
                     this.loader = false;
                     this.$store.commit('openSnackbar', {
                         color: 'moody-blue',
-                        text: this.$gettext('Now your file is analyzed and ready to use.'),
+                        text: this.$gettext('Your file has been checked and is ready to use.'),
                     });
                 }, 1000);
                 return;
@@ -239,7 +239,15 @@ export default {
                     type: UPLOAD_TYPES.UPLOAD,
                 });
                 this.$store.commit('increaseNumberOfUploads');
-                this.$router.push(`/upload-file?upload=${data.id}`).catch(() => {});
+                this.$router
+                    .push({
+                        path: '/upload-file',
+                        query: {
+                            ...this.$route.query,
+                            upload: data.id,
+                        },
+                    })
+                    .catch(() => {});
             } catch (e) {
                 /* istanbul ignore next */
                 console.error(e);
@@ -289,7 +297,15 @@ export default {
                     type: UPLOAD_TYPES.URL,
                 });
                 this.$store.commit('increaseNumberOfUploads');
-                this.$router.push(`/upload-file?url=${data.id}`).catch(() => {});
+                this.$router
+                    .push({
+                        path: '/upload-file',
+                        query: {
+                            ...this.$route.query,
+                            url: data.id,
+                        },
+                    })
+                    .catch(() => {});
             } catch (e) {
                 /* istanbul ignore next */
                 console.error(e);
@@ -310,9 +326,33 @@ export default {
          * Handle option select
          * @param { 'AUTO' | 'MANUAL' } option
          */
-        onOptionSelect(option) {
+        async onOptionSelect(option) {
             if (option === 'MANUAL') {
-                this.$router.push(`/select-data/?${this.uploadDetails.type.toLowerCase()}=${this.uploadDetails.id}`);
+                this.$router.push({
+                    path: 'select-data',
+                    query: {
+                        ...this.$route.query,
+                        [this.uploadDetails.type.toLowerCase()]: this.uploadDetails.id,
+                    },
+                });
+            } else {
+                try {
+                    const { data: selections } = await ApiService.createOcdsLiteSelections(
+                        this.$store.state.uploadDetails.type === 'url' ? 'urls' : 'uploads',
+                        this.$store.state.uploadDetails.id
+                    );
+                    this.$store.commit('setSelections', selections);
+                    this.$router.push({
+                        path: '/download',
+                        query: {
+                            ...this.$route.query,
+                            selections: selections.id,
+                        },
+                    });
+                } catch (e) {
+                    /* istanbul ignore next */
+                    console.error(e);
+                }
             }
         },
     },

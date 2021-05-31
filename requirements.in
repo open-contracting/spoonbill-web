@@ -12,6 +12,7 @@ drf-nested-routers
 ijson
 markdown
 psycopg2
+python-json-logger
 pyyaml
 redis
 requests

@@ -200,8 +200,8 @@ class TestTableViews:
         tables = self.client.get(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
-        mocked_open = self.mocker.patch("core.views.open")
-        mocked_open.return_value.__enter__.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
+        mocked_open = self.mocker.patch("core.views.DataPreprocessor.restore")
+        mocked_open.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
 
         response = self.client.patch(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",

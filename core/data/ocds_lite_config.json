@@ -1,0 +1,75 @@
+{
+  "table_threshold": 1,
+  "tables": {
+    "awards": {
+      "child_tables": {
+        "awards_suppliers": {
+          "only": [
+            "/awards/suppliers/name",
+            "/awards/suppliers/id",
+            "/awards/suppliers/*/name",
+            "/awards/suppliers/*/id",
+            "ocid",
+            "id"
+          ],
+          "repeat": [
+            "/awards/id"
+          ],
+          "split": false
+        }
+      },
+      "only": [
+        "/awards/value/amount",
+        "/awards/value/currency",
+        "/awards/suppliers/id",
+        "/awards/suppliers/name",
+        "/awards/suppliers/*/id",
+        "/awards/suppliers/*/name",
+        "/awards/date",
+        "/awards/description",
+        "/awards/title",
+        "/awards/id",
+        "ocid",
+        "id"
+      ],
+      "split": true
+    },
+    "contracts": {
+      "only": [
+        "/contracts/dateSigned",
+        "/contracts/value/amount",
+        "/contracts/value/currency",
+        "/contracts/period/endDate",
+        "/contracts/period/startDate",
+        "/contracts/status",
+        "/contracts/description",
+        "/contracts/title",
+        "/contracts/awardID",
+        "/contracts/id",
+        "ocid",
+        "id"
+      ],
+      "split": false
+    },
+    "tenders": {
+      "only": [
+        "/tender/numberOfTenderers",
+        "/tender/tenderPeriod/endDate",
+        "/tender/tenderPeriod/startDate",
+        "/tender/mainProcurementCategory",
+        "/tender/procurementMethodDetails",
+        "/tender/procurementMethod",
+        "/tender/value/amount",
+        "/tender/value/currency",
+        "/tender/procuringEntity/id",
+        "/tender/procuringEntity/name",
+        "/tender/description",
+        "/tender/title",
+        "/tender/id",
+        "ocid",
+        "id"
+      ],
+      "split": false
+    }
+  }
+}

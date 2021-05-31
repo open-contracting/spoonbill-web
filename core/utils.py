@@ -9,8 +9,10 @@ from zipfile import ZipFile
 
 import ijson
 from django.utils.translation import activate, get_language
+from spoonbill.stats import DataPreprocessor
 
 from core.column_headings import headings
+from core.constants import OCDS_LITE_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -41,33 +43,33 @@ def export_directory_path(instance, filename):
 
 
 def retrieve_tables(analyzed_data):
-    tables = analyzed_data.get("tables", {})
+    tables = analyzed_data.tables
     available_tables = []
     unavailable_tables = []
     for key in TABLES_ORDER:
         table = tables.get(key, {})
-        if table.get("total_rows", 0) == 0:
+        if table.total_rows == 0:
             unavailable_tables.append(key)
             continue
-        arrays = {k: v for k, v in table.get("arrays", {}).items() if v > 0}
+        arrays = {k: v for k, v in table.arrays.items() if v > 0}
         available_table = {
-            "name": table.get("name"),
-            "rows": table.get("total_rows"),
+            "name": table.name,
+            "rows": table.total_rows,
             "arrays": arrays,
             "available_data": {
                 "columns": {
-                    "additional": list(table.get("additional_columns", {}).keys()),
-                    "total": len(table.get("columns", {}).keys()),
+                    "additional": list(table.additional_columns.keys()),
+                    "total": len(table.columns.keys()),
                 }
             },
         }
         available_cols = 0
         missing_columns_data = []
-        for col in table.get("columns", {}).values():
-            if col.get("hits", 0) > 0:
+        for col in table.columns.values():
+            if col.hits > 0:
                 available_cols += 1
             else:
-                missing_columns_data.append(col["id"])
+                missing_columns_data.append(col.id)
         available_table["available_data"]["columns"].update(
             {"available": available_cols, "missing_data": missing_columns_data}
         )
@@ -76,13 +78,15 @@ def retrieve_tables(analyzed_data):
 
 
 def store_preview_csv(columns_key, rows_key, table_data, preview_path):
-    headers = set()
-    for row in table_data[rows_key]:
-        headers |= set(row.keys())
+    columns = getattr(table_data, columns_key)
+    headers = [header for header, col in columns.items() if col.hits > 0]
+    if not columns_key.startswith("combined"):
+        headers.append("parentTable")
     with open(preview_path, "w", newline="\n") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()
-        writer.writerows(table_data[rows_key])
+        rows = getattr(table_data, rows_key)
+        writer.writerows(rows)
 
 
 def transform_to_r(value):
@@ -99,25 +103,24 @@ def get_column_headings(datasource, tables, table):
     column_headings = {}
     if datasource.headings_type == "ocds":
         return column_headings
-    columns = tables[table.name]["columns"].keys() if table.split else tables[table.name]["combined_columns"].keys()
+    columns = tables[table.name].columns.keys() if table.split else tables[table.name].combined_columns.keys()
     for col in columns:
         non_index_based = re.sub(r"\d", "*", col)
         column_headings.update({col: heading_formatters[datasource.headings_type](headings.get(non_index_based, col))})
     return column_headings
 
 
-def set_column_headings(datasource, analyzed_file_path):
+def set_column_headings(selection, analyzed_file_path):
     current_language_code = get_language()
-    with open(analyzed_file_path) as fd:
-        tables = json.loads(fd.read())["tables"]
-    if datasource.headings_type.startswith("es"):
+    spec = DataPreprocessor.restore(analyzed_file_path)
+    if selection.headings_type.startswith("es"):
         activate("es")
-    for table in datasource.tables.all():
-        table.column_headings = get_column_headings(datasource, tables, table)
+    for table in selection.tables.all():
+        table.column_headings = get_column_headings(selection, spec.tables, table)
         table.save(update_fields=["column_headings"])
         if table.split:
             for a_table in table.array_tables.all():
-                a_table.column_headings = get_column_headings(datasource, tables, a_table)
+                a_table.column_headings = get_column_headings(selection, spec.tables, a_table)
                 a_table.save(update_fields=["column_headings"])
     activate(current_language_code)
 
@@ -158,29 +161,64 @@ def zip_files(source_dir, zipfile, extension=None):
                     fzip.write(os.path.join(folder, file_), file_)
 
 
-def get_flatten_options(selection):
-    selections = {}
-    exclude_tables_list = []
+def get_only_columns(table, child_table=None, analyzed_data=None):
+    only_columns = []
+    only = (
+        OCDS_LITE_CONFIG["tables"].get(table.name, {}).get("only", [])
+        if not child_table
+        else OCDS_LITE_CONFIG["tables"][table.name]["child_tables"].get(child_table.name, {}).get("only", [])
+    )
+    if not only:
+        return only
+    table_key = table.name if not child_table else child_table.name
+    columns = (
+        analyzed_data.tables[table_key].columns.keys()
+        if table.split
+        else analyzed_data.tables[table_key].combined_columns.keys()
+    )
+    for col in columns:
+        non_index_based = re.sub(r"\d", "*", col)
+        if non_index_based in only:
+            only_columns.append(col)
+    return only_columns
 
-    for table in selection.tables.all():
+
+def get_options_for_table(selections, exclude_tables_list, selection, tables, parent=None, analyzed_data=None):
+    for table in tables.all():
         if not table.include:
             exclude_tables_list.append(table.name)
             continue
-        selections[table.name] = {"split": table.split}
+        else:
+            selections[table.name] = {"split": table.split}
         if table.column_headings:
             selections[table.name]["headers"] = table.column_headings
         if table.heading:
             selections[table.name]["name"] = table.heading
+        if selection.kind == selection.OCDS_LITE:
+            selections[table.name]["pretty_headers"] = True
+            lite_table_config = (
+                OCDS_LITE_CONFIG["tables"].get(table.name, {})
+                if not parent
+                else OCDS_LITE_CONFIG["tables"].get(parent.name, {}).get("child_tables", {}).get(table.name, {})
+            )
+            only = get_only_columns(table, analyzed_data=analyzed_data)
+            if only:
+                selections[table.name]["only"] = only
+            if "repeat" in lite_table_config:
+                selections[table.name]["repeat"] = lite_table_config["repeat"]
         if table.split:
-            for a_table in table.array_tables.all():
-                if not a_table.include:
-                    exclude_tables_list.append(a_table.name)
-                    continue
-                selections[a_table.name] = {"split": a_table.split}
-                if a_table.column_headings:
-                    selections[a_table.name]["headers"] = a_table.column_headings
-                if a_table.heading:
-                    selections[a_table.name]["name"] = a_table.heading
+            get_options_for_table(selections, exclude_tables_list, selection, table.array_tables, table, analyzed_data)
+
+
+def get_flatten_options(selection):
+    selections = {}
+    exclude_tables_list = []
+    spec = None
+
+    if selection.kind == selection.OCDS_LITE:
+        datasource = selection.url_set.all() or selection.upload_set.all()
+        spec = DataPreprocessor.restore(datasource[0].analyzed_file.path)
+    get_options_for_table(selections, exclude_tables_list, selection, selection.tables, analyzed_data=spec)
     options = {"selection": selections}
     if exclude_tables_list:
         options["exclude"] = exclude_tables_list

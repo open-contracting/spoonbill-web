@@ -113,8 +113,8 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert upload_obj.validation.is_valid is None
         assert not upload_obj.available_tables
 
-        mocked_dumps = mocker.patch("core.tasks.json.dumps")
-        mocked_dumps.side_effect = OSError(errno.ENOSPC, "No left space.")
+        mocked_dump = mocker.patch("core.tasks.FileAnalyzer")
+        mocked_dump().spec.dump.side_effect = OSError(errno.ENOSPC, "No left space.")
         validate_data(upload_obj.id, model="Upload")
 
         upload_obj = Upload.objects.get(id=upload_obj.id)
@@ -358,3 +358,20 @@ class TestFlattenDataTask:
         flatten = Flatten.objects.get(id=flatten_id)
         assert flatten.status == Flatten.FAILED
         assert flatten.error == "Currently, the space limit was reached. Please try again later."
+
+    def test_flatten_csv_successful_lite(self, client, upload_obj_validated):
+        selection_id, flatten_id = create_flatten(
+            client, upload_obj_validated, prefix=self.url_prefix, export_format=Flatten.CSV, kind="ocds_lite"
+        )
+        selection = DataSelection.objects.get(id=selection_id)
+        assert selection.kind == selection.OCDS_LITE
+        assert selection.headings_type == selection.EN_USER_FRIENDLY
+        tables = selection.tables.all()
+        assert len(tables) == 3
+
+        flatten_data(flatten_id, model=self.model)
+
+        flatten = Flatten.objects.get(id=flatten_id)
+        assert flatten.status == Flatten.COMPLETED
+        assert flatten.file.path.startswith(settings.MEDIA_ROOT)
+        assert flatten.file.path.endswith(".zip")

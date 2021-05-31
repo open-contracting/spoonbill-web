@@ -1,11 +1,11 @@
 import json
 import logging
 import os
+import pathlib
 import shutil
-import uuid
+import time
 from copy import deepcopy
 from datetime import timedelta
-from tempfile import TemporaryFile
 
 import ijson
 import requests
@@ -14,13 +14,13 @@ from channels.layers import get_channel_layer
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from spoonbill import FileFlattener
+from spoonbill import FileAnalyzer, FileFlattener
 from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 from spoonbill.flatten import FlattenOptions
 from spoonbill.stats import DataPreprocessor
-from spoonbill.utils import iter_file
 
 from core.models import Flatten, Upload, Url
 from core.serializers import FlattenSerializer, UploadSerializer, UrlSerializer
@@ -89,19 +89,37 @@ def validate_data(object_id, model=None, lang_code="en"):
             logger.debug("Start validation for %s file" % object_id)
             with open(SCHEMA_PATH) as fd:
                 schema = json.loads(fd.read())
-            spec = DataPreprocessor(schema, ROOT_TABLES, combined_tables=COMBINED_TABLES)
             resource = ""
             if is_release_package(datasource.file.path):
                 resource = "releases"
             elif is_record_package(datasource.file.path):
                 resource = "records"
             if resource:
-                for count in spec.process_items(iter_file(datasource.file.path, resource), with_preview=True):
+                path = pathlib.Path(datasource.file.path)
+                workdir = path.parent
+                filename = path.name
+                total = path.stat().st_size
+                analyzer = FileAnalyzer(
+                    workdir, schema=schema, root_key=resource, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES
+                )
+                timestamp = time.time()
+                for read, count in analyzer.analyze_file(filename, with_preview=True):
+                    if (time.time() - timestamp) <= 1:
+                        continue
                     async_to_sync(channel_layer.group_send)(
                         f"datasource_{datasource.id}",
-                        {"type": "task.validate", "datasource": {"id": str(datasource.id)}, "processed_rows": count},
+                        {
+                            "type": "task.validate",
+                            "datasource": {"id": str(datasource.id)},
+                            "progress": {
+                                "rows": count,
+                                "percentage": (read / total) * 100 if total else 0,
+                                "size": total,
+                                "read": read,
+                            },
+                        },
                     )
-                analyzed_data = spec.dump()
+                    timestamp = time.time()
                 is_valid = True
 
             datasource.validation.is_valid = is_valid
@@ -110,23 +128,19 @@ def validate_data(object_id, model=None, lang_code="en"):
             datasource.save(update_fields=["root_key"])
 
             if is_valid and not datasource.available_tables and not datasource.analyzed_file:
-                with TemporaryFile() as temp:
-                    temp.write(json.dumps(analyzed_data, default=str).encode("utf-8"))
-                    temp.seek(0)
-                    f = File(temp)
-                    f.name = uuid.uuid4().hex
-                    datasource.analyzed_file = f
-                    available_tables, unavailable_tables = retrieve_tables(analyzed_data)
-                    datasource.available_tables = available_tables
-                    datasource.unavailable_tables = unavailable_tables
-                    datasource.save(update_fields=["analyzed_file", "available_tables", "unavailable_tables"])
+                _file = ContentFile(b"")
+                datasource.analyzed_file.save("new", _file)
+                analyzer.spec.dump(datasource.analyzed_file.path)
+                available_tables, unavailable_tables = retrieve_tables(analyzer.spec)
+                datasource.available_tables = available_tables
+                datasource.unavailable_tables = unavailable_tables
+                datasource.save(update_fields=["available_tables", "unavailable_tables"])
             elif is_valid and datasource.analyzed_file:
-                with open(datasource.analyzed_file.path) as f:
-                    data = json.loads(f.read())
-                    available_tables, unavailable_tables = retrieve_tables(data)
-                    datasource.available_tables = available_tables
-                    datasource.unavailable_tables = unavailable_tables
-                    datasource.save(update_fields=["available_tables", "unavailable_tables"])
+                spec = DataPreprocessor.restore(datasource.analyzed_file.path)
+                available_tables, unavailable_tables = retrieve_tables(spec)
+                datasource.available_tables = available_tables
+                datasource.unavailable_tables = unavailable_tables
+                datasource.save(update_fields=["available_tables", "unavailable_tables"])
 
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",
@@ -265,15 +279,20 @@ def download_data_source(object_id, model=None, lang_code="en"):
             size = int(r.headers.get("Content-Length", 0))
             downloaded = 0
             chunk_size = 10240
-            with TemporaryFile() as temp:
+            _file = ContentFile(b"")
+            datasource.file.save("new", _file)
+            with open(datasource.file.path, "wb") as fd:
+                timestamp = time.time()
                 for chunk in r.iter_content(chunk_size=chunk_size):
-                    temp.write(chunk)
+                    fd.write(chunk)
                     downloaded += chunk_size
                     if size != 0:
                         progress = (downloaded / size) * 100
                         progress = progress if progress < 100 else 100
                     else:
                         progress = size
+                    if (time.time() - timestamp) <= 1:
+                        continue
                     async_to_sync(channel_layer.group_send)(
                         f"datasource_{object_id}",
                         {
@@ -282,13 +301,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                             "progress": int(progress),
                         },
                     )
-
-                temp.seek(0)
-                file_ = File(temp)
-                file_.name = uuid.uuid4().hex
-                datasource.file = file_
-                datasource.save(update_fields=["file"])
-
+                    timestamp = time.time()
             if datasource.analyzed_data_url:
                 r = requests.get(datasource.analyzed_data_url, stream=True)
                 if r.status_code != 200:
@@ -315,12 +328,17 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 downloaded = 0
                 datasource.status = "analyzed_data.downloading"
                 datasource.save(update_fields=["status"])
-                with TemporaryFile() as temp:
+                _file = ContentFile(b"")
+                datasource.analyzed_file.save("new", _file)
+                with open(datasource.analyzed_file.path, "wb") as fd:
+                    timestamp = time.time()
                     for chunk in r.iter_content(chunk_size=chunk_size):
-                        temp.write(chunk)
+                        fd.write(chunk)
                         downloaded += chunk_size
                         progress = (downloaded / size) * 100
                         progress = progress if progress < 100 else 100
+                        if (time.time() - timestamp) <= 1:
+                            continue
                         async_to_sync(channel_layer.group_send)(
                             f"datasource_{object_id}",
                             {
@@ -329,11 +347,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
                                 "progress": int(progress),
                             },
                         )
-                    temp.seek(0)
-                    file_ = File(temp)
-                    file_.name = uuid.uuid4().hex
-                    datasource.analyzed_file = file_
-                    datasource.save(update_fields=["analyzed_file"])
+                        timestamp = time.time()
+
             datasource.status = "queued.validation"
             datasource.downloaded = True
             expired_at = timezone.now() + timedelta(days=settings.JOB_FILES_TIMEOUT)
@@ -414,7 +429,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 
 
 @celery_app.task
-def flatten_data(flatten_id, model=None, lang_code="en"):
+def flatten_data(flatten_id, model=None, lang_code="en_US"):
     with internationalization(lang_code=lang_code):
         logger_context = {"FLATTEN_ID": flatten_id, "TASK": "flatten_data", "MODEL": model}
         channel_layer = get_channel_layer()
@@ -438,26 +453,51 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
                 f"datasource_{datasource.id}",
                 {"type": "task.flatten", "flatten": serializer.to_representation(instance=flatten)},
             )
-            with open(datasource.analyzed_file.path) as fd:
-                analyzed_data = json.loads(fd.read())
-            spec = DataPreprocessor.restore(analyzed_data)
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
+            total_rows = spec.total_items
             opt = get_flatten_options(selection)
+            logger.debug(
+                "Generate options for export",
+                extra={
+                    "MESSAGE_ID": "generate_flatten_options",
+                    "DATASOURCE_ID": str(datasource.id),
+                    "MODEL": model,
+                    "SELECTION_ID": str(selection.id),
+                    "FLATTEN_ID": str(flatten.id),
+                    "OPTIONS": opt,
+                },
+            )
             options = FlattenOptions(**opt)
-            datasource_dir = os.path.dirname(datasource.file.path)
-            export_dir = f"{datasource_dir}/export"
-            if not os.path.exists(export_dir):
-                os.makedirs(export_dir)
-            formats = {"csv": False, "xlsx": False}
-            formats[flatten.export_format] = True
-            flattener = FileFlattener(export_dir, options, spec.tables, root_key=datasource.root_key, **formats)
+            workdir = pathlib.Path(datasource.file.path).parent
+            formats = {"csv": None, "xlsx": None}
+            if flatten.export_format == flatten.CSV:
+                workdir = workdir / "export"
+                if not workdir.exists():
+                    os.makedirs(workdir)
+                formats[flatten.export_format] = workdir
+            else:
+                formats[flatten.export_format] = "result.xlsx"
+            flattener = FileFlattener(workdir, options, spec.tables, root_key=datasource.root_key, **formats)
+            timestamp = time.time()
             for count in flattener.flatten_file(datasource.file.path):
+                if (time.time() - timestamp) <= 1:
+                    continue
                 async_to_sync(channel_layer.group_send)(
                     f"datasource_{datasource.id}",
-                    {"type": "task.flatten", "flatten": {"id": str(flatten.id)}, "processed_rows": count},
+                    {
+                        "type": "task.flatten",
+                        "flatten": {"id": str(flatten.id)},
+                        "progress": {
+                            "total_rows": total_rows,
+                            "processed": count,
+                            "percentage": (count / total_rows) * 100 if total_rows else total_rows,
+                        },
+                    },
                 )
+                timestamp = time.time()
             if flatten.export_format == flatten.CSV:
-                target_file = f"{export_dir}/{datasource.id}.zip"
-                zip_files(export_dir, target_file, extension="csv")
+                target_file = f"{workdir}/{datasource.id}.zip"
+                zip_files(workdir, target_file, extension="csv")
                 with open(target_file, "rb") as fd:
                     file_ = File(fd)
                     file_.name = f"{datasource.id}.zip"
@@ -466,7 +506,7 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
                     flatten.save(update_fields=["file", "status"])
                 os.remove(fd.name)
             else:
-                target_file = f"{export_dir}/result.xlsx"
+                target_file = f"{workdir}/result.xlsx"
                 with open(target_file, "rb") as fd:
                     file_ = File(fd)
                     file_.name = "result.xlsx"
@@ -500,7 +540,11 @@ def flatten_data(flatten_id, model=None, lang_code="en"):
             extra = deepcopy(logger_context)
             extra["MESSAGE_ID"] = "flatten_failed"
             extra["ERROR_MESSAGE"] = error_message
-            logger.info("Flatten %s for %s datasource %s failed" % (flatten_id, model, datasource.id), extra=extra)
+            logger.error(
+                "Flatten %s for %s datasource %s failed" % (flatten_id, model, datasource.id),
+                extra=extra,
+                exc_info=True,
+            )
             flatten.status = "failed"
             flatten.error = error_message
             flatten.save(update_fields=["error", "status"])

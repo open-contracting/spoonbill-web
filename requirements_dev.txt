@@ -27,7 +27,6 @@ async-timeout==3.0.1
 attrs==21.2.0
     # via
     #   automat
-    #   jsonschema
     #   pytest
     #   service-identity
     #   twisted
@@ -39,9 +38,11 @@ babel==2.9.1
     # via sphinx
 billiard==3.6.4.0
     # via celery
-black==21.5b0
+black==21.5b1
     # via -r requirements_dev.in
-celery==5.0.5
+cached-property==1.5.2
+    # via kombu
+celery==5.1.0
     # via
     #   -r requirements.in
     #   django-celery-beat
@@ -52,7 +53,7 @@ certifi==2020.12.5
     #   sentry-sdk
 cffi==1.14.5
     # via cryptography
-cfgv==3.2.0
+cfgv==3.3.0
     # via pre-commit
 channels-redis==3.2.0
     # via -r requirements.in
@@ -64,6 +65,8 @@ chardet==4.0.0
     # via requests
 click-didyoumean==0.0.3
     # via celery
+click-logging==1.0.1
+    # via spoonbill
 click-plugins==1.1.1
     # via celery
 click-repl==0.1.6
@@ -73,17 +76,18 @@ click==7.1.2
     #   black
     #   celery
     #   click-didyoumean
+    #   click-logging
     #   click-plugins
     #   click-repl
     #   pip-tools
     #   spoonbill
 constantly==15.1.0
     # via twisted
-coverage==5.5
+coverage[toml]==5.5
     # via
     #   coveralls
     #   pytest-cov
-coveralls==3.0.1
+coveralls==3.1.0
     # via -r requirements_dev.in
 cryptography==3.4.7
     # via
@@ -106,7 +110,7 @@ django-timezone-field==4.1.2
     # via django-celery-beat
 django-transfer==0.4
     # via -r requirements.in
-django==3.2.2
+django==3.2.3
     # via
     #   -r requirements.in
     #   channels
@@ -133,7 +137,7 @@ flake8==3.9.2
     # via -r requirements_dev.in
 gitdb==4.0.7
     # via gitpython
-gitpython==3.1.14
+gitpython==3.1.17
     # via transifex-client
 greenlet==1.1.0
     # via sqlalchemy
@@ -143,7 +147,7 @@ hyperlink==21.0.0
     # via
     #   autobahn
     #   twisted
-identify==2.2.4
+identify==2.2.6
     # via pre-commit
 idna==2.10
     # via
@@ -157,10 +161,9 @@ ijson==3.1.4
     #   spoonbill
 imagesize==1.2.0
     # via sphinx
-importlib-metadata==4.0.1
+importlib-metadata==4.2.0
     # via
     #   flake8
-    #   jsonschema
     #   kombu
     #   markdown
     #   pep517
@@ -175,32 +178,26 @@ iniconfig==1.1.1
     # via pytest
 isort==5.8.0
     # via -r requirements_dev.in
-itsdangerous==1.1.0
+itsdangerous==2.0.1
     # via requests-cache
-jinja2==2.11.3
+jinja2==3.0.1
     # via sphinx
 json-merge-patch==0.2
     # via ocdsextensionregistry
 jsonpointer==2.1
-    # via
-    #   ocdskit
-    #   spoonbill
+    # via spoonbill
 jsonref==0.2
     # via
     #   ocdsextensionregistry
     #   ocdskit
     #   ocdsmerge
     #   spoonbill
-jsonschema==3.2.0
-    # via ocdskit
-kombu==5.0.2
+kombu==5.1.0
     # via celery
 markdown==3.3.4
     # via -r requirements.in
-markupsafe==1.1.1
-    # via
-    #   jinja2
-    #   sphinx
+markupsafe==2.0.1
+    # via jinja2
 mccabe==0.6.1
     # via flake8
 msgpack==1.0.2
@@ -213,7 +210,7 @@ ocdsextensionregistry==0.1.4
     # via
     #   ocdskit
     #   spoonbill
-ocdskit==0.2.23
+ocdskit==1.0.0
     # via spoonbill
 ocdsmerge==0.6.6
     # via ocdskit
@@ -229,7 +226,7 @@ pip-tools==6.1.0
     # via -r requirements_dev.in
 pluggy==0.13.1
     # via pytest
-pre-commit==2.12.1
+pre-commit==2.13.0
     # via -r requirements_dev.in
 prompt-toolkit==3.0.18
     # via click-repl
@@ -255,13 +252,11 @@ pyopenssl==20.0.1
     # via twisted
 pyparsing==2.4.7
     # via packaging
-pyrsistent==0.17.3
-    # via jsonschema
 pytest-asyncio==0.15.1
     # via -r requirements_dev.in
-pytest-cov==2.11.1
+pytest-cov==2.12.0
     # via -r requirements_dev.in
-pytest-django==4.2.0
+pytest-django==4.3.0
     # via -r requirements_dev.in
 pytest-env==0.6.2
     # via -r requirements_dev.in
@@ -279,6 +274,8 @@ python-crontab==2.5.1
     # via django-celery-beat
 python-dateutil==2.8.1
     # via python-crontab
+python-json-logger==2.0.1
+    # via -r requirements.in
 python-slugify==4.0.1
     # via transifex-client
 pytz==2021.1
@@ -302,14 +299,11 @@ requests==2.25.1
     #   -r requirements.in
     #   coveralls
     #   ocdsextensionregistry
-    #   ocdskit
     #   ocdsmerge
     #   requests-cache
     #   sphinx
     #   spoonbill
     #   transifex-client
-rfc3987==1.3.8
-    # via ocdskit
 sentry-sdk==1.1.0
     # via -r requirements.in
 service-identity==21.1.0
@@ -319,7 +313,6 @@ six==1.16.0
     #   automat
     #   click-repl
     #   django-transfer
-    #   jsonschema
     #   pyopenssl
     #   python-dateutil
     #   service-identity
@@ -332,7 +325,7 @@ snowballstemmer==2.1.0
     # via sphinx
 sphinx-rtd-theme==0.5.2
     # via -r requirements.in
-sphinx==4.0.0
+sphinx==4.0.2
     # via
     #   -r requirements.in
     #   sphinx-rtd-theme
@@ -340,27 +333,24 @@ sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
     # via sphinx
-sphinxcontrib-htmlhelp==1.0.3
+sphinxcontrib-htmlhelp==2.0.0
     # via sphinx
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-qthelp==1.0.3
     # via sphinx
-sphinxcontrib-serializinghtml==1.1.4
+sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-sqlalchemy==1.4.14
-    # via
-    #   -r requirements.in
-    #   ocdskit
+sqlalchemy==1.4.15
+    # via -r requirements.in
 sqlparse==0.4.1
     # via django
-strict-rfc3339==0.7
-    # via ocdskit
 text-unidecode==1.3
     # via python-slugify
 toml==0.10.2
     # via
     #   black
+    #   coverage
     #   pep517
     #   pre-commit
     #   pytest
@@ -376,10 +366,11 @@ typing-extensions==3.10.0.0
     # via
     #   asgiref
     #   black
+    #   gitpython
     #   importlib-metadata
 url-normalize==1.4.3
     # via requests-cache
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   requests
     #   sentry-sdk
@@ -388,11 +379,12 @@ vine==5.0.0
     # via
     #   amqp
     #   celery
-virtualenv==20.4.6
+    #   kombu
+virtualenv==20.4.7
     # via pre-commit
 wcwidth==0.2.5
     # via prompt-toolkit
-xlsxwriter==1.4.2
+xlsxwriter==1.4.3
     # via spoonbill
 zipp==3.4.1
     # via

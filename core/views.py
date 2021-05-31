@@ -7,13 +7,17 @@ from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from spoonbill.stats import DataPreprocessor
 
+from core.constants import OCDS_LITE_CONFIG
 from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
 from core.serializers import (
     DataSelectionSerializer,
@@ -47,7 +51,7 @@ class UploadViewSet(viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
-            if not request.FILES.get("file"):
+            if "file" not in request.FILES:
                 return Response({"detail": _("File is required")}, status=status.HTTP_400_BAD_REQUEST)
             lang_code = get_language()
             validation_obj = Validation.objects.create()
@@ -55,9 +59,17 @@ class UploadViewSet(viewsets.GenericViewSet):
             upload_obj = Upload.objects.create(expired_at=expired_at, validation=validation_obj)
             cleanup_upload.apply_async((upload_obj.id, "Upload", lang_code), eta=upload_obj.expired_at)
 
-            file_ = File(request.FILES["file"])
-            upload_obj.file = file_
-            upload_obj.save(update_fields=["file"])
+            if isinstance(request.FILES["file"], TemporaryUploadedFile):
+                _empty_file = ContentFile(b"")
+                upload_obj.file.save("new", _empty_file)
+                _file = request.FILES["file"]
+                initial_path = _file.file.name
+                os.rename(initial_path, upload_obj.file.path)
+                _file.close()
+            else:
+                file_ = File(request.FILES["file"])
+                upload_obj.file = file_
+                upload_obj.save(update_fields=["file"])
 
             task = validate_data.delay(upload_obj.id, model="Upload", lang_code=lang_code)
             validation_obj.task_id = task.id
@@ -70,7 +82,7 @@ class UploadViewSet(viewsets.GenericViewSet):
                 status=status.HTTP_201_CREATED,
             )
         except (OSError, Exception) as error:
-            extra = {"MESSAGE_ID": "receiving_file_failed", "ERROR_MSG": str(error), "UPLOAD_ID": str(upload_obj.id)}
+            extra = {"MESSAGE_ID": "receiving_file_failed", "ERROR_MSG": str(error)}
             if hasattr(error, "errno") and error.errno == errno.ENOSPC:
                 logger.info("Error while receiving file %s" % str(error), extra=extra)
                 return Response(
@@ -80,10 +92,7 @@ class UploadViewSet(viewsets.GenericViewSet):
             else:
                 logger.exception("Error while receiving file %s" % str(error), extra=extra)
                 return Response(
-                    {
-                        "detail": _("Error while receiving file. Contact our support service. RequestID: %s")
-                        % upload_obj.id
-                    },
+                    {"detail": _("Error while receiving file. Contact our support service")},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
 
@@ -100,7 +109,9 @@ class URLViewSet(viewsets.GenericViewSet):
     **Example (data from some cloud):**
     ```python
     >>> import requests
-    >>> response = request.post('/urls/', {'url': 'https://<filehosting.host>/<json-file>'})
+    >>> response = request.post('/urls/',
+                                {'url': 'https://<filehosting.host>/<json-file>'},
+                                headers={'Accept-Language': 'en_US|es'})
     >>> response.json()
     {
         "id": "96224033-73ef-430a-bc46-67cd205f249f",
@@ -126,8 +137,10 @@ class URLViewSet(viewsets.GenericViewSet):
 
     **Example (data from OCDS data registry):**
     ```python
-    >>> response = request.post('/urls/', {'url': 'https://<data-registry.host>/<dataset-query>',
-                                           'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>'})
+    >>> response = request.post('/urls/',
+                                {'url': 'https://<data-registry.host>/<dataset-query>',
+                                 'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>'},
+                                headers={'Accept-Language': 'en_US|es'})
     >>> response.json()
     {
         "id": "cb82da20-1aa2-4574-a8f7-3fbe92c7b412",
@@ -148,8 +161,10 @@ class URLViewSet(viewsets.GenericViewSet):
         "downloaded": False,
         "error": None
     }
-
     ```
+
+    After receiving this response you need to redirect user to the following URL: `https://<spoonbill-web.host>/#/upload-file?lang=<lang-code>&url=<received-id>`
+    e.g. `https://<spoonbill-web.host>/#/upload-file?lang=en_US|es&url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412`
     """
 
     permissions_classes = permissions.AllowAny
@@ -194,19 +209,51 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, upload_id=None, url_id=None):
-        serializer = self.get_serializer_class()(data=request.data or request.POST)
-        if serializer.is_valid():
-            ds = DataSelection.objects.create()
-            for table in request.data.get("tables", []):
-                tb = Table.objects.create(**table)
-                ds.tables.add(tb)
-            if upload_id:
-                ds.upload_set.add(upload_id)
-            elif url_id:
-                ds.url_set.add(url_id)
-            return Response(self.get_serializer_class()(ds).data, status=status.HTTP_201_CREATED)
+        data = request.data or request.POST
+        kind = data.get("kind", DataSelection.CUSTOM)
+        headings_type = DataSelection.OCDS
+
+        if kind != DataSelection.OCDS_LITE:
+            serializer = self.get_serializer_class()(data=data)
+            if serializer.is_valid():
+                datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
+                selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
+                for table in serializer.data["tables"]:
+                    _table = Table.objects.create(**table)
+                    selection.tables.add(_table)
+                datasource.selections.add(selection)
+                return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
+            if not datasource.available_tables:
+                return Response(
+                    {"detail": _("Datasource without available tables")}, status=status.HTTP_400_BAD_REQUEST
+                )
+            lang_code = get_language()
+            lang_prefix = lang_code.split("-")[0]
+            headings_type = f"{lang_prefix}_user_friendly"
+            selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
+            for available_table in datasource.available_tables:
+                if available_table["name"] in OCDS_LITE_CONFIG["tables"]:
+                    _name = available_table["name"]
+                    _split = OCDS_LITE_CONFIG["tables"][_name].get("split", False)
+                    _table = Table.objects.create(name=_name, split=_split)
+                    child_tables_data = spec.tables[_name].child_tables
+                    if _split and child_tables_data:
+                        for child_table in child_tables_data:
+                            _include = (
+                                False
+                                if child_table not in OCDS_LITE_CONFIG["tables"][_name].get("child_tables", {})
+                                else True
+                            )
+                            _child_table = Table.objects.create(name=child_table, include=_include)
+                            _table.array_tables.add(_child_table)
+                    selection.tables.add(_table)
+            datasource.selections.add(selection)
+            return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
 
     def list(self, request, *args, url_id=None, upload_id=None):
         if url_id:
@@ -257,9 +304,7 @@ class TableViewSet(viewsets.ModelViewSet):
             elif "upload_id" in kwargs:
                 datasource = Upload.objects.get(id=kwargs["upload_id"])
             table = Table.objects.get(id=kwargs["id"])
-            with open(datasource.analyzed_file.path) as fd:
-                data = json.loads(fd.read())
-            tables = data["tables"]
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             update_fields = []
             for key in ("split", "include", "heading"):
                 if key in request.data:
@@ -269,8 +314,8 @@ class TableViewSet(viewsets.ModelViewSet):
                 table.save(update_fields=update_fields)
             is_array_tables = len(table.array_tables.all())
             if "split" in request.data and request.data["split"] and not is_array_tables:
-                child_tables = tables.get(table.name, {}).get("child_tables", [])
-                self._split_table(table, tables, datasource, child_tables)
+                child_tables = spec.tables[table.name].child_tables
+                self._split_table(table, spec.tables, datasource, child_tables)
             serializer = self.get_serializer_class()(table)
             sources = table.dataselection_set.all() or table.array_tables.all()[0].dataselection_set.all()
             if sources:
@@ -303,7 +348,7 @@ class TableViewSet(viewsets.ModelViewSet):
         datasource_dir = os.path.dirname(datasource.file.path)
         for child_table_key in child_tables:
             analyzed_child_table = analyzed_tables.get(child_table_key, {})
-            if analyzed_child_table.get("total_rows", 0) == 0:
+            if analyzed_child_table.total_rows == 0:
                 logger.debug(
                     "Skip child table %s for datasource %s" % (child_table_key, datasource),
                     extra={
@@ -317,9 +362,9 @@ class TableViewSet(viewsets.ModelViewSet):
             child_table = Table.objects.create(name=child_table_key)
             table.array_tables.add(child_table)
             preview_path = f"{datasource_dir}/{child_table_key}_combined.csv"
-            store_preview_csv(COMBINED_COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)
-            if analyzed_child_table.get("child_tables", []):
-                self._split_table(table, analyzed_tables, datasource, analyzed_child_table["child_tables"])
+            store_preview_csv(COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)
+            if analyzed_child_table.child_tables:
+                self._split_table(table, analyzed_tables, datasource, analyzed_child_table.child_tables)
 
 
 class TablePreviewViewSet(viewsets.GenericViewSet):
@@ -335,17 +380,15 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
         datasource_dir = os.path.dirname(datasource.file.path)
         selection = DataSelection.objects.get(id=selection_id)
         try:
-            with open(datasource.analyzed_file.path) as fd:
-                analyzed_data = json.loads(fd.read())
-            tables = analyzed_data["tables"]
+            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             data = []
             if table.split:
                 preview_path = f"{datasource_dir}/{table.name}.csv"
                 if not os.path.exists(preview_path):
-                    store_preview_csv(COLUMNS, PREVIEW_ROWS, tables[table.name], preview_path)
+                    store_preview_csv(COLUMNS, PREVIEW_ROWS, spec.tables[table.name], preview_path)
                 with open(preview_path) as csvfile:
                     preview = {
-                        "name": tables[table.name]["name"],
+                        "name": spec.tables[table.name].name,
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,
@@ -359,7 +402,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                     preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
                     with open(preview_path) as csvfile:
                         preview = {
-                            "name": tables[child_table.name]["name"],
+                            "name": spec.tables[child_table.name].name,
                             "id": str(child_table.id),
                             "preview": csvfile.read(),
                             "heading": child_table.heading,
@@ -370,10 +413,10 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
             else:
                 preview_path = f"{datasource_dir}/{table.name}_combined.csv"
                 if not os.path.exists(preview_path):
-                    store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, tables[table.name], preview_path)
+                    store_preview_csv(COMBINED_COLUMNS, COMBINED_PREVIEW_ROWS, spec.tables[table.name], preview_path)
                 with open(preview_path) as csvfile:
                     preview = {
-                        "name": tables[table.name]["name"],
+                        "name": spec.tables[table.name].name,
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,

@@ -13,21 +13,67 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: spoonbillpwd
+          POSTGRES_USER: spoonbilluser
+          POSTGRES_DB: spoonbill
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: checkout
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '10'
-      - name: Run tests
-        run: |
-              cd ./frontend
-              npm install
-              npm run test:unit
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-${{ secrets.CACHE_NAME }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ secrets.CACHE_NAME }}-
+      - name: Install requirements
+        run: pip install -r requirements_dev.txt
+      - name: Run pre-commit
+        run: |
+            pip install --upgrade pre-commit coveralls
+            pre-commit autoupdate
+            pre-commit run --all-files
+      - name: Run tests
+        run: |
+            sed -i 1d .envrc
+            source .envrc
+            pytest --cov-fail-under=${{ secrets.COVERAGE_PERCENT }}
+        env:
+          DEBUG: True
+      - name: Test frontend
+        run: |
+              cd ./frontend
+              gem install coveralls-lcov
+              npm install
+              npm run test:unit
+              coveralls-lcov -v -n ./coverage/lcov.info > coverage.json
+      - name: Upload to coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github --merge=./frontend/coverage.json
       - name: "Upload to transifex"
         run: |
               sudo apt-get install gettext

@@ -10,7 +10,12 @@
 
             <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
 
-            <v-stepper-step :complete="value > 2" complete-icon="mdi-pencil" step="2" @click="navigateTo(2, '/select-data')">
+            <v-stepper-step
+                :complete="value > 2"
+                complete-icon="mdi-pencil"
+                step="2"
+                @click="navigateTo(2, '/select-data', isOcdsLite)"
+            >
                 <translate :class="{ 'text-link': value > 2 }">Select data</translate>
             </v-stepper-step>
 
@@ -20,9 +25,9 @@
                 :complete="value > 3"
                 complete-icon="mdi-pencil"
                 step="3"
-                @click="navigateTo(3, '/customize-tables')"
+                @click="navigateTo(3, '/customize-tables', isOcdsLite)"
             >
-                <translate :class="{ 'text-link': value > 3 }">Customize tables</translate>
+                <translate :class="{ 'text-link': value > 3 }">Preview tables</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 3, complete: value > 4 }"></v-divider>
@@ -31,9 +36,9 @@
                 :complete="value > 4"
                 complete-icon="mdi-pencil"
                 step="4"
-                @click="navigateTo(4, '/edit-headings')"
+                @click="navigateTo(4, '/edit-headings', isOcdsLite)"
             >
-                <translate :class="{ 'text-link': value > 4 }">Edit tables</translate>
+                <translate :class="{ 'text-link': value > 4 }">Edit headings</translate>
             </v-stepper-step>
 
             <v-divider :class="{ active: value > 4, complete: value > 5 }"></v-divider>
@@ -66,6 +71,9 @@ export default {
                     return 1;
             }
         },
+        isOcdsLite() {
+            return this.$store.state.selections && this.$store.state.selections.kind === 'ocds_lite';
+        },
     },
 
     methods: {
@@ -73,8 +81,10 @@ export default {
          * Go to specified path
          * @param { number } step
          * @param { string } path
+         * @param { boolean } disable
          */
-        async navigateTo(step, path) {
+        async navigateTo(step, path, disable = false) {
+            if (disable) return;
             if (this.value === 1 && step === 1 && this.$store.state.numberOfUploads > 0) {
                 const confirmed = await this.$root.openConfirmDialog();
                 if (confirmed) {
@@ -85,7 +95,17 @@ export default {
             }
 
             if (this.value <= step) return;
-            this.$router.push({ path, query: path === '/upload-file' ? {} : this.$route.query }).catch(() => {});
+            let query = {};
+            if (path === '/upload-file') {
+                if (this.$route.query.lang) {
+                    query.lang = this.$route.query.lang;
+                }
+            } else {
+                query = {
+                    ...this.$route.query,
+                };
+            }
+            this.$router.push({ path, query }).catch(() => {});
         },
     },
 };
