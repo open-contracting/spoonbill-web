@@ -9,6 +9,8 @@
             "/awards/suppliers/id",
             "/awards/suppliers/*/name",
             "/awards/suppliers/*/id",
+            "rowID",
+            "parentID",
             "ocid",
             "id"
           ],
