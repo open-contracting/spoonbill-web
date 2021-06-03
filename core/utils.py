@@ -1,5 +1,4 @@
 import csv
-import json
 import logging
 import os
 import re
@@ -162,20 +161,15 @@ def zip_files(source_dir, zipfile, extension=None):
                     fzip.write(os.path.join(folder, file_), file_)
 
 
-def get_only_columns(table, child_table=None, analyzed_data=None):
+def get_only_columns(table, table_config, analyzed_data=None):
     only_columns = []
-    only = (
-        OCDS_LITE_CONFIG["tables"].get(table.name, {}).get("only", [])
-        if not child_table
-        else OCDS_LITE_CONFIG["tables"][table.name]["child_tables"].get(child_table.name, {}).get("only", [])
-    )
+    only = table_config.get("only", [])
     if not only:
         return only
-    table_key = table.name if not child_table else child_table.name
     columns = (
-        analyzed_data.tables[table_key].columns.keys()
+        analyzed_data.tables[table.name].columns.keys()
         if table.split
-        else analyzed_data.tables[table_key].combined_columns.keys()
+        else analyzed_data.tables[table.name].combined_columns.keys()
     )
     for col in columns:
         non_index_based = re.sub(r"\d", "*", col)
@@ -202,7 +196,7 @@ def get_options_for_table(selections, exclude_tables_list, selection, tables, pa
                 if not parent
                 else OCDS_LITE_CONFIG["tables"].get(parent.name, {}).get("child_tables", {}).get(table.name, {})
             )
-            only = get_only_columns(table, analyzed_data=analyzed_data)
+            only = get_only_columns(table, lite_table_config, analyzed_data=analyzed_data)
             if only:
                 selections[table.name]["only"] = only
             if "repeat" in lite_table_config:
