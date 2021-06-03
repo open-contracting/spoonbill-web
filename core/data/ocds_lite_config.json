@@ -12,9 +12,6 @@
             "ocid",
             "id"
           ],
-          "repeat": [
-            "/awards/id"
-          ],
           "split": false
         }
       },
@@ -31,6 +28,9 @@
         "/awards/id",
         "ocid",
         "id"
+      ],
+      "repeat": [
+        "/awards/id"
       ],
       "split": true
     },
