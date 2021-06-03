@@ -77,7 +77,12 @@ def retrieve_tables(analyzed_data):
 
 
 def store_preview_csv(columns_key, rows_key, table_data, preview_path):
-    columns = getattr(table_data, columns_key)
+    # TODO: fix this
+    # preview_rows for root table after split contains all columns
+    if table_data.is_root:
+        columns = table_data.combined_columns
+    else:
+        columns = getattr(table_data, columns_key)
     columns.update(table_data.additional_columns)
     headers = [header for header, col in columns.items() if col.hits > 0]
     if not columns_key.startswith("combined"):
