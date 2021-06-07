@@ -37,13 +37,34 @@ class TestUrl:
             "unavailable_tables",
             "url",
             "validation",
+            "source",
+            "period",
+            "country",
         }
         assert set(url["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert not url["deleted"]
         assert url["status"] == "queued.download"
+        assert url["country"] is None
+        assert url["period"] is None
+        assert url["source"] is None
 
         url_obj = Url.objects.get(id=url["id"])
         download_datasource_task.delay.assert_called_once_with(url_obj.id, model="Url", lang_code="en-us")
+
+        response = client.post(
+            f"{self.url_prefix}",
+            {
+                "url": "https://example.org/dataset.json",
+                "country": "Mordor",
+                "period": "I was there, Gandalf, three thousands years ago",
+                "source": "Elrond",
+            },
+        )
+        assert response.status_code == 201
+        url = response.json()
+        assert url["country"] == "Mordor"
+        assert url["period"] == "I was there, Gandalf, three thousands years ago"
+        assert url["source"] == "Elrond"
 
     def test_get_non_existed_datasource(self, client):
         response = client.get(f"{self.url_prefix}some-invalid-id/")
