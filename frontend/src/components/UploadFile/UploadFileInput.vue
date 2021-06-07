@@ -42,6 +42,17 @@
         </template>
 
         <div v-else>
+            <div class="py-3" v-if="showRegistryData">
+                <p class="mb-2" v-if="uploadDetails.country">
+                    <translate tag="span">Data for country</translate>: {{ uploadDetails.country }}
+                </p>
+                <p class="mb-2" v-if="uploadDetails.period">
+                    <translate tag="span">Data for range</translate>: {{ uploadDetails.period }}
+                </p>
+                <p class="mb-0" v-if="uploadDetails.source">
+                    <translate tag="span">Data from</translate>: {{ uploadDetails.source }}
+                </p>
+            </div>
             <translate tag="h2" class="mt-10 page-title">Select your next action</translate>
             <upload-file-options class="mt-6" @select="onOptionSelect" />
         </div>
@@ -104,6 +115,10 @@ export default {
 
         downloadProgress() {
             return Math.round(this.$store.state.downloadProgress);
+        },
+
+        showRegistryData() {
+            return this.uploadDetails.source || this.uploadDetails.country || this.uploadDetails.period;
         },
     },
 
