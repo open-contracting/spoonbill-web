@@ -106,6 +106,8 @@ class URLViewSet(viewsets.GenericViewSet):
     For providing a dataset placed somewhere on the Internet it is enough to provide a URL attribute in the body of
     the POST request.
 
+    Also, you may add optional info to respective fields, such as 'country', 'period' and 'source'
+
     **Example (data from some cloud):**
     ```python
     >>> import requests
@@ -139,7 +141,11 @@ class URLViewSet(viewsets.GenericViewSet):
     ```python
     >>> response = request.post('/urls/',
                                 {'url': 'https://<data-registry.host>/<dataset-query>',
-                                 'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>'},
+                                 'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>',
+                                 'country': 'United Kingdom',
+                                 'period': 'Last 6 months',
+                                 'source': 'OCP Kingfisher Database'
+                                 },
                                 headers={'Accept-Language': 'en_US|es'})
     >>> response.json()
     {
@@ -159,7 +165,13 @@ class URLViewSet(viewsets.GenericViewSet):
         "expired_at": None,
         "deleted": False,
         "downloaded": False,
-        "error": None
+        "error": None,
+        "available_tables": None,
+        "unavailable_tables": [],
+        "root_key": None,
+        "country": "United Kingdom",
+        "period": "Last 6 months",
+        "source": "OCP Kingfisher Database"
     }
     ```
 
