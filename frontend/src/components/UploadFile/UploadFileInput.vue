@@ -56,11 +56,9 @@
             <translate tag="h2" class="mt-10 page-title">Select your next action</translate>
             <upload-file-options class="mt-6" @select="onOptionSelect" />
         </div>
-        <div>
-            test data
+        <div>test data</div>
+        <div v-if="uploadDetails.country">
             {{ uploadDetails.country }}
-            {{ uploadDetails.period }}
-            {{ uploadDetails.source }}
         </div>
     </div>
 </template>
