@@ -57,9 +57,6 @@
             <upload-file-options class="mt-6" @select="onOptionSelect" />
         </div>
         <div>test data</div>
-        <div v-if="uploadDetails.country">
-            {{ uploadDetails.country }}
-        </div>
     </div>
 </template>
 
