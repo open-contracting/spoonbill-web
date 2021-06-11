@@ -91,7 +91,7 @@ django-timezone-field==4.1.2
     # via django-celery-beat
 django-transfer==0.4
     # via -r requirements.in
-django==3.2.3
+django==3.2.4
     # via
     #   -r requirements.in
     #   channels
@@ -110,6 +110,8 @@ docutils==0.16
     #   sphinx-rtd-theme
 drf-nested-routers==0.93.3
     # via -r requirements.in
+flatten-dict==0.4.0
+    # via spoonbill
 gitdb==4.0.7
     # via gitpython
 gitpython==3.1.17
@@ -229,6 +231,7 @@ six==1.16.0
     #   automat
     #   click-repl
     #   django-transfer
+    #   flatten-dict
     #   pyopenssl
     #   python-dateutil
     #   service-identity

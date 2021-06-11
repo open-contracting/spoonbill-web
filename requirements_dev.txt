@@ -135,6 +135,8 @@ filelock==3.0.12
     # via virtualenv
 flake8==3.9.2
     # via -r requirements_dev.in
+flatten-dict==0.4.0
+    # via spoonbill
 gitdb==4.0.7
     # via gitpython
 gitpython==3.1.17
@@ -313,6 +315,7 @@ six==1.16.0
     #   automat
     #   click-repl
     #   django-transfer
+    #   flatten-dict
     #   pyopenssl
     #   python-dateutil
     #   service-identity
