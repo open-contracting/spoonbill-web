@@ -17,6 +17,7 @@ from .utils import Task
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 DATASET_PATH = f"{DATA_DIR}/sample-dataset.json"
+DATASET_JSONL_PATH = f"{DATA_DIR}/sample-dataset.jsonl"
 
 
 @pytest.mark.django_db
@@ -126,6 +127,50 @@ class TestUploadViewsUnit(TestCase):
         settings.FILE_UPLOAD_MAX_MEMORY_SIZE = 100
         mocked_validation.delay.return_value = Task()
         with open(DATASET_PATH) as _file:
+            response = self.client.post(self.url_prefix, {"file": _file})
+        assert response.status_code == 201
+        upload = response.json()
+        assert set(upload.keys()) == {
+            "analyzed_file",
+            "available_tables",
+            "created_at",
+            "deleted",
+            "expired_at",
+            "file",
+            "id",
+            "root_key",
+            "selections",
+            "status",
+            "unavailable_tables",
+            "validation",
+        }
+        assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
+        assert upload["file"].startswith(settings.MEDIA_URL)
+        assert not upload["deleted"]
+
+        upload_obj = Upload.objects.get(id=upload["id"])
+        mocked_validation.delay.assert_called_once_with(upload_obj.id, model="Upload", lang_code="en-us")
+        mocked_cleanup.apply_async.assert_called_once_with(
+            (upload_obj.id, "Upload", "en-us"), eta=upload_obj.expired_at
+        )
+
+        # cleanup test data
+        directory = pathlib.Path(upload_obj.file.path).parent
+        shutil.rmtree(directory)
+
+
+@pytest.mark.django_db
+class TestUploadViewsUnitJsonl(TestCase):
+    def setUp(self):
+        self.url_prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
+
+    @override_settings()
+    @patch("core.views.validate_data")
+    @patch("core.views.cleanup_upload")
+    def test_create_selections_successful(self, mocked_cleanup, mocked_validation):
+        settings.FILE_UPLOAD_MAX_MEMORY_SIZE = 100
+        mocked_validation.delay.return_value = Task()
+        with open(DATASET_JSONL_PATH) as _file:
             response = self.client.post(self.url_prefix, {"file": _file})
         assert response.status_code == 201
         upload = response.json()
