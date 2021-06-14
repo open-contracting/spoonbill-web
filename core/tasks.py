@@ -24,14 +24,7 @@ from spoonbill.stats import DataPreprocessor
 
 from core.models import Flatten, Upload, Url
 from core.serializers import FlattenSerializer, UploadSerializer, UrlSerializer
-from core.utils import (
-    get_flatten_options,
-    internationalization,
-    is_record_package,
-    is_release_package,
-    retrieve_tables,
-    zip_files,
-)
+from core.utils import get_flatten_options, internationalization, retrieve_tables, zip_files
 from spoonbill_web.celery import app as celery_app
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
@@ -87,43 +80,35 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
 
             logger.debug("Start validation for %s file" % object_id)
-            with open(SCHEMA_PATH) as fd:
-                schema = json.loads(fd.read())
-            resource = ""
-            if is_release_package(datasource.file.path):
-                resource = "releases"
-            elif is_record_package(datasource.file.path):
-                resource = "records"
-            if resource:
-                path = pathlib.Path(datasource.file.path)
-                workdir = path.parent
-                filename = path.name
-                total = path.stat().st_size
-                analyzer = FileAnalyzer(
-                    workdir, schema=schema, root_key=resource, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES
+            path = pathlib.Path(datasource.file.path)
+            workdir = path.parent
+            filename = path.name
+            total = path.stat().st_size
+            analyzer = FileAnalyzer(workdir, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES)
+
+            timestamp = time.time()
+            filepath = workdir / filename
+            for read, count in analyzer.analyze_file(filepath, with_preview=True):
+                if (time.time() - timestamp) <= 1:
+                    continue
+                async_to_sync(channel_layer.group_send)(
+                    f"datasource_{datasource.id}",
+                    {
+                        "type": "task.validate",
+                        "datasource": {"id": str(datasource.id)},
+                        "progress": {
+                            "rows": count,
+                            "percentage": (read / total) * 100 if total else 0,
+                            "size": total,
+                            "read": read,
+                        },
+                    },
                 )
                 timestamp = time.time()
-                for read, count in analyzer.analyze_file(filename, with_preview=True):
-                    if (time.time() - timestamp) <= 1:
-                        continue
-                    async_to_sync(channel_layer.group_send)(
-                        f"datasource_{datasource.id}",
-                        {
-                            "type": "task.validate",
-                            "datasource": {"id": str(datasource.id)},
-                            "progress": {
-                                "rows": count,
-                                "percentage": (read / total) * 100 if total else 0,
-                                "size": total,
-                                "read": read,
-                            },
-                        },
-                    )
-                    timestamp = time.time()
-                is_valid = True
+            is_valid = True
 
             datasource.validation.is_valid = is_valid
-            datasource.root_key = resource
+            datasource.root_key = analyzer.pkg_type
             datasource.validation.save(update_fields=["is_valid"])
             datasource.save(update_fields=["root_key"])
 
@@ -477,7 +462,7 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 formats[flatten.export_format] = workdir
             else:
                 formats[flatten.export_format] = "result.xlsx"
-            flattener = FileFlattener(workdir, options, spec.tables, root_key=datasource.root_key, **formats)
+            flattener = FileFlattener(workdir, options, tables=spec.tables, pkg_type=datasource.root_key, **formats)
             timestamp = time.time()
             for count in flattener.flatten_file(datasource.file.path):
                 if (time.time() - timestamp) <= 1:

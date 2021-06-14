@@ -100,7 +100,7 @@ class TestValidateDataTask(BaseUploadTestSuite):
 
     def test_handle_exception(self, upload_obj, mocker):
         mocked_logger = mocker.patch("core.tasks.logger")
-        mocked_open = mocker.patch("core.tasks.open")
+        mocked_open = mocker.patch("core.tasks.FileAnalyzer")
         mocked_open.side_effect = Exception("Open fails")
         validate_data(upload_obj.id, model=self.model)
         assert mocked_logger.exception.call_count == 1
@@ -114,6 +114,7 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert not upload_obj.available_tables
 
         mocked_dump = mocker.patch("core.tasks.FileAnalyzer")
+        mocked_dump().pkg_type = "releases"
         mocked_dump().spec.dump.side_effect = OSError(errno.ENOSPC, "No left space.")
         validate_data(upload_obj.id, model="Upload")
 
