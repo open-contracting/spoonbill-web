@@ -462,7 +462,14 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 formats[flatten.export_format] = workdir
             else:
                 formats[flatten.export_format] = "result.xlsx"
-            flattener = FileFlattener(workdir, options, tables=spec.tables, pkg_type=datasource.root_key, **formats)
+            flattener = FileFlattener(
+                workdir,
+                options,
+                tables=spec.tables,
+                pkg_type=datasource.root_key,
+                multiple_values=getattr(spec, "multiple_values", False),
+                **formats,
+            )
             timestamp = time.time()
             for count in flattener.flatten_file(datasource.file.path):
                 if (time.time() - timestamp) <= 1:
