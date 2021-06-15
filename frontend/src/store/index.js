@@ -164,9 +164,17 @@ export default new Vuex.Store({
                 }
             }
         },
-
+        //@ts-ignore
         setupConnection({ commit }, { id, type, onOpen }) {
-            const connection = new WebSocket(`${process.env.VUE_APP_WEBSOCKET_URL}/${id}/`);
+            let connection;
+            if (process.env.VUE_APP_WEBSOCKET_URL.includes('ws:/') || process.env.VUE_APP_WEBSOCKET_URL.includes('wss:/')) {
+                connection = new WebSocket(`${process.env.VUE_APP_WEBSOCKET_URL}/${id}/`);
+            } else {
+                let protocol = window.location.protocol;
+                let socketProtocol = protocol.includes('http') ? 'ws' : 'wss';
+                let socketPath = `${socketProtocol}://${window.location.host}/api/ws/${id}/`;
+                connection = new WebSocket(socketPath);
+            }
 
             connection.onmessage = (event) => {
                 const data = JSON.parse(event.data);
