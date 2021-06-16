@@ -10,6 +10,7 @@
             "/awards/suppliers/*/name",
             "/awards/suppliers/*/id",
             "parentID",
+            "ocid",
             "id"
           ],
           "split": false
@@ -27,6 +28,7 @@
         "/awards/title",
         "/awards/id",
         "rowID",
+        "ocid",
         "id"
       ],
       "repeat": [
