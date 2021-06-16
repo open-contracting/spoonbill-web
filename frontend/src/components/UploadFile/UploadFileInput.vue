@@ -210,10 +210,12 @@ export default {
                 setTimeout(() => {
                     this.isValid = true;
                     this.loader = false;
-                    this.$store.commit('openSnackbar', {
-                        color: 'moody-blue',
-                        text: this.$gettext('Your file has been checked and is ready to use.'),
-                    });
+                    if (this.uploadDetails.type !== 'url') {
+                        this.$store.commit('openSnackbar', {
+                            color: 'moody-blue',
+                            text: this.$gettext('Your file has been checked and is ready to use.'),
+                        });
+                    }
                 }, 1000);
                 return;
             }

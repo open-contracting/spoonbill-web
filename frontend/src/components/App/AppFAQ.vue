@@ -1,5 +1,5 @@
 <template>
-    <v-card class="mt-2 faq-block">
+    <v-card class="mt-2 faq-block" v-if="canShow">
         <v-card-title>
             <slot name="title" />
         </v-card-title>
@@ -17,6 +17,19 @@ export default {
         accent: {
             type: Boolean,
             default: false,
+        },
+    },
+    computed: {
+        canShow() {
+            if (!this.$store.state.uploadDetails) {
+                return true;
+            } else {
+                if (this.$store.state.uploadDetails.type !== 'url') {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         },
     },
 };

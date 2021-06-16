@@ -8,11 +8,14 @@
                 in the file.
             </translate>
 
-            <translate tag="p" class="page-description">
+            <translate tag="p" class="page-description" v-if="canShowDefaultText">
                 If the file size you have uploaded is very large and has multiple tables, it is recommended that you only
                 select and flatten data that you actually want to use.
             </translate>
-
+            <translate tag="p" class="page-description" v-else>
+                Datasets can be very large and so it is recommended that you only select and flatten data that you actually
+                want to use
+            </translate>
             <upload-file-input class="mt-7" />
         </v-col>
         <v-col cols="12" md="4">
@@ -67,6 +70,19 @@ export default {
     name: 'UploadFile',
 
     components: { AppFAQ, UploadFileInput },
+    computed: {
+        canShowDefaultText() {
+            if (!this.$store.state.uploadDetails) {
+                return true;
+            } else {
+                if (this.$store.state.uploadDetails.type !== 'url') {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        },
+    },
 };
 </script>
 
