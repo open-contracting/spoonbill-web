@@ -171,7 +171,11 @@ export default new Vuex.Store({
                 connection = new WebSocket(`${process.env.VUE_APP_WEBSOCKET_URL}/${id}/`);
             } else {
                 let protocol = window.location.protocol;
-                let socketProtocol = protocol.includes('http') ? 'ws' : 'wss';
+                let socketProtocol = 'ws';
+                if (protocol.includes('https')) {
+                    socketProtocol = 'wss';
+                }
+
                 let socketPath = `${socketProtocol}://${window.location.host}/api/ws/${id}/`;
                 connection = new WebSocket(socketPath);
             }
