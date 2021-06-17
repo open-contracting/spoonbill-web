@@ -4,6 +4,7 @@ import os
 import re
 import uuid
 from contextlib import contextmanager
+from os.path import splitext
 from zipfile import ZipFile
 
 import ijson
@@ -30,7 +31,8 @@ TABLES_ORDER = (
 
 def instance_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/<id>/<filename>
-    return "{0}/{1}.json".format(instance.id, uuid.uuid4().hex)
+    _, extension = splitext(filename)
+    return "{0}/{1}{2}".format(instance.id, uuid.uuid4().hex, extension)
 
 
 def export_directory_path(instance, filename):
