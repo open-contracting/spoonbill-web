@@ -200,6 +200,15 @@ export default new Vuex.Store({
                     }
                     commit('setFlatten', data.flatten);
                 }
+                if (data.error) {
+                    commit('setUploadDetails', {
+                        validation: {
+                            is_valid: false,
+                        },
+                        status: 'validation',
+                    });
+                    // connection.close();
+                }
             };
 
             connection.onerror = (e) => {
