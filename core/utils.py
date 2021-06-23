@@ -1,12 +1,16 @@
 import csv
 import logging
 import os
+import pathlib
 import re
 import uuid
 from contextlib import contextmanager
+from os.path import commonprefix
+from urllib.parse import unquote, urlparse
 from zipfile import ZipFile
 
 import ijson
+from django.conf import settings
 from django.utils.translation import activate, get_language
 from spoonbill.stats import DataPreprocessor
 
@@ -14,6 +18,8 @@ from core.column_headings import headings
 from core.constants import OCDS_LITE_CONFIG
 
 logger = logging.getLogger(__name__)
+
+DATAREGISTRY_MEDIA_ROOT = settings.DATAREGISTRY_MEDIA_ROOT
 
 # DON'T CHANGE ORDER
 TABLES_ORDER = (
@@ -218,3 +224,20 @@ def get_flatten_options(selection):
     if exclude_tables_list:
         options["exclude"] = exclude_tables_list
     return options
+
+
+def get_protocol(url):
+    return urlparse(url).scheme
+
+
+def dataregistry_path_formatter(path):
+    path = pathlib.Path(unquote(urlparse(path).path))
+    if str(path).count("/") == 1 and str(path)[0] == "/":
+        path = pathlib.Path(str(path).replace("/", ""))
+    path = DATAREGISTRY_MEDIA_ROOT / path
+    return path
+
+
+def dataregistry_path_resolver(path):
+    path = pathlib.Path(path).resolve()
+    return path
