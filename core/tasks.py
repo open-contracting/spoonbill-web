@@ -6,6 +6,7 @@ import shutil
 import time
 from copy import deepcopy
 from datetime import timedelta
+from urllib.parse import unquote, urlparse
 
 import ijson
 import requests
@@ -24,7 +25,15 @@ from spoonbill.stats import DataPreprocessor
 
 from core.models import Flatten, Upload, Url
 from core.serializers import FlattenSerializer, UploadSerializer, UrlSerializer
-from core.utils import get_flatten_options, internationalization, retrieve_tables, zip_files
+from core.utils import (
+    dataregistry_path_formatter,
+    dataregistry_path_resolver,
+    get_flatten_options,
+    get_protocol,
+    internationalization,
+    retrieve_tables,
+    zip_files,
+)
 from spoonbill_web.celery import app as celery_app
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
@@ -239,56 +248,14 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 "Start download for %s" % object_id,
                 extra={"MESSAGE_ID": "download_start", "UPLOAD_ID": object_id, "URL": datasource.url},
             )
-            r = requests.get(datasource.url, stream=True)
-            if r.status_code != 200:
-                logger.error(
-                    "Error while downloading data file for %s" % object_id,
-                    extra={
-                        "MESSAGE_ID": "download_failed",
-                        "DATASOURCE_ID": object_id,
-                        "MODEL": model,
-                        "STATUS_CODE": r.status_code,
-                    },
-                )
-                datasource.error = _(f"{r.status_code}: {r.reason}")
-                datasource.status = "failed"
-                datasource.save(update_fields=["error", "status"])
-                async_to_sync(channel_layer.group_send)(
-                    f"datasource_{object_id}",
-                    {
-                        "type": "task.download_data_source",
-                        "datasource": serializer.to_representation(instance=datasource),
-                    },
-                )
-                return
-            size = int(r.headers.get("Content-Length", 0))
-            downloaded = 0
-            chunk_size = 10240
-            _file = ContentFile(b"")
-            datasource.file.save("new", _file)
-            with open(datasource.file.path, "wb") as fd:
-                timestamp = time.time()
-                for chunk in r.iter_content(chunk_size=chunk_size):
-                    fd.write(chunk)
-                    downloaded += chunk_size
-                    if size != 0:
-                        progress = (downloaded / size) * 100
-                        progress = progress if progress < 100 else 100
-                    else:
-                        progress = size
-                    if (time.time() - timestamp) <= 1:
-                        continue
-                    async_to_sync(channel_layer.group_send)(
-                        f"datasource_{object_id}",
-                        {
-                            "type": "task.download_data_source",
-                            "datasource": serializer.to_representation(instance=datasource),
-                            "progress": int(progress),
-                        },
-                    )
-                    timestamp = time.time()
-            if datasource.analyzed_data_url:
-                r = requests.get(datasource.analyzed_data_url, stream=True)
+            if get_protocol(datasource.url) == "file":
+                path = dataregistry_path_formatter(datasource.url)
+                path = dataregistry_path_resolver(path)
+                path = str(path).replace(settings.MEDIA_ROOT, "")
+                datasource.file.name = path
+                datasource.save()
+            else:
+                r = requests.get(datasource.url, stream=True)
                 if r.status_code != 200:
                     logger.error(
                         "Error while downloading data file for %s" % object_id,
@@ -310,18 +277,21 @@ def download_data_source(object_id, model=None, lang_code="en"):
                         },
                     )
                     return
+                size = int(r.headers.get("Content-Length", 0))
                 downloaded = 0
-                datasource.status = "analyzed_data.downloading"
-                datasource.save(update_fields=["status"])
+                chunk_size = 10240
                 _file = ContentFile(b"")
-                datasource.analyzed_file.save("new", _file)
-                with open(datasource.analyzed_file.path, "wb") as fd:
+                datasource.file.save("new", _file)
+                with open(datasource.file.path, "wb") as fd:
                     timestamp = time.time()
                     for chunk in r.iter_content(chunk_size=chunk_size):
                         fd.write(chunk)
                         downloaded += chunk_size
-                        progress = (downloaded / size) * 100
-                        progress = progress if progress < 100 else 100
+                        if size != 0:
+                            progress = (downloaded / size) * 100
+                            progress = progress if progress < 100 else 100
+                        else:
+                            progress = size
                         if (time.time() - timestamp) <= 1:
                             continue
                         async_to_sync(channel_layer.group_send)(
@@ -333,6 +303,59 @@ def download_data_source(object_id, model=None, lang_code="en"):
                             },
                         )
                         timestamp = time.time()
+            if datasource.analyzed_data_url:
+                if get_protocol(datasource.analyzed_data_url) == "file":
+                    path = dataregistry_path_formatter(datasource.analyzed_data_url)
+                    path = dataregistry_path_resolver(path)
+                    path = str(path).replace(settings.MEDIA_ROOT, "")
+                    datasource.analyzed_file.name = path
+                    datasource.save()
+                else:
+                    r = requests.get(datasource.analyzed_data_url, stream=True)
+                    if r.status_code != 200:
+                        logger.error(
+                            "Error while downloading data file for %s" % object_id,
+                            extra={
+                                "MESSAGE_ID": "download_failed",
+                                "DATASOURCE_ID": object_id,
+                                "MODEL": model,
+                                "STATUS_CODE": r.status_code,
+                            },
+                        )
+                        datasource.error = _(f"{r.status_code}: {r.reason}")
+                        datasource.status = "failed"
+                        datasource.save(update_fields=["error", "status"])
+                        async_to_sync(channel_layer.group_send)(
+                            f"datasource_{object_id}",
+                            {
+                                "type": "task.download_data_source",
+                                "datasource": serializer.to_representation(instance=datasource),
+                            },
+                        )
+                        return
+                    downloaded = 0
+                    datasource.status = "analyzed_data.downloading"
+                    datasource.save(update_fields=["status"])
+                    _file = ContentFile(b"")
+                    datasource.analyzed_file.save("new", _file)
+                    with open(datasource.analyzed_file.path, "wb") as fd:
+                        timestamp = time.time()
+                        for chunk in r.iter_content(chunk_size=chunk_size):
+                            fd.write(chunk)
+                            downloaded += chunk_size
+                            progress = (downloaded / size) * 100
+                            progress = progress if progress < 100 else 100
+                            if (time.time() - timestamp) <= 1:
+                                continue
+                            async_to_sync(channel_layer.group_send)(
+                                f"datasource_{object_id}",
+                                {
+                                    "type": "task.download_data_source",
+                                    "datasource": serializer.to_representation(instance=datasource),
+                                    "progress": int(progress),
+                                },
+                            )
+                            timestamp = time.time()
 
             datasource.status = "queued.validation"
             datasource.downloaded = True
@@ -371,37 +394,24 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 f"datasource_{object_id}",
                 {"type": "task.download_data_source", "error": _("Datasource %s not found") % object_id},
             )
-        except OSError as e:
-            logger.info(
+        except (OSError, Exception) as e:
+            e = type(e).__name__
+            message_id = {"OSError": "download_no_left_space", "Exception": "download_exception"}
+            message = {
+                "OSError": "Currently, the space limit was reached. Please try again later.",
+                "Exception": "Something went wrong. Contact with support service.",
+            }
+            log_level = {"OSError": logger.info, "Exception": logger.exception}
+            log_level[e](
                 "Error while download datasource %s" % object_id,
                 extra={
-                    "MESSAGE_ID": "download_no_left_space",
+                    "MESSAGE_ID": message_id[e],
                     "DATASOURCE_ID": object_id,
                     "MODEL": model,
                     "ERROR": str(e),
                 },
             )
-            datasource.error = _("Currently, the space limit was reached. Please try again later.")
-            datasource.status = "failed"
-            datasource.save(update_fields=["status", "error"])
-            async_to_sync(channel_layer.group_send)(
-                f"datasource_{object_id}",
-                {
-                    "type": "task.download_data_source",
-                    "datasource": serializer.to_representation(instance=datasource),
-                },
-            )
-        except Exception as e:
-            logger.exception(
-                "Error while download datasource %s" % object_id,
-                extra={
-                    "MESSAGE_ID": "download_exception",
-                    "DATASOURCE_ID": object_id,
-                    "MODEL": model,
-                    "ERROR": str(e),
-                },
-            )
-            datasource.error = _("Something went wrong. Contact with support service.")
+            datasource.error = _(message[e])
             datasource.status = "failed"
             datasource.save(update_fields=["status", "error"])
             async_to_sync(channel_layer.group_send)(
