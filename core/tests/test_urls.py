@@ -49,6 +49,7 @@ class TestUrl:
             "source",
             "period",
             "country",
+            "multi_uploads",
         }
         assert set(url["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert not url["deleted"]

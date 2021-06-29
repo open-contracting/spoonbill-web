@@ -194,18 +194,33 @@ class URLViewSet(viewsets.GenericViewSet):
             url = request.POST.get("url", "") or request.data.get("url", "")
             if not url:
                 return Response({"detail": _("Url is required")}, status=status.HTTP_400_BAD_REQUEST)
+            head_path = None
+            paths = request.data["url"]
+            if not isinstance(request.data["url"], list):
+                paths = [request.data["url"]]
+            for path in paths:
+                serializer = self.get_serializer_class()(data={"url": path})
+                if serializer.is_valid():
+                    validation_obj = Validation.objects.create()
+                    url_obj = Url.objects.create(**serializer.validated_data)
+                    url_obj.validation = validation_obj
+                    if request.data["url"].index(path) == 0:
+                        url_obj.country = request.data.get("country")
+                        url_obj.period = request.data.get("period")
+                        url_obj.source = request.data.get("source")
+                        head_path = url_obj
+                        head_path.is_head_of_multi_upload = True if len(paths) > 1 else False
+                        head_path.save()
+                    else:
+                        head_path.multi_uploads.add(url_obj)
 
-            serializer = self.get_serializer_class()(data=request.POST or request.data)
-            if serializer.is_valid():
-                validation_obj = Validation.objects.create()
-                url_obj = Url.objects.create(**serializer.data)
-                url_obj.validation = validation_obj
-                url_obj.save(update_fields=["validation"])
-                lang_code = get_language()
-                download_data_source.delay(url_obj.id, model="Url", lang_code=lang_code)
-                return Response(self.get_serializer_class()(url_obj).data, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                    url_obj.save(update_fields=["validation"])
+                    lang_code = get_language()
+                    download_data_source.delay(url_obj.id, model="Url", lang_code=lang_code)
+                else:
+                    return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(self.get_serializer_class()(head_path).data, status=status.HTTP_201_CREATED)
+
         except ValidationError as error:
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
 

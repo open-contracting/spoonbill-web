@@ -101,6 +101,8 @@ class Url(models.Model):
     country = models.CharField(max_length=60, blank=True, null=True)
     period = models.CharField(max_length=255, blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
+    is_head_of_multi_upload = models.BooleanField(default=False)
+    multi_uploads = models.ManyToManyField("self", blank=True, null=True)
 
     class Meta:
         db_table = "urls"
