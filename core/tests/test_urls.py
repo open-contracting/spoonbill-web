@@ -1,10 +1,21 @@
+import os
+import pathlib
+import shutil
+import unittest
+from unittest.mock import patch
+
 import pytest
 from django.conf import settings
+from django.test import override_settings
 
 from core.models import Url
 from core.serializers import UrlSerializer
+from core.utils import dataregistry_path_formatter, dataregistry_path_resolver
 
 from .utils import create_data_selection, get_data_selections
+
+DATA_DIR = os.path.dirname(__file__) + "/data"
+DATASET_PATH = f"{DATA_DIR}/sample-dataset.json"
 
 
 @pytest.mark.django_db
@@ -203,3 +214,86 @@ class TestUrl:
             content_type="application/json",
         )
         assert response.status_code == 404
+
+    def test_dataregistry_path(self, client, tmp_path):
+        with override_settings(DATAREGISTRY_MEDIA_ROOT=pathlib.Path(str(tmp_path) + "/data_registry")):
+            file = tmp_path / "data_registry/file.json"
+            file.parent.mkdir()
+            file.touch()
+
+            # Relative path
+            url = "file:///file.json"
+            response = client.post(f"{self.url_prefix}", {"url": url})
+            path = dataregistry_path_resolver(dataregistry_path_formatter(url))
+            assert os.path.isfile(file)
+            assert str(path) == str(file)
+            assert response.status_code == 201
+
+            # Absolute path
+            url = "file://" + str(file)
+            response = client.post(f"{self.url_prefix}", {"url": url})
+            path = dataregistry_path_resolver(dataregistry_path_formatter(url))
+            assert str(path) == str(file)
+            assert response.status_code == 201
+
+            # Path outside of data registry folder
+            forbidden_file = tmp_path / "forbidden_file.json"
+            forbidden_file.touch()
+            url = "file://" + str(tmp_path) + "/forbidden_file.json"
+            path = dataregistry_path_resolver(dataregistry_path_formatter(url))
+            assert str(path) == str(forbidden_file)
+            assert os.path.isfile(forbidden_file)
+            with pytest.raises(ValueError) as e:
+                client.post(f"{self.url_prefix}", {"url": url})
+            assert "Input URL is invalid" in str(e)
+
+            # Path that leads outside of data registry folder
+            url = "file://" + str(tmp_path) + "/data_registry/../forbidden_file.json"
+            path = dataregistry_path_resolver(dataregistry_path_formatter(url))
+            assert str(path) == str(tmp_path) + "/forbidden_file.json"
+            with pytest.raises(ValueError) as e:
+                client.post(f"{self.url_prefix}", {"url": url})
+            assert "Input URL is invalid" in str(e)
+
+            # Path that leads to root
+            url = "file:///./../../../../../../../../forbidden_file.json"
+            path = dataregistry_path_resolver(dataregistry_path_formatter(url))
+            assert str(path) == "/forbidden_file.json"
+            with pytest.raises(ValueError) as e:
+                client.post(f"{self.url_prefix}", {"url": url})
+            assert "Input URL is invalid" in str(e)
+
+            # Symlink not allowed
+            dest = tmp_path / "data_registry/forbidden_file.json"
+            os.symlink(forbidden_file, str(dest))
+            assert os.path.islink(dest)
+            url = "file://" + str(tmp_path) + "/data_registry" + "/forbidden_file.json"
+            with pytest.raises(ValueError) as e:
+                client.post(
+                    f"{self.url_prefix}",
+                    {"url": url},
+                )
+            assert "Input URL is invalid" in str(e)
+
+            # Symlink allowed, jail is on
+            with patch("core.validators.settings.DATAREGISTRY_ALLOW_SYMLINKS", True):
+                with pytest.raises(ValueError) as e:
+                    client.post(
+                        f"{self.url_prefix}",
+                        {"url": url},
+                    )
+                    assert "Input URL is invalid" in str(e)
+
+            # Symlink allowed, jail is off
+            with patch("core.validators.settings.DATAREGISTRY_ALLOW_SYMLINKS", True):
+                with patch("core.validators.settings.DATAREGISTRY_JAIL", False):
+                    client.post(
+                        f"{self.url_prefix}",
+                        {"url": url},
+                    )
+                    assert response.status_code == 201
+
+    def test_dataregistry_path_no_dataregistry_imported(self, client):
+        with pytest.raises(ValueError) as e:
+            client.post(f"{self.url_prefix}", {"url": "file:///file.json"})
+        assert "Input URL is invalid" in str(e)

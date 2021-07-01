@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import export_directory_path, instance_directory_path
+from core.validators import validate_url_or_path
 
 fs = FileSystemStorage()
 
@@ -82,8 +83,8 @@ class Url(models.Model):
         (FAILED, _("Failed")),
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    url = models.URLField(max_length=2048)
-    analyzed_data_url = models.URLField(max_length=2048, blank=True, null=True)
+    url = models.CharField(max_length=2048, validators=[validate_url_or_path])
+    analyzed_data_url = models.CharField(max_length=2048, validators=[validate_url_or_path], blank=True, null=True)
     analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
