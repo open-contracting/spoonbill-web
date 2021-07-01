@@ -1,7 +1,9 @@
+import json
 import os
 import pathlib
 import shutil
 import unittest
+from shutil import copyfile
 from unittest.mock import patch
 
 import pytest
@@ -51,6 +53,8 @@ class TestUrl:
             "source",
             "period",
             "country",
+            "is_head_of_multi_upload",
+            "multi_uploads",
         }
         assert set(url["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert not url["deleted"]
@@ -292,6 +296,36 @@ class TestUrl:
                         {"url": url},
                     )
                     assert response.status_code == 201
+
+            # Multi upload URL creation successful
+            paths = []
+            for i in range(1, 6):
+                dest = tmp_path / f"data_registry/file{i}.json"
+                copyfile(DATASET_PATH, dest)
+                url = f"file:///file{i}.json"
+                paths.append(url)
+                assert os.path.isfile(dest)
+
+            response = client.post(f"{self.url_prefix}", json.dumps({"url": paths}), content_type="application/json")
+            url = response.json()
+            assert response.status_code == 201
+            assert url["url"] == paths[0]
+            assert url["is_head_of_multi_upload"]
+            assert url["status"] == "queued.download"
+            assert len(url["multi_uploads"]) == len(paths) - 1
+            head_id = url["id"]
+
+            for id in url["multi_uploads"]:
+                upload = client.get(f"{self.url_prefix}{id}/").json()
+                assert upload["url"] == paths[url["multi_uploads"].index(id) + 1]
+                assert not upload["is_head_of_multi_upload"]
+                assert upload["status"] == "queued.download"
+                assert len(upload["multi_uploads"]) == 1
+                assert upload["multi_uploads"][0] == head_id
+
+            # # Multi upload flatten successful
+            # upload = client.post(f"{self.url_prefix}{id}/selections/", {"kind": "ocds_lite"})
+            # assert 1 == upload.json()
 
     def test_dataregistry_path_no_dataregistry_imported(self, client):
         with pytest.raises(ValueError) as e:

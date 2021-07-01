@@ -82,5 +82,7 @@ class UrlSerializer(serializers.ModelSerializer):
             "status",
             "unavailable_tables",
             "validation",
+            "is_head_of_multi_upload",
+            "multi_uploads",
         )
         fields = "__all__"

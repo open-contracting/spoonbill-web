@@ -80,9 +80,9 @@ def validate_data(object_id, model=None, lang_code="en"):
         try:
             is_valid = False
             datasource = ds_model.objects.get(id=object_id)
-
             datasource.status = "validation"
             datasource.save(update_fields=["status"])
+
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",
                 {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
@@ -97,6 +97,7 @@ def validate_data(object_id, model=None, lang_code="en"):
 
             timestamp = time.time()
             filepath = workdir / filename
+
             for read, count in analyzer.analyze_file(filepath, with_preview=True):
                 if (time.time() - timestamp) <= 1:
                     continue
@@ -221,6 +222,7 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
 
 @celery_app.task
 def download_data_source(object_id, model=None, lang_code="en"):
+
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "download_data_source"}
         channel_layer = get_channel_layer()
@@ -233,10 +235,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
             return
         try:
             datasource = ds_model.objects.get(id=object_id)
-
             datasource.status = "downloading"
             datasource.save(update_fields=["status"])
-
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{object_id}",
                 {
@@ -386,6 +386,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 "Schedule validation for %s" % object_id,
                 extra={"MESSAGE_ID": "schedule_validation", "UPLOAD_ID": object_id},
             )
+
         except ObjectDoesNotExist:
             logger_context["MODEL"] = model
             logger_context["MESSAGE_ID"] = "datasource_not_found"
@@ -481,7 +482,16 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 **formats,
             )
             timestamp = time.time()
-            for count in flattener.flatten_file(datasource.file.path):
+
+            is_multi_upload = getattr(datasource, "is_head_of_multi_upload", False)
+            if is_multi_upload:
+                uploads = [datasource]
+                uploads.extend(datasource.multi_uploads.all())
+                files = [upload.file.path for upload in uploads]
+            else:
+                files = datasource.file.path
+
+            for count in flattener.flatten_file(files):
                 if (time.time() - timestamp) <= 1:
                     continue
                 async_to_sync(channel_layer.group_send)(
