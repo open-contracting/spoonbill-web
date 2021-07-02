@@ -54,3 +54,10 @@ def validate_url_or_path(url):
         return
     except (ValidationError, AttributeError):
         raise ValueError("Input URL is invalid")
+
+
+def multi_upload_validator(array):
+    if len(array) > 1:
+        for path in array:
+            if get_protocol(path) != "file":
+                raise ValidationError("Multiple uploads are not available for this type of URL")

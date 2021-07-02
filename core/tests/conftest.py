@@ -107,7 +107,7 @@ def upload_obj_validated(upload_obj, analyzed, available_tables):
 @pytest.fixture
 def url_obj(validation_obj, dataset):
     return Url.objects.create(
-        url="https://example.org/dataset.json",
+        url=["https://example.org/dataset.json"],
         analyzed_data_url="https://example.org/analyzed.json",
         validation=validation_obj,
         expired_at=timezone.now(),

@@ -89,15 +89,29 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
 
             logger.debug("Start validation for %s file" % object_id)
-            path = pathlib.Path(datasource.file.path)
-            workdir = path.parent
-            filename = path.name
-            total = path.stat().st_size
+            paths = (
+                datasource.paths
+                if hasattr(datasource, "paths") and datasource.paths
+                else [pathlib.Path(datasource.file.path)]
+            )
+            workdir = (
+                pathlib.Path(paths[0]).parent
+                if hasattr(datasource, "paths") and datasource.paths
+                else pathlib.Path(datasource.file.path).parent
+            )
+            filenames = [pathlib.Path(path).name for path in paths]
+            total = (
+                pathlib.Path(paths[0]).stat().st_size
+                if hasattr(datasource, "paths") and datasource.paths
+                else pathlib.Path(datasource.file.path).stat().st_size
+            )
             analyzer = FileAnalyzer(workdir, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES)
 
             timestamp = time.time()
-            filepath = workdir / filename
-            for read, count in analyzer.analyze_file(filepath, with_preview=True):
+
+            filepaths = [workdir / filename for filename in filenames]
+
+            for read, count in analyzer.analyze_file(filepaths, with_preview=True):
                 if (time.time() - timestamp) <= 1:
                     continue
                 async_to_sync(channel_layer.group_send)(
@@ -248,11 +262,10 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 "Start download for %s" % object_id,
                 extra={"MESSAGE_ID": "download_start", "UPLOAD_ID": object_id, "URL": datasource.url},
             )
-            if get_protocol(datasource.url) == "file":
-                path = dataregistry_path_formatter(datasource.url)
-                path = dataregistry_path_resolver(path)
-                path = str(path).replace(settings.MEDIA_ROOT, "")
-                datasource.file.name = path
+
+            urls = [datasource.url] if not isinstance(datasource.url, list) else datasource.url
+            if get_protocol(urls[0]) == "file":
+                datasource.paths = [dataregistry_path_resolver(dataregistry_path_formatter(url)) for url in urls]
                 datasource.save()
             else:
                 r = requests.get(datasource.url, stream=True)
@@ -463,7 +476,11 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 },
             )
             options = FlattenOptions(**opt)
-            workdir = pathlib.Path(datasource.file.path).parent
+            workdir = (
+                pathlib.Path(datasource.file.path).parent
+                if datasource.file
+                else pathlib.Path(datasource.paths[0]).parent
+            )
             formats = {"csv": None, "xlsx": None}
             if flatten.export_format == flatten.CSV:
                 workdir = workdir / "export"
@@ -481,7 +498,10 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 **formats,
             )
             timestamp = time.time()
-            for count in flattener.flatten_file(datasource.file.path):
+
+            files = datasource.paths if hasattr(datasource, "paths") and datasource.paths else [datasource.file.path]
+
+            for count in flattener.flatten_file(files):
                 if (time.time() - timestamp) <= 1:
                     continue
                 async_to_sync(channel_layer.group_send)(

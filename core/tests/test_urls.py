@@ -1,3 +1,4 @@
+import json
 import os
 import pathlib
 import shutil
@@ -51,6 +52,7 @@ class TestUrl:
             "source",
             "period",
             "country",
+            "paths",
         }
         assert set(url["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert not url["deleted"]
@@ -292,6 +294,26 @@ class TestUrl:
                         {"url": url},
                     )
                     assert response.status_code == 201
+
+            # Multi upload dataregistry path creation successful
+            paths = []
+            for i in range(1, 6):
+                dest = tmp_path / f"data_registry/file{i}.json"
+                shutil.copyfile(DATASET_PATH, dest)
+                url = f"file:///file{i}.json"
+                paths.append(url)
+                assert os.path.isfile(dest)
+
+            response = client.post(f"{self.url_prefix}", json.dumps({"url": paths}), content_type="application/json")
+            url = response.json()
+            assert response.status_code == 201
+            assert url["url"] == paths
+            assert url["status"] == "queued.download"
+
+            # Multi upload with invalid URL
+            paths.append("https://www.google.com/")
+            response = client.post(f"{self.url_prefix}", json.dumps({"url": paths}), content_type="application/json")
+            assert "Multiple uploads are not available for this type of URL" in response.json()["detail"]["url"]
 
     def test_dataregistry_path_no_dataregistry_imported(self, client):
         with pytest.raises(ValueError) as e:
