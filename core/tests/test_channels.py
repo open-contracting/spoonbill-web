@@ -22,7 +22,6 @@ class TestValidationConsumer:
         validate_data(str(upload_obj.id), model="Upload")
         message = event_loop.run_until_complete(communicator.receive_from())
         event_loop.run_until_complete(communicator.disconnect())
-
         assert (json.loads(message).keys()) == {"datasource", "type"}
 
     def test_task_download_data_source(self, event_loop, url_obj, mocked_request):

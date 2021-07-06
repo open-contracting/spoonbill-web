@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from spoonbill.stats import DataPreprocessor
 
 from core.constants import OCDS_LITE_CONFIG
-from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
+from core.models import DataFile, DataSelection, Flatten, Table, Upload, Url, Validation
 from core.serializers import (
     DataSelectionSerializer,
     FlattenSerializer,
@@ -51,25 +51,34 @@ class UploadViewSet(viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
-            if "file" not in request.FILES:
+            if "files" not in request.FILES:
                 return Response({"detail": _("File is required")}, status=status.HTTP_400_BAD_REQUEST)
+            if len(request.FILES.getlist("files")) > 1:
+                return Response(
+                    {"detail": _("Multi-upload feature is not available for file uploads yet. Stay tuned!")},
+                    status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                )
             lang_code = get_language()
             validation_obj = Validation.objects.create()
             expired_at = timezone.now() + timedelta(days=settings.JOB_FILES_TIMEOUT)
             upload_obj = Upload.objects.create(expired_at=expired_at, validation=validation_obj)
             cleanup_upload.apply_async((upload_obj.id, "Upload", lang_code), eta=upload_obj.expired_at)
 
-            if isinstance(request.FILES["file"], TemporaryUploadedFile):
+            if isinstance(request.FILES["files"], TemporaryUploadedFile):
                 _empty_file = ContentFile(b"")
-                upload_obj.file.save("new", _empty_file)
-                _file = request.FILES["file"]
+                file_obj = DataFile.objects.create()
+                file_obj.file.save("new", _empty_file)
+                upload_obj.files.add(file_obj)
+                _file = request.FILES["files"]
                 initial_path = _file.file.name
-                os.rename(initial_path, upload_obj.file.path)
+                os.rename(initial_path, upload_obj.files.all()[0].file.path)
                 _file.close()
             else:
-                file_ = File(request.FILES["file"])
-                upload_obj.file = file_
-                upload_obj.save(update_fields=["file"])
+                file_ = File(request.FILES["files"])
+                file_obj = DataFile.objects.create()
+                file_obj.file.save("new", file_)
+                upload_obj.files.add(file_obj)
+                upload_obj.save()
 
             task = validate_data.delay(upload_obj.id, model="Upload", lang_code=lang_code)
             validation_obj.task_id = task.id
@@ -112,7 +121,7 @@ class URLViewSet(viewsets.GenericViewSet):
     ```python
     >>> import requests
     >>> response = request.post('/urls/',
-                                {'url': 'https://<filehosting.host>/<json-file>'},
+                                {'urls': [ 'https://<filehosting.host>/<json-file>' ]},
                                 headers={'Accept-Language': 'en_US|es'})
     >>> response.json()
     {
@@ -123,7 +132,7 @@ class URLViewSet(viewsets.GenericViewSet):
             "is_valid": None,
             "errors": None
         },
-        "url": "https://<filehosting.host>/<json-file>",
+        "urls": [ "https://<filehosting.host>/<json-file>" ],
         "analyzed_data_url": "",
         "analyzed_data_file": None,
         "data_file": None,
@@ -140,7 +149,7 @@ class URLViewSet(viewsets.GenericViewSet):
     **Example (data from OCDS data registry):**
     ```python
     >>> response = request.post('/urls/',
-                                {'url': 'https://<data-registry.host>/<dataset-query>',
+                                {'urls': 'https://<data-registry.host>/<dataset-query>',
                                  'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>',
                                  'country': 'United Kingdom',
                                  'period': 'Last 6 months',
@@ -156,7 +165,7 @@ class URLViewSet(viewsets.GenericViewSet):
             "is_valid": None,
             "errors": None
         },
-        "url": "https://<data-registry.host>/<dataset-query>",
+        "urls": [ "https://<data-registry.host>/<dataset-query>" ],
         "analyzed_data_url": "https://<data-registry.host>/<analyzed-data-query>",
         "analyzed_data_file": None,
         "data_file": None,
@@ -191,14 +200,14 @@ class URLViewSet(viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
-            url = request.POST.get("url", "") or request.data.get("url", "")
-            if not url:
+            urls = request.POST.get("urls", "") or request.data.get("urls", "")
+            if not urls:
                 return Response({"detail": _("Url is required")}, status=status.HTTP_400_BAD_REQUEST)
 
             serializer = self.get_serializer_class()(data=request.POST or request.data)
             if serializer.is_valid():
                 validation_obj = Validation.objects.create()
-                url_obj = Url.objects.create(**serializer.data)
+                url_obj = Url.objects.create(**serializer.validated_data)
                 url_obj.validation = validation_obj
                 url_obj.save(update_fields=["validation"])
                 lang_code = get_language()
@@ -357,7 +366,7 @@ class TableViewSet(viewsets.ModelViewSet):
             )
 
     def _split_table(self, table, analyzed_tables, datasource, child_tables):
-        datasource_dir = os.path.dirname(datasource.file.path)
+        datasource_dir = os.path.dirname(datasource.files.all()[0].file.path)
         for child_table_key in child_tables:
             analyzed_child_table = analyzed_tables.get(child_table_key, {})
             if analyzed_child_table.total_rows == 0:
@@ -389,7 +398,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
             datasource = Url.objects.get(id=url_id)
         elif upload_id:
             datasource = Upload.objects.get(id=upload_id)
-        datasource_dir = os.path.dirname(datasource.file.path)
+        datasource_dir = os.path.dirname(datasource.files.all()[0].file.path)
         selection = DataSelection.objects.get(id=selection_id)
         try:
             spec = DataPreprocessor.restore(datasource.analyzed_file.path)

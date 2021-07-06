@@ -130,24 +130,6 @@ def set_column_headings(selection, analyzed_file_path):
     activate(current_language_code)
 
 
-def is_release_package(filepath):
-    with open(filepath, "rb") as f:
-        items = ijson.items(f, "releases.item")
-        for item in items:
-            if item:
-                return True
-    return False
-
-
-def is_record_package(filepath):
-    with open(filepath, "rb") as f:
-        items = ijson.items(f, "records.item")
-        for item in items:
-            if item:
-                return True
-    return False
-
-
 @contextmanager
 def internationalization(lang_code="en"):
     current_lang = get_language()
@@ -240,3 +222,10 @@ def dataregistry_path_formatter(path):
 def dataregistry_path_resolver(path):
     path = pathlib.Path(path).resolve()
     return path
+
+
+def multiple_file_assigner(files, paths):
+    for file in files:
+        file.file.name = paths[files.index(file)]
+        file.save()
+    return files
