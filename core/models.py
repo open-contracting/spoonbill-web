@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import export_directory_path, instance_directory_path
-from core.validators import validate_url_or_path
+from core.validators import url_multi_upload_validator, validate_url_or_path
 
 fs = FileSystemStorage()
 
@@ -45,7 +45,7 @@ class Upload(models.Model):
         (VALIDATION, _("Validation")),
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    file = models.FileField(upload_to=instance_directory_path, storage=fs)
+    files = models.ManyToManyField("DataFile", blank=True, null=True)
     analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_VALIDATION)
@@ -83,10 +83,14 @@ class Url(models.Model):
         (FAILED, _("Failed")),
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    url = models.CharField(max_length=2048, validators=[validate_url_or_path])
+    urls = ArrayField(
+        models.CharField(max_length=2048, validators=[validate_url_or_path]),
+        default=list,
+        validators=[url_multi_upload_validator],
+    )
     analyzed_data_url = models.CharField(max_length=2048, validators=[validate_url_or_path], blank=True, null=True)
     analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
-    file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
+    files = models.ManyToManyField("DataFile", blank=True, null=True)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_DOWNLOAD)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -184,3 +188,16 @@ class Flatten(models.Model):
 
     def __str__(self):
         return f"{self.__class__.__name__} {self.id}"
+
+
+class DataFile(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
+
+    class Meta:
+        db_table = "files"
+        verbose_name = _("File")
+        verbose_name_plural = _("Files")
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.file}"

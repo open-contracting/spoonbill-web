@@ -11,7 +11,7 @@ from django.core.files.base import ContentFile
 from django.utils import timezone
 from spoonbill.stats import DataPreprocessor
 
-from core.models import Upload, Url, Validation
+from core.models import DataFile, Upload, Url, Validation
 from core.utils import retrieve_tables
 
 from .utils import Response, Task
@@ -83,7 +83,10 @@ def validation_obj():
 def upload_obj(validation_obj, dataset):
     file_ = File(dataset)
     file_.name = uuid.uuid4().hex
-    obj = Upload.objects.create(file=file_, validation=validation_obj, expired_at=timezone.now())
+    file_obj = DataFile.objects.create(file=file_)
+    obj = Upload.objects.create(validation=validation_obj, expired_at=timezone.now())
+    obj.files.add(file_obj)
+    obj.save()
     yield obj
 
     shutil.rmtree(f"{settings.MEDIA_ROOT}{obj.id}", ignore_errors=True)
@@ -107,7 +110,7 @@ def upload_obj_validated(upload_obj, analyzed, available_tables):
 @pytest.fixture
 def url_obj(validation_obj, dataset):
     return Url.objects.create(
-        url="https://example.org/dataset.json",
+        urls=["https://example.org/dataset.json"],
         analyzed_data_url="https://example.org/analyzed.json",
         validation=validation_obj,
         expired_at=timezone.now(),
@@ -120,9 +123,10 @@ def url_obj_w_files(url_obj, dataset, analyzed):
     file_.name = uuid.uuid4().hex
     analyzed_file_ = File(analyzed)
     analyzed_file_.name = uuid.uuid4().hex
-    url_obj.file = file_
+    file_obj = DataFile.objects.create(file=file_)
+    url_obj.files.add(file_obj)
     url_obj.analyzed_file = analyzed_file_
-    url_obj.save(update_fields=["file", "analyzed_file"])
+    url_obj.save()
 
     yield url_obj
 

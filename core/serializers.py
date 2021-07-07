@@ -1,12 +1,23 @@
+from django.conf import settings
 from rest_framework import serializers
 
-from core.models import DataSelection, Flatten, Table, Upload, Url, Validation
+from core.models import DataFile, DataSelection, Flatten, Table, Upload, Url, Validation
 
 
 class ArrayTablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
         fields = ("id", "name", "include", "heading")
+
+
+class DataFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataFile
+        read_only_fields = ("id", "file")
+        fields = "__all__"
+
+    def to_representation(self, obj):
+        return settings.MEDIA_URL + obj.file.name
 
 
 class TablesSerializer(serializers.ModelSerializer):
@@ -44,6 +55,7 @@ class ValidationSerializer(serializers.ModelSerializer):
 class UploadSerializer(serializers.ModelSerializer):
     validation = ValidationSerializer(read_only=True)
     selections = DataSelectionSerializer(read_only=True, many=True)
+    files = DataFileSerializer(read_only=True, many=True)
 
     class Meta:
         model = Upload
@@ -58,6 +70,7 @@ class UploadSerializer(serializers.ModelSerializer):
             "status",
             "unavailable_tables",
             "validation",
+            "files",
         )
         fields = "__all__"
 
@@ -65,6 +78,7 @@ class UploadSerializer(serializers.ModelSerializer):
 class UrlSerializer(serializers.ModelSerializer):
     validation = ValidationSerializer(read_only=True)
     selections = DataSelectionSerializer(read_only=True, many=True)
+    files = DataFileSerializer(read_only=True, many=True)
 
     class Meta:
         model = Url
@@ -76,7 +90,7 @@ class UrlSerializer(serializers.ModelSerializer):
             "downloaded",
             "error",
             "expired_at",
-            "file",
+            "files",
             "id",
             "root_key",
             "status",

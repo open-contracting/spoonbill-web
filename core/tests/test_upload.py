@@ -10,7 +10,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from rest_framework import status
 
-from core.models import Upload
+from core.models import DataFile, Upload
 from core.serializers import UploadSerializer
 from core.tests.utils import create_data_selection, get_data_selections
 
@@ -45,7 +45,7 @@ class TestUploadViews:
         assert response.json() == {"detail": "File is required"}
 
     def test_create_upload_successful(self):
-        response = self.client.post(self.url_prefix, {"file": self.dataset})
+        response = self.client.post(self.url_prefix, {"files": self.dataset})
         assert response.status_code == 201
         upload = response.json()
         assert set(upload.keys()) == {
@@ -54,7 +54,7 @@ class TestUploadViews:
             "created_at",
             "deleted",
             "expired_at",
-            "file",
+            "files",
             "id",
             "root_key",
             "selections",
@@ -63,7 +63,9 @@ class TestUploadViews:
             "validation",
         }
         assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
-        assert upload["file"].startswith(self.settings.MEDIA_URL)
+
+        for file in upload["files"]:
+            assert file.startswith(settings.MEDIA_URL)
         assert not upload["deleted"]
 
         upload_obj = Upload.objects.get(id=upload["id"])
@@ -73,7 +75,7 @@ class TestUploadViews:
         )
 
         # cleanup test data
-        shutil.rmtree(f"{self.settings.MEDIA_ROOT}{upload_obj.id}")
+        shutil.rmtree(f"{self.settings.MEDIA_ROOT}{upload_obj.files.all()[0].id}")
 
     def test_get_non_existed_upload(self):
         response = self.client.get(f"{self.url_prefix}some-invalid-id/")
@@ -107,13 +109,13 @@ class TestUploadViews:
 
     def test_exception_handle(self):
         self.task_cleanup.apply_async.side_effect = Exception("Something went wrong.")
-        response = self.client.post(self.url_prefix, {"file": self.dataset})
+        response = self.client.post(self.url_prefix, {"files": self.dataset})
         assert response.status_code == 500
         assert "detail" in response.json()
 
     def test_no_left_space(self):
         self.task_cleanup.apply_async.side_effect = OSError(errno.ENOSPC, "No left space.")
-        response = self.client.post(self.url_prefix, {"file": self.dataset})
+        response = self.client.post(self.url_prefix, {"files": self.dataset})
         assert response.status_code == 413
         assert response.json() == {"detail": "Currently, the space limit was reached. Please try again later."}
 
@@ -131,7 +133,7 @@ class TestUploadViewsUnit(TestCase):
             settings.FILE_UPLOAD_MAX_MEMORY_SIZE = 100
             mocked_validation.delay.return_value = Task()
             with reader(path) as _file:
-                response = self.client.post(self.url_prefix, {"file": _file})
+                response = self.client.post(self.url_prefix, {"files": _file})
             assert response.status_code == 201
             upload = response.json()
             assert set(upload.keys()) == {
@@ -140,7 +142,7 @@ class TestUploadViewsUnit(TestCase):
                 "created_at",
                 "deleted",
                 "expired_at",
-                "file",
+                "files",
                 "id",
                 "root_key",
                 "selections",
@@ -149,11 +151,18 @@ class TestUploadViewsUnit(TestCase):
                 "validation",
             }
             assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
-            assert upload["file"].startswith(settings.MEDIA_URL)
+            for file in upload["files"]:
+                assert file.startswith(settings.MEDIA_URL)
             assert not upload["deleted"]
 
             upload_obj = Upload.objects.get(id=upload["id"])
 
             # cleanup test data
-            directory = pathlib.Path(upload_obj.file.path).parent
+            directory = pathlib.Path(upload_obj.files.all()[0].file.path).parent
             shutil.rmtree(directory)
+
+    def test_upload_multiple_files(self):
+        with open(DATASET_PATH) as _file:
+            response = self.client.post(self.url_prefix, {"files": [_file, _file]})
+        assert response.status_code == 413
+        assert response.json() == {"detail": "Multi-upload feature is not available for file uploads yet. Stay tuned!"}

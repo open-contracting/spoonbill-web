@@ -23,7 +23,7 @@ from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 from spoonbill.flatten import FlattenOptions
 from spoonbill.stats import DataPreprocessor
 
-from core.models import Flatten, Upload, Url
+from core.models import DataFile, Flatten, Upload, Url
 from core.serializers import FlattenSerializer, UploadSerializer, UrlSerializer
 from core.utils import (
     dataregistry_path_formatter,
@@ -31,6 +31,7 @@ from core.utils import (
     get_flatten_options,
     get_protocol,
     internationalization,
+    multiple_file_assigner,
     retrieve_tables,
     zip_files,
 )
@@ -67,6 +68,7 @@ def get_serializer_by_model(str_model, log_context=None):
 
 @celery_app.task
 def validate_data(object_id, model=None, lang_code="en"):
+
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "validate_data"}
         ds_model, serializer = get_serializer_by_model(model, logger_context)
@@ -89,15 +91,16 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
 
             logger.debug("Start validation for %s file" % object_id)
-            path = pathlib.Path(datasource.file.path)
-            workdir = path.parent
-            filename = path.name
-            total = path.stat().st_size
+            paths = [pathlib.Path(file.file.path) for file in datasource.files.all()]
+            workdir = paths[0].parent
+            filenames = [pathlib.Path(path).name for path in paths]
+
+            total = sum([pathlib.Path(path).stat().st_size for path in paths])
             analyzer = FileAnalyzer(workdir, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES)
 
             timestamp = time.time()
-            filepath = workdir / filename
-            for read, count in analyzer.analyze_file(filepath, with_preview=True):
+            filepaths = [workdir / filename for filename in filenames]
+            for read, count in analyzer.analyze_file(filepaths, with_preview=True):
                 if (time.time() - timestamp) <= 1:
                     continue
                 async_to_sync(channel_layer.group_send)(
@@ -206,6 +209,11 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
             logger_context["MESSAGE_ID"] = "datasource_not_found"
             logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
             return
+        urls = getattr(datasource, "urls", [])
+        protocol = None if not urls else get_protocol(urls[0])
+        if protocol == "file":
+            logger.debug("Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT" % (datasource.id))
+            return
         if datasource.expired_at > timezone.now():
             logger.debug(
                 "Skip datasource cleanup %s, expired_at in future %s"
@@ -213,10 +221,11 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
             )
             cleanup_upload.apply_async((datasource.id, model, lang_code), eta=datasource.expired_at)
             return
-        datasource_path = os.path.dirname(datasource.file.path)
-        shutil.rmtree(datasource_path, ignore_errors=True)
+        datasource_paths = [os.path.dirname(file.file.path) for file in datasource.files.all()]
+        for path in datasource_paths:
+            shutil.rmtree(path, ignore_errors=True)
         datasource.delete()
-        logger.debug("Remove all data from %s" % (datasource_path))
+        logger.debug("Remove all data from %s" % (datasource_paths))
 
 
 @celery_app.task
@@ -246,16 +255,20 @@ def download_data_source(object_id, model=None, lang_code="en"):
             )
             logger.debug(
                 "Start download for %s" % object_id,
-                extra={"MESSAGE_ID": "download_start", "UPLOAD_ID": object_id, "URL": datasource.url},
+                extra={"MESSAGE_ID": "download_start", "UPLOAD_ID": object_id, "URL": datasource.urls},
             )
-            if get_protocol(datasource.url) == "file":
-                path = dataregistry_path_formatter(datasource.url)
-                path = dataregistry_path_resolver(path)
-                path = str(path).replace(settings.MEDIA_ROOT, "")
-                datasource.file.name = path
-                datasource.save()
+
+            if get_protocol(datasource.urls[0]) == "file":
+                paths = [
+                    str(dataregistry_path_resolver(dataregistry_path_formatter(url))).replace(settings.MEDIA_ROOT, "")
+                    for url in datasource.urls
+                ]
+                files = [DataFile.objects.create() for path in paths]
+                files = multiple_file_assigner(files, paths)
+
+                datasource.files.add(*files)
             else:
-                r = requests.get(datasource.url, stream=True)
+                r = requests.get(datasource.urls[0], stream=True)
                 if r.status_code != 200:
                     logger.error(
                         "Error while downloading data file for %s" % object_id,
@@ -281,8 +294,13 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 downloaded = 0
                 chunk_size = 10240
                 _file = ContentFile(b"")
-                datasource.file.save("new", _file)
-                with open(datasource.file.path, "wb") as fd:
+                file_obj = DataFile.objects.create()
+
+                file_obj.file.save("new", _file)
+                file_obj.save()
+                datasource.files.add(file_obj)
+
+                with open(file_obj.file.path, "wb") as fd:
                     timestamp = time.time()
                     for chunk in r.iter_content(chunk_size=chunk_size):
                         fd.write(chunk)
@@ -375,7 +393,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 extra={
                     "MESSAGE_ID": "download_complete",
                     "UPLOAD_ID": object_id,
-                    "URL": datasource.url,
+                    "URL": datasource.urls,
                     "EXPIRED_AT": expired_at.isoformat(),
                 },
             )
@@ -463,7 +481,8 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 },
             )
             options = FlattenOptions(**opt)
-            workdir = pathlib.Path(datasource.file.path).parent
+            files = [file.file.path for file in datasource.files.all()]
+            workdir = pathlib.Path(files[0]).parent
             formats = {"csv": None, "xlsx": None}
             if flatten.export_format == flatten.CSV:
                 workdir = workdir / "export"
@@ -481,7 +500,7 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 **formats,
             )
             timestamp = time.time()
-            for count in flattener.flatten_file(datasource.file.path):
+            for count in flattener.flatten_file(files):
                 if (time.time() - timestamp) <= 1:
                     continue
                 async_to_sync(channel_layer.group_send)(
@@ -497,6 +516,7 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                     },
                 )
                 timestamp = time.time()
+
             if flatten.export_format == flatten.CSV:
                 target_file = f"{workdir}/{datasource.id}.zip"
                 zip_files(workdir, target_file, extension="csv")

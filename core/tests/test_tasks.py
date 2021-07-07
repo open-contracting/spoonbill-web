@@ -73,7 +73,7 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert url_obj.validation.is_valid is None
 
     def test_not_json_file(self, upload_obj):
-        with open(upload_obj.file.path, "w") as f:
+        with open(upload_obj.files.all()[0].file.path, "w") as f:
             f.write("some txt file")
 
         upload_obj = Upload.objects.get(id=upload_obj.id)
@@ -164,6 +164,18 @@ class TestCleanupUploadTask(BaseUploadTestSuite):
             },
         )
 
+    def test_dataregistry_failed(self, url_obj, mocker):
+        mocked_logger = mocker.patch("core.tasks.logger")
+        url_obj.urls = ["file:///file.json"]
+        url_obj.save(update_fields=["urls"])
+        assert not url_obj.deleted
+        task = cleanup_upload(url_obj.id, model=self.model)
+        assert not url_obj.deleted
+        assert not task
+        mocked_logger.debug.called_once_with(
+            "Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT" % (url_obj.id)
+        )
+
 
 @pytest.mark.django_db
 class TestDownloadDataSource:
@@ -181,7 +193,7 @@ class TestDownloadDataSource:
         assert url_obj.downloaded
 
         test_dataset = json.loads(dataset.read())
-        with open(url_obj.file.path) as f:
+        with open(url_obj.files.all()[0].file.path) as f:
             data = json.loads(f.read())
         assert data == test_dataset
 
@@ -223,7 +235,7 @@ class TestDownloadDataSource:
         assert url_obj.error == f"{response.status_code}: {response.reason}"
         assert mocked_request.get.call_count == 2
 
-        with open(url_obj.file.path) as f:
+        with open(url_obj.files.all()[0].file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())
 
@@ -241,7 +253,7 @@ class TestDownloadDataSource:
         assert url_obj.error == "Something went wrong. Contact with support service."
         assert mocked_request.get.call_count == 2
 
-        with open(url_obj.file.path) as f:
+        with open(url_obj.files.all()[0].file.path) as f:
             data = json.loads(f.read())
         assert data == json.loads(dataset.read())
 

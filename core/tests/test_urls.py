@@ -1,3 +1,4 @@
+import json
 import os
 import pathlib
 import shutil
@@ -28,7 +29,7 @@ class TestUrl:
         assert response.json() == {"detail": "Url is required"}
 
     def test_create_datasource_successful(self, client, download_datasource_task):
-        response = client.post(f"{self.url_prefix}", {"url": "https://example.org/dataset.json"})
+        response = client.post(f"{self.url_prefix}", {"urls": ["https://example.org/dataset.json"]})
         assert response.status_code == 201
         url = response.json()
         assert set(url.keys()) == {
@@ -40,13 +41,13 @@ class TestUrl:
             "downloaded",
             "error",
             "expired_at",
-            "file",
+            "files",
             "id",
             "root_key",
             "selections",
             "status",
             "unavailable_tables",
-            "url",
+            "urls",
             "validation",
             "source",
             "period",
@@ -65,7 +66,7 @@ class TestUrl:
         response = client.post(
             f"{self.url_prefix}",
             {
-                "url": "https://example.org/dataset.json",
+                "urls": "https://example.org/dataset.json",
                 "country": "Mordor",
                 "period": "I was there, Gandalf, three thousands years ago",
                 "source": "Elrond",
@@ -223,7 +224,7 @@ class TestUrl:
 
             # Relative path
             url = "file:///file.json"
-            response = client.post(f"{self.url_prefix}", {"url": url})
+            response = client.post(f"{self.url_prefix}", {"urls": url})
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert os.path.isfile(file)
             assert str(path) == str(file)
@@ -231,7 +232,7 @@ class TestUrl:
 
             # Absolute path
             url = "file://" + str(file)
-            response = client.post(f"{self.url_prefix}", {"url": url})
+            response = client.post(f"{self.url_prefix}", {"urls": url})
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(file)
             assert response.status_code == 201
@@ -244,7 +245,7 @@ class TestUrl:
             assert str(path) == str(forbidden_file)
             assert os.path.isfile(forbidden_file)
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"url": url})
+                client.post(f"{self.url_prefix}", {"urls": url})
             assert "Input URL is invalid" in str(e)
 
             # Path that leads outside of data registry folder
@@ -252,7 +253,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(tmp_path) + "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"url": url})
+                client.post(f"{self.url_prefix}", {"urls": url})
             assert "Input URL is invalid" in str(e)
 
             # Path that leads to root
@@ -260,7 +261,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"url": url})
+                client.post(f"{self.url_prefix}", {"urls": url})
             assert "Input URL is invalid" in str(e)
 
             # Symlink not allowed
@@ -271,7 +272,7 @@ class TestUrl:
             with pytest.raises(ValueError) as e:
                 client.post(
                     f"{self.url_prefix}",
-                    {"url": url},
+                    {"urls": url},
                 )
             assert "Input URL is invalid" in str(e)
 
@@ -280,7 +281,7 @@ class TestUrl:
                 with pytest.raises(ValueError) as e:
                     client.post(
                         f"{self.url_prefix}",
-                        {"url": url},
+                        {"urls": url},
                     )
                     assert "Input URL is invalid" in str(e)
 
@@ -289,11 +290,31 @@ class TestUrl:
                 with patch("core.validators.settings.DATAREGISTRY_JAIL", False):
                     client.post(
                         f"{self.url_prefix}",
-                        {"url": url},
+                        {"urls": url},
                     )
                     assert response.status_code == 201
 
+            # Multi upload dataregistry path creation successful
+            paths = []
+            for i in range(1, 6):
+                dest = tmp_path / f"data_registry/file{i}.json"
+                shutil.copyfile(DATASET_PATH, dest)
+                url = f"file:///file{i}.json"
+                paths.append(url)
+                assert os.path.isfile(dest)
+
+            response = client.post(f"{self.url_prefix}", json.dumps({"urls": paths}), content_type="application/json")
+            url = response.json()
+            assert response.status_code == 201
+            assert url["urls"] == paths
+            assert url["status"] == "queued.download"
+
+            # Multi upload with invalid URL
+            paths.append("https://www.google.com/")
+            response = client.post(f"{self.url_prefix}", json.dumps({"urls": paths}), content_type="application/json")
+            assert "Multiple uploads are not available for this type of URL" in response.json()["detail"]["urls"]
+
     def test_dataregistry_path_no_dataregistry_imported(self, client):
         with pytest.raises(ValueError) as e:
-            client.post(f"{self.url_prefix}", {"url": "file:///file.json"})
+            client.post(f"{self.url_prefix}", {"urls": "file:///file.json"})
         assert "Input URL is invalid" in str(e)
