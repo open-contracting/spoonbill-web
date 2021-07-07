@@ -88,7 +88,7 @@ def store_preview_csv(columns_key, rows_key, table_data, preview_path):
     if not columns_key.startswith("combined"):
         headers.append("parentTable")
     with open(preview_path, "w", newline="\n") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=headers)
+        writer = csv.DictWriter(csvfile, fieldnames=headers, extrasaction="ignore")
         writer.writeheader()
         rows = getattr(table_data, rows_key)
         writer.writerows(rows)
