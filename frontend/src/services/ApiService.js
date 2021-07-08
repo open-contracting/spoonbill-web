@@ -1,16 +1,17 @@
 import axios from 'axios';
 
 export default {
-    sendFile(file, cancelToken, onUploadProgress) {
-        return axios.post('uploads/', file, {
+    sendFile(files, cancelToken, onUploadProgress) {
+        // let filesArr = [...files];
+        return axios.post('uploads/', files, {
             cancelToken,
             onUploadProgress,
         });
     },
 
-    sendUrl(url) {
+    sendUrl(urls) {
         return axios.post('urls/', {
-            url,
+            urls,
         });
     },
 

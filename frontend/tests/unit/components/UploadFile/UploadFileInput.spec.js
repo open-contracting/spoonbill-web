@@ -43,9 +43,10 @@ describe('UploadFileInput.vue', () => {
                 vuetify,
                 router,
             });
-
-            await wrapper.vm.sendUrl('http://mocked-url.com');
-            expect(ApiService.sendUrl).toBeCalledWith('http://mocked-url.com');
+            const url = 'http://mocked-url.com';
+            let recivedUrl = url.split('/n');
+            await wrapper.vm.sendUrl(url);
+            expect(ApiService.sendUrl).toBeCalledWith(recivedUrl);
         });
 
         test("'cancelRequest' cancels 'sendFile' request", () => {
