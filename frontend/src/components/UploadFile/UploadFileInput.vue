@@ -246,7 +246,9 @@ export default {
                 this.showLoading(file.name, true);
                 this.createCancelToken();
                 const formData = new FormData();
-                formData.append('file', file);
+                let files = [];
+                files.push(file);
+                formData.append('files', ...files);
                 const { data } = await ApiService.sendFile(formData, this.cancelTokenSource.token, (ev) => {
                     this.$store.commit('setDownloadProgress', Math.floor((ev.loaded * 100) / ev.total));
                 });
@@ -303,11 +305,13 @@ export default {
          * @param { string } url
          */
         async sendUrl(url) {
+            const splitedUrls = url.split('\n');
+
             try {
                 await this.$store.dispatch('closeConnection');
                 this.$store.commit('setUploadDetails', null);
                 this.showLoading(url, false);
-                const { data } = await ApiService.sendUrl(url);
+                const { data } = await ApiService.sendUrl(splitedUrls);
                 this.$store.commit('setDownloadProgress', 0);
                 this.$store.commit('setUploadDetails', {
                     ...data,
