@@ -223,7 +223,7 @@ class TestUrl:
             file.touch()
 
             # Relative path
-            url = "file:///file.json"
+            url = "file://file.json"
             response = client.post(f"{self.url_prefix}", {"urls": url})
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert os.path.isfile(file)
@@ -299,7 +299,7 @@ class TestUrl:
             for i in range(1, 6):
                 dest = tmp_path / f"data_registry/file{i}.json"
                 shutil.copyfile(DATASET_PATH, dest)
-                url = f"file:///file{i}.json"
+                url = f"file://file{i}.json"
                 paths.append(url)
                 assert os.path.isfile(dest)
 
