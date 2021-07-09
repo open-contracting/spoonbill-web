@@ -376,11 +376,13 @@ export default {
                 selections.id,
                 tableId
             );
+            console.log('data', data);
             this.tables = await Promise.all(
-                data.map(async (preview) => {
-                    const parsed = await Papa.parse(data[0].preview, {
+                data.map(async (preview, i) => {
+                    const parsed = await Papa.parse(data[i].preview, {
                         skipEmptyLines: true,
                     });
+                    console.log('parsed', parsed);
                     return {
                         id: preview.id,
                         name: preview.name,
