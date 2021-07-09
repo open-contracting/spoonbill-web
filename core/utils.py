@@ -212,10 +212,8 @@ def get_protocol(url):
 
 
 def dataregistry_path_formatter(path):
-    path = pathlib.Path(unquote(urlparse(path).path))
-    if str(path).count("/") == 1 and str(path)[0] == "/":
-        path = pathlib.Path(str(path).replace("/", ""))
-    path = settings.DATAREGISTRY_MEDIA_ROOT / path
+    path = path.replace("file://", "")
+    path = settings.DATAREGISTRY_MEDIA_ROOT / pathlib.Path(path)
     return path
 
 
