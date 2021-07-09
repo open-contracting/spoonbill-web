@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import logging.config
 import os
+from distutils.util import strtobool
 from pathlib import Path
 
 import sentry_sdk
@@ -213,8 +214,11 @@ TRANSFER_MAPPINGS = {
     MEDIA_ROOT[:-1]: MEDIA_URL[:-1],
 }
 
-DATAREGISTRY_ALLOW_SYMLINKS = os.getenv("DATAREGISTRY_ALLOW_SYMLINKS", False)
-DATAREGISTRY_JAIL = os.getenv("DATAREGISTRY_JAIL", True)
+
+DATAREGISTRY_ALLOW_SYMLINKS = bool(strtobool(os.getenv("DATAREGISTRY_ALLOW_SYMLINKS", "False")))
+
+DATAREGISTRY_JAIL = bool(strtobool(os.getenv("DATAREGISTRY_JAIL", "True")))
+
 DATAREGISTRY_MEDIA_ROOT = os.getenv("DATAREGISTRY_MEDIA_ROOT", None)
 if DATAREGISTRY_MEDIA_ROOT:
     DATAREGISTRY_MEDIA_ROOT = Path(DATAREGISTRY_MEDIA_ROOT)
