@@ -124,6 +124,7 @@ jobs:
               echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
               echo "SENTRY_ENVIRONMENT=tests" >> .env
               echo "API_PREFIX=api/" >> .env
+              echo "JOB_FILES_TIMEOUT=5" >> .env
       - name: "Download translate files from transifex for front"
         run: |
               pip install transifex-client
