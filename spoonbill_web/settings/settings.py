@@ -31,10 +31,7 @@ if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration(), CeleryIntegration()],
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production,
-        traces_sample_rate=1.0,
+        traces_sample_rate=0,  # The Sentry plan does not include Performance.
     )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
