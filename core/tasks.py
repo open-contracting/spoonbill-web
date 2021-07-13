@@ -122,7 +122,8 @@ def validate_data(object_id, model=None, lang_code="en"):
             datasource.validation.is_valid = is_valid
             datasource.root_key = analyzer.pkg_type
             datasource.validation.save(update_fields=["is_valid"])
-            datasource.save(update_fields=["root_key"])
+            datasource.order = ", ".join(analyzer.order)
+            datasource.save()
 
             if is_valid and not datasource.available_tables and not datasource.analyzed_file:
                 _file = ContentFile(b"")

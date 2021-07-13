@@ -61,6 +61,7 @@ class TestUploadViews:
             "status",
             "unavailable_tables",
             "validation",
+            "order",
         }
         assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
 
@@ -149,6 +150,7 @@ class TestUploadViewsUnit(TestCase):
                 "status",
                 "unavailable_tables",
                 "validation",
+                "order",
             }
             assert set(upload["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
             for file in upload["files"]:

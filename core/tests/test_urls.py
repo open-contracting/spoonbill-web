@@ -52,6 +52,7 @@ class TestUrl:
             "source",
             "period",
             "country",
+            "order",
         }
         assert set(url["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert not url["deleted"]
