@@ -21,6 +21,7 @@ export default new Vuex.Store({
 
         downloadProgress: -1,
         numberOfUploads: 0,
+        tableOrder: [],
     },
     getters: {
         uploadStatus(state) {
@@ -33,7 +34,9 @@ export default new Vuex.Store({
             state.snackbar.color = color;
             state.snackbar.opened = true;
         },
-
+        setTableOrder(state, payload) {
+            state.tableOrder = payload.split(', ');
+        },
         closeSnackbar(state) {
             state.snackbar.text = null;
             state.snackbar.color = null;
@@ -41,17 +44,27 @@ export default new Vuex.Store({
         },
 
         setSelections(state, selections) {
-            if (selections?.tables) {
-                selections.tables.sort((a, b) => {
-                    if (a.name < b.name) {
-                        return -1;
-                    }
-                    if (a.name > b.name) {
-                        return 1;
-                    }
-                    return 0;
+            if (selections?.tables && state.tableOrder && state.tableOrder.length > 0) {
+                let sortedSelectionTables = [];
+                state.tableOrder.forEach((t) => {
+                    let selectionTable = selections.tables.find((selTable) => selTable.name === t);
+                    selectionTable && sortedSelectionTables.push(selectionTable);
                 });
+                selections.tables = [...sortedSelectionTables];
+            } else {
+                if (selections?.tables) {
+                    selections.tables.sort((a, b) => {
+                        if (a.name < b.name) {
+                            return -1;
+                        }
+                        if (a.name > b.name) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                }
             }
+
             state.selections = selections;
         },
 
@@ -155,9 +168,21 @@ export default new Vuex.Store({
                     const res = await ApiService.getUploadInfoByUrl(id);
                     data = res.data;
                 }
+                commit('setUploadDetails', data);
+                if (data.order) {
+                    commit('setTableOrder', data.order);
+                } else {
+                    // FIXME
+                    commit(
+                        'setTableOrder',
+                        `ocid, id, date, tag, initiationType, parties, buyer, planning, 
+                        tenders, awards, contracts, language, relatedProcesses, documents, milestones, amendments`
+                    );
+                }
                 data.type = type;
                 commit('setUploadDetails', data);
             } catch (e) {
+                console.log(e);
                 /* istanbul ignore next */
                 if (e.response.status === 404) {
                     router.push('/').catch(() => {});
