@@ -60,6 +60,7 @@ class UploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Upload
         read_only_fields = (
+            "order",
             "analyzed_file",
             "available_tables",
             "created_at",
@@ -83,6 +84,7 @@ class UrlSerializer(serializers.ModelSerializer):
     class Meta:
         model = Url
         read_only_fields = (
+            "order",
             "analyzed_file",
             "available_tables",
             "created_at",
