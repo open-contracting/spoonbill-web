@@ -107,7 +107,8 @@ class UploadViewSet(viewsets.GenericViewSet):
 
 
 class URLViewSet(viewsets.GenericViewSet):
-    """URL based datasource
+    """
+    ##URL based datasource
 
     This endpoint allows providing URLs for the dataset file and analyzed dataset file which is placed in some cloud
     services or data registries (data lakes) that provide HTTP access for their data.
@@ -186,6 +187,38 @@ class URLViewSet(viewsets.GenericViewSet):
 
     After receiving this response you need to redirect user to the following URL: `https://<spoonbill-web.host>/#/upload-file?lang=<lang-code>&url=<received-id>`
     e.g. `https://<spoonbill-web.host>/#/upload-file?lang=en_US|es&url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412`
+
+    ## Dataregistry path URLs
+
+    You may pass the URL field path to a file, that is located in dataregistry folder.
+    Links for these files should look like this:
+    `file:///absolute/path/to/a/file/within/dataregistry/folder/document.json` \n
+    (absolute path, note 3 slashes after `file:`), or \n
+    `file://document.json` \n
+     (relative path, if file is located within the dataregistry folder).
+
+    **Example of json request body:**
+
+    ```python
+    {"urls":
+        [
+            "file://file.json"
+        ]
+    }
+    ```
+
+    Multiple path URLs may be passed at once as well:
+    ```python
+    {"urls":
+        [
+            "file://file.json",
+            "file:///mnt/big-hdd/dataregistry/prozorro/2020.json",
+            "file://file2.json",
+            "file://file3.json",
+            "file://file4.json"
+        ]
+    }
+    ```
     """
 
     permissions_classes = permissions.AllowAny
