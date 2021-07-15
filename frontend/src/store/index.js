@@ -175,8 +175,8 @@ export default new Vuex.Store({
                     // FIXME
                     commit(
                         'setTableOrder',
-                        `ocid, id, date, tag, initiationType, parties, buyer, planning,
-                        tenders, awards, contracts, language, relatedProcesses, documents, milestones, amendments`
+                        'ocid, id, date, tag, initiationType, parties, buyer, planning, ' +
+                            'tenders, awards, contracts, language, relatedProcesses, documents, milestones, amendments'
                     );
                 }
                 data.type = type;
