@@ -14,8 +14,8 @@ services:
       - 'traefik.http.routers.dashboard.entrypoints=dashboard'
       - 'traefik.http.routers.dashboard.service=api@internal'
     ports:
-      - 80:80
-      - 8888:8888
+      - ${TRAEFIK_IP:-0.0.0.0}:80:80
+      - ${TRAEFIK_IP:-0.0.0.0}:8888:8888
     command:
       - '--api'
       - '--api.insecure=true'
