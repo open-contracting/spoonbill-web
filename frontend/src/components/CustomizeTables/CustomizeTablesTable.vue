@@ -1,5 +1,5 @@
 <template>
-    <div class="table">
+    <div class="table" :key="key">
         <v-row>
             <v-col cols="12" md="6">
                 <div v-if="aboutThisTable">
@@ -125,6 +125,7 @@ export default {
             tables: [],
             missingDataMenu: false,
             showMissingDataList: false,
+            key: 0,
         };
     },
 
@@ -237,8 +238,8 @@ export default {
 
         arrays() {
             let translated = this.$ngettext(
-                'There is %{ n } array in this tables',
-                'There are %{ n } arrays in this tables',
+                'There is %{ n } array in this table',
+                'There are %{ n } arrays in this table',
                 Object.keys(this.additionalInfo.arrays).length
             );
             return [this.$gettextInterpolate(translated, { n: Object.keys(this.additionalInfo.arrays).length })];
@@ -413,6 +414,7 @@ export default {
                 /* istanbul ignore next */
                 this.$error(e);
             }
+            this.key = this.key + 1;
         },
     },
 };
