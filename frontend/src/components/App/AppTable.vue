@@ -52,7 +52,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(row, rowIndex) in data" :key="rowIndex">
+                    <tr v-for="(row, rowIndex) in formattedData" :key="rowIndex">
                         <td
                             v-for="(col, colIndex) in row"
                             :class="{ highlighted: highlightedCols.includes(colIndex) }"
@@ -142,6 +142,13 @@ export default {
                 }
                 return acc;
             }, []);
+        },
+        formattedData() {
+            if (this.$route && this.$route.name === 'customize tables') {
+                return this.data.slice(0, 5);
+            } else {
+                return this.data;
+            }
         },
     },
 
