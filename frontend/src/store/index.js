@@ -185,6 +185,11 @@ export default new Vuex.Store({
                 console.log(e);
                 /* istanbul ignore next */
                 if (e.response.status === 404) {
+                    console.log('errror');
+                    commit('openSnackbar', {
+                        text: 'This file is old and was already deleted. Please upload a new one.',
+                        color: 'error',
+                    });
                     router.push('/').catch(() => {});
                 }
             }
