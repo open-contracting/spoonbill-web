@@ -498,6 +498,7 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 tables=spec.tables,
                 pkg_type=datasource.root_key,
                 multiple_values=getattr(spec, "multiple_values", False),
+                schema=spec.schema,
                 **formats,
             )
             timestamp = time.time()

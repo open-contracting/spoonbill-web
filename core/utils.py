@@ -5,14 +5,19 @@ import pathlib
 import re
 import uuid
 from contextlib import contextmanager
+from operator import attrgetter
 from os.path import commonprefix
 from urllib.parse import unquote, urlparse
 from zipfile import ZipFile
 
 import ijson
+import jsonref
+import requests
 from django.conf import settings
 from django.utils.translation import activate, get_language
+from spoonbill.common import BASE_SCHEMA_URL
 from spoonbill.stats import DataPreprocessor
+from spoonbill.utils import SchemaHeaderExtractor
 
 from core.column_headings import headings
 from core.constants import OCDS_LITE_CONFIG
@@ -98,17 +103,22 @@ def transform_to_r(value):
     return value.replace(" ", "_").lower()
 
 
-def get_column_headings(datasource, tables, table):
+def get_column_headings(datasource, tables, table, schema_headers=None):
     heading_formatters = {
         "en_r_friendly": transform_to_r,
         "es_r_friendly": transform_to_r,
-        "en_user_friendly": lambda x: x,
-        "es_user_friendly": lambda x: x,
     }
     column_headings = {}
     if datasource.headings_type == "ocds":
         return column_headings
+
     columns = tables[table.name].columns.keys() if table.split else tables[table.name].combined_columns.keys()
+
+    if "user_friendly" in datasource.headings_type:
+        for col in columns:
+            column_headings.update({col: schema_headers.get_header(col)})
+        return column_headings
+
     for col in columns:
         non_index_based = re.sub(r"\d", "*", col)
         column_headings.update({col: heading_formatters[datasource.headings_type](headings.get(non_index_based, col))})
@@ -118,14 +128,27 @@ def get_column_headings(datasource, tables, table):
 def set_column_headings(selection, analyzed_file_path):
     current_language_code = get_language()
     spec = DataPreprocessor.restore(analyzed_file_path)
+    schema_headers = None
+
+    if "user_friendly" in selection.headings_type:
+        language = selection.headings_type[:2]
+        schema_format = spec.schema["id"].split("/").pop()
+        schema_lang = "en" if spec.schema["title"].startswith("Schema") else "es"
+        schema_link = getattr(spec.schema, "__reference__", {"$ref": None})["$ref"]
+
+        if language != schema_lang:
+            spec.schema = switch_schema(schema_format, language, schema_lang, schema_link)
+
+        schema_headers = SchemaHeaderExtractor(schema=spec.schema)
+
     if selection.headings_type.startswith("es"):
         activate("es")
     for table in selection.tables.all():
-        table.column_headings = get_column_headings(selection, spec.tables, table)
+        table.column_headings = get_column_headings(selection, spec.tables, table, schema_headers)
         table.save(update_fields=["column_headings"])
         if table.split:
             for a_table in table.array_tables.all():
-                a_table.column_headings = get_column_headings(selection, spec.tables, a_table)
+                a_table.column_headings = get_column_headings(selection, spec.tables, a_table, schema_headers)
                 a_table.save(update_fields=["column_headings"])
     activate(current_language_code)
 
@@ -227,3 +250,12 @@ def multiple_file_assigner(files, paths):
         file.file.name = paths[files.index(file)]
         file.save()
     return files
+
+
+def switch_schema(input_format, language, schema_lang, schema_link=None):
+    if schema_link:
+        url = schema_link.replace(f"/{schema_lang}/", f"/{language}/")
+    else:
+        url = f"{BASE_SCHEMA_URL}{language}/{input_format}"
+    schema = jsonref.JsonRef.replace_refs(requests.get(url=url).json())
+    return schema
