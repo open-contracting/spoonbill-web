@@ -12,8 +12,8 @@ services:
     networks:
       - main
     ports:
-      - 80:80
-      - 443:443
+      - ${TRAEFIK_IP:-0.0.0.0}:80:80
+      - ${TRAEFIK_IP:-0.0.0.0}:443:443
     restart: unless-stopped
     command:
       - '--api'
