@@ -250,7 +250,8 @@ export default {
                 files.push(file);
                 formData.append('files', ...files);
                 const { data } = await ApiService.sendFile(formData, this.cancelTokenSource.token, (ev) => {
-                    this.$store.commit('setDownloadProgress', Math.floor((ev.loaded * 100) / ev.total));
+                    const loaded = Math.floor((ev.loaded * 100) / ev.total);
+                    this.$store.commit('setDownloadProgress', loaded);
                 });
                 this.$store.commit('setDownloadProgress', 0);
                 this.$store.commit('setUploadDetails', {
