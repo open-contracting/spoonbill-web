@@ -187,7 +187,7 @@ export default new Vuex.Store({
                 if (e.response.status === 404) {
                     console.log('errror');
                     commit('openSnackbar', {
-                        text: 'This file is old and was already deleted. Please upload a new one.',
+                        text: 'This linked file is no longer available. Please supply a new URL',
                         color: 'error',
                     });
                     router.push('/').catch(() => {});
@@ -213,7 +213,8 @@ export default new Vuex.Store({
             connection.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.progress) {
-                    commit('setDownloadProgress', data.progress.percentage);
+                    const progress = data.progress.percentage;
+                    commit('setDownloadProgress', progress <= 100 ? progress : 100);
                 }
                 if ([TASK_TYPES.VALIDATE, TASK_TYPES.DOWNLOAD_DATA_SOURCE].includes(data.type)) {
                     commit('setUploadDetails', {

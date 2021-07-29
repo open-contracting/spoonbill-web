@@ -20,6 +20,43 @@
         </v-col>
         <v-col cols="12" md="4">
             <app-f-a-q accent>
+                <div slot="title" color="primary">FAQ</div>
+                <v-expansion-panels :value="panelsValue" accordion multiple>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header class="d-flex">
+                            How do I convert CSV or Excel data to JSON?
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            If you would like to convert CSV data to JSON, please use the older
+                            <span>
+                                <a href="https://flatten-tool.readthedocs.io/en/latest/usage-ocds/" target="_blank">
+                                    Command-Line tool.
+                                </a>
+                            </span>
+                            <br />
+                            Please note that the Command-Line Tool requires some knowledge of programming and is not suited
+                            to non-technical users.
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header class="d-flex">
+                            What should I do if there are issues with my file?
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible
+                            to flatten. <br />If you are uncertain whether your data complies with OCDS, use the
+                            <span>
+                                <a href="https://standard.open-contracting.org/review/" target="_blank">
+                                    Data Review Tool
+                                </a>
+                            </span>
+
+                            to check first.
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </app-f-a-q>
+            <!-- <app-f-a-q accent>
                 <v-icon slot="title" color="primary">mdi-alert</v-icon>
 
                 <div class="pa-5 pt-0">
@@ -57,7 +94,7 @@
                         <translate> to check first</translate>.
                     </p>
                 </div>
-            </app-f-a-q>
+            </app-f-a-q> -->
         </v-col>
     </v-row>
 </template>
@@ -68,7 +105,11 @@ import AppFAQ from '@/components/App/AppFAQ';
 
 export default {
     name: 'UploadFile',
-
+    data: function () {
+        return {
+            panelsValue: [0],
+        };
+    },
     components: { AppFAQ, UploadFileInput },
     computed: {
         canShowDefaultText() {
@@ -86,4 +127,10 @@ export default {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+br {
+    margin-top: 10px;
+    content: '';
+    display: block;
+}
+</style>

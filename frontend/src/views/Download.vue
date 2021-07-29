@@ -87,7 +87,7 @@
                     <translate
                         class="text-link"
                         tag="a"
-                        href="https://open-contracting.github.io/ocds-r-manual/#introduction"
+                        :href="link"
                         target="_blank"
                         rel="noopener"
                     >
@@ -107,9 +107,10 @@
                     >.
                 </li>
                 <li>
-                    <translate>
-                        If you are experienced with R, our manual for how to use R to analyse OCDS data can be found
-                    </translate>
+                    <translate
+                        >If you are experienced with R, our manual for how to use R to analyse OCDS data can be
+                        found</translate
+                    >
                     <translate
                         class="text-link"
                         tag="a"
@@ -139,6 +140,7 @@ export default {
         return {
             EXPORT_FORMATS,
             completed: [],
+            link:'https://docs.google.com/spreadsheets/d/1N_B-T7suVDjD9kVW2l3Z9jmACLwKcWGVrghXpFryGt0/edit?usp=sharing'
         };
     },
 

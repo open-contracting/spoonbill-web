@@ -128,11 +128,11 @@ export default {
                     content: this.$gettext(
                         'An array is a sort of list that is nested inside a field. When converting from ' +
                             'JSON to CSV it is usually helpful to split out arrays into separate tables to make the ' +
-                            'data to work with. Some tables in OCDS have more than one array.'
+                            'data easier to work with. Some tables in OCDS have more than one array.'
                     ),
                 },
                 {
-                    title: this.$gettext('Why are some table unavailable?'),
+                    title: this.$gettext('Why are some tables unavailable?'),
                     content: this.$gettext(
                         'If a table is unavailable it means that the organisation publishing ' +
                             'the data has no information for those tables.'

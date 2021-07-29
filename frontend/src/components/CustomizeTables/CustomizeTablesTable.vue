@@ -237,11 +237,43 @@ export default {
         },
 
         arrays() {
-            let translated = this.$ngettext(
-                'There is %{ n } array in this table',
-                'There are %{ n } arrays in this table',
-                Object.keys(this.additionalInfo.arrays).length
-            );
+            let translated = this.$ngettext('There is %{ n } array in this table', 'There are %{ n } arrays in this table');
+            let arraysCount = Object.keys(this.additionalInfo.arrays).length;
+            switch (arraysCount) {
+                case 0:
+                    translated = this.$ngettext('There are no arrays in this table', 'There are no arrays in this table');
+                    break;
+                case 1:
+                    translated = this.$ngettext('There is one array in this table', 'There is one array in this table');
+                    break;
+                case 2:
+                    translated = this.$ngettext('There are two arrays in this table', 'There are two arrays in this table');
+                    break;
+                case 3:
+                    translated = this.$ngettext(
+                        'There are three arrays in this table',
+                        'There are three arrays in this table'
+                    );
+                    break;
+                case 4:
+                    translated = this.$ngettext(
+                        'There are four arrays in this table',
+                        'There are four arrays in this table"'
+                    );
+                    break;
+                case 5:
+                    translated = this.$ngettext(
+                        'There are five arrays in this table',
+                        'There are five arrays in this table'
+                    );
+                    break;
+                default:
+                    translated = this.$ngettext(
+                        'There is %{ n } array in this table',
+                        'There are %{ n } arrays in this table'
+                    );
+            }
+
             return [this.$gettextInterpolate(translated, { n: Object.keys(this.additionalInfo.arrays).length })];
         },
 
@@ -259,7 +291,7 @@ export default {
             if (availableColumns) {
                 let translatedFirstPart = this.$ngettext(
                     'There is data for %{ n } of the ',
-                    'There are data for %{ n } of the ',
+                    'There is data for %{ n } of the ',
                     availableColumns
                 );
                 let translatedSecondPart = this.$ngettext(
