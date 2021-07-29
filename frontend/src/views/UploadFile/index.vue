@@ -29,7 +29,7 @@
                         <v-expansion-panel-content>
                             If you would like to convert CSV data to JSON, please use the older
                             <span>
-                                <a href="https://flatten-tool.readthedocs.io/en/latest/usage-ocds/" target="_blank">
+                                <a href="https://open-contracting.github.io/spoonbill/" target="_blank">
                                     Command-Line tool.
                                 </a>
                             </span>
