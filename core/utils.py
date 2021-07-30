@@ -3,6 +3,7 @@ import logging
 import os
 import pathlib
 import re
+import struct
 import uuid
 from contextlib import contextmanager
 from os.path import commonprefix
@@ -227,3 +228,9 @@ def multiple_file_assigner(files, paths):
         file.file.name = paths[files.index(file)]
         file.save()
     return files
+
+
+def gz_size(filename):
+    with open(filename, "rb") as f:
+        f.seek(-4, 2)
+        return struct.unpack("I", f.read(4))[0]

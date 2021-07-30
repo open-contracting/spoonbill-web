@@ -22,6 +22,7 @@ from spoonbill import FileAnalyzer, FileFlattener
 from spoonbill.common import COMBINED_TABLES, ROOT_TABLES
 from spoonbill.flatten import FlattenOptions
 from spoonbill.stats import DataPreprocessor
+from spoonbill.utils import get_reader
 
 from core.models import DataFile, Flatten, Upload, Url
 from core.serializers import FlattenSerializer, UploadSerializer, UrlSerializer
@@ -30,6 +31,7 @@ from core.utils import (
     dataregistry_path_resolver,
     get_flatten_options,
     get_protocol,
+    gz_size,
     internationalization,
     multiple_file_assigner,
     retrieve_tables,
@@ -95,7 +97,9 @@ def validate_data(object_id, model=None, lang_code="en"):
             workdir = paths[0].parent
             filenames = [pathlib.Path(path).name for path in paths]
 
-            total = sum([pathlib.Path(path).stat().st_size for path in paths])
+            total = sum(
+                [pathlib.Path(path).stat().st_size if get_reader(path) == open else gz_size(path) for path in paths]
+            )
             analyzer = FileAnalyzer(workdir, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES)
 
             timestamp = time.time()
