@@ -41,8 +41,6 @@ services:
       - postgres
       - redis
       - traefik
-    ports:
-      - "127.0.0.1:8000:8000"
     hostname: app
     env_file:
       - .env
@@ -60,8 +58,6 @@ services:
     restart: on-failure
   postgres:
     container_name: postgres
-    ports:
-      - "127.0.0.1:5432:5432"
     hostname: postgres
     image: postgres:latest
     env_file:
@@ -131,8 +127,6 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.site.entrypoints=http'
       - 'traefik.http.routers.site.rule=PathPrefix(`/`)'
-    ports:
-      - "88:88"
     depends_on:
       - app
     hostname: front
