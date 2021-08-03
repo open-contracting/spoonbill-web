@@ -48,8 +48,8 @@ services:
       - postgres
       - redis
       - traefik
-    ports:
-      - "127.0.0.1:8000:8000"
+    # ports:
+    #   - "127.0.0.1:8000:8000"
     hostname: app
     env_file:
       - .env
@@ -136,8 +136,8 @@ services:
       - 'traefik.http.routers.site.tls=true'
       - 'traefik.http.routers.site.tls.certresolver=acmec'
       - 'traefik.http.routers.site.tls.options=default'
-    ports:
-      - "127.0.0.1:88:88"
+    # ports:
+    #   - "127.0.0.1:88:88"
     env_file:
       - .env
     depends_on:
