@@ -35,7 +35,7 @@ services:
   app:
     image: ${IMAGE}
     pull_policy: if_not_present
-    command: sh -c "mkdir -p /data/django /data/tmp && python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
+    command: sh -c "mkdir -p /data/spoonbill /data/tmp && python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
     container_name: app
     labels:
       - 'traefik.enable=true'
@@ -59,7 +59,7 @@ services:
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
       - FILE_UPLOAD_TEMP_DIR=/data/tmp/
-      - MEDIA_ROOT=/data/django/
+      - MEDIA_ROOT=/data/spoonbill/
     networks:
       - main
     volumes:
@@ -95,7 +95,7 @@ services:
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
       - FILE_UPLOAD_TEMP_DIR=/data/tmp/
-      - MEDIA_ROOT=/data/django/
+      - MEDIA_ROOT=/data/spoonbill/
     depends_on:
       - app
       - postgres
