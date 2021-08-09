@@ -35,7 +35,7 @@ services:
   app:
     image: ${IMAGE}
     pull_policy: if_not_present
-    command: sh -c "mkdir -p /data/spoonbill /data/tmp && python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
+    command: sh -c "mkdir -p ${DATA_DIR:-temporary-data}/var ${DATA_DIR:-temporary-data}/tmp && python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
     container_name: app
     labels:
       - 'traefik.enable=true'
@@ -58,12 +58,14 @@ services:
       - DB_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
-      - FILE_UPLOAD_TEMP_DIR=/data/tmp/
-      - MEDIA_ROOT=/data/spoonbill/
+      - FILE_UPLOAD_TEMP_DIR=${DATA_DIR:-temporary-data}/tmp/
+      - MEDIA_ROOT=${DATA_DIR:-temporary-data}/var/
+      - DATAREGISTRY_MEDIA_ROOT=${DATAREGISTRY_MEDIA_ROOT:-temporary-data-dataregistry}
     networks:
       - main
     volumes:
-      - ${DATA_DIR:-temporary-data}:/data
+      - ${DATA_DIR:-temporary-data}:${DATA_DIR:-temporary-data}
+      - ${DATAREGISTRY_MEDIA_ROOT:-temporary-data-dataregistry}:${DATAREGISTRY_MEDIA_ROOT:-temporary-data-dataregistry}
     restart: unless-stopped
   postgres:
     container_name: postgres
