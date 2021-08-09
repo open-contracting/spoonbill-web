@@ -33,7 +33,7 @@ def dataregistry_path_validator(path):
 
         if (
             commonprefix([path, settings.DATAREGISTRY_MEDIA_ROOT]) == str(settings.DATAREGISTRY_MEDIA_ROOT)
-            and str(os.path.dirname(path)) == reg_dir
+            and str(os.path.dirname(path)).startswith(reg_dir)
             and pathlib.Path(path).is_file()
         ):
             return
