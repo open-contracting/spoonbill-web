@@ -96,14 +96,16 @@ services:
       - DB_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
-      - FILE_UPLOAD_TEMP_DIR=/data/tmp/
-      - MEDIA_ROOT=/data/spoonbill/
+      - FILE_UPLOAD_TEMP_DIR=${DATA_DIR:-temporary-data}/tmp/
+      - MEDIA_ROOT=${DATA_DIR:-temporary-data}/var/
+      - DATAREGISTRY_MEDIA_ROOT=${DATAREGISTRY_MEDIA_ROOT:-temporary-data-dataregistry}
     depends_on:
       - app
       - postgres
       - redis
     volumes:
-      - ${DATA_DIR:-temporary-data}:/data
+      - ${DATA_DIR:-temporary-data}:${DATA_DIR:-temporary-data}
+      - ${DATAREGISTRY_MEDIA_ROOT:-temporary-data-dataregistry}:${DATAREGISTRY_MEDIA_ROOT:-temporary-data-dataregistry}
     hostname: celery_worker
     networks:
       - main
