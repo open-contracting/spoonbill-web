@@ -24,34 +24,38 @@
                 <v-expansion-panels :value="panelsValue" accordion multiple>
                     <v-expansion-panel>
                         <v-expansion-panel-header class="d-flex">
-                            How do I convert CSV or Excel data to JSON?
+                            <translate> How do I convert CSV or Excel data to JSON? </translate>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
-                            If you would like to convert CSV data to JSON, please use the older
+                            <translate> If you would like to convert CSV data to JSON, please use the older </translate>
                             <span>
                                 <a href="https://flatten-tool.readthedocs.io/en/latest/usage-ocds/" target="_blank">
                                     Command-Line tool.
                                 </a>
                             </span>
                             <br />
-                            Please note that the Command-Line Tool requires some knowledge of programming and is not suited
-                            to non-technical users.
+                            <translate>
+                                Please note that the Command-Line Tool requires some knowledge of programming and is not
+                                suited to non-technical users.
+                            </translate>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel>
                         <v-expansion-panel-header class="d-flex">
-                            What should I do if there are issues with my file?
+                            <translate> What should I do if there are issues with my file? </translate>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
-                            The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible
-                            to flatten. <br />If you are uncertain whether your data complies with OCDS, use the
+                            <translate>
+                                The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be
+                                possible to flatten. <br />If you are uncertain whether your data complies with OCDS, use the
+                            </translate>
+
                             <span>
                                 <a href="https://standard.open-contracting.org/review/" target="_blank">
                                     Data Review Tool
                                 </a>
                             </span>
-
-                            to check first.
+                            <translate> to check first. </translate>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                 </v-expansion-panels>
