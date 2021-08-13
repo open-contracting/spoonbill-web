@@ -39,7 +39,7 @@ export default {
             } else {
                 const { rows, arrays } = this.table;
                 const arraysLength = Object.keys(arrays).length;
-                let result = this.$gettext('total row count: ') + rows;
+                let result = this.$gettext('total row count') + ' :' + rows;
                 if (arrays) {
                     result += `, ${arraysLength} ${arraysLength > 1 ? this.$gettext('arrays') : this.$gettext('array')}`;
                 }
