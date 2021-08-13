@@ -247,7 +247,7 @@ export default {
                     translated = this.$gettext('There is one array in this table', 'There is one array in this table');
                     break;
                 case 2:
-                    translated = this.ngettext('There are two arrays in this table', 'There are two arrays in this table');
+                    translated = this.$ngettext('There are two arrays in this table', 'There are two arrays in this table');
                     break;
                 case 3:
                     translated = this.$gettext(
