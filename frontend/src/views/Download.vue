@@ -84,13 +84,7 @@
                         release schema
                     </translate>
                     <translate>or using the</translate>
-                    <translate
-                        class="text-link"
-                        tag="a"
-                        :href="link"
-                        target="_blank"
-                        rel="noopener"
-                    >
+                    <translate class="text-link" tag="a" :href="link" target="_blank" rel="noopener">
                         OCDS Glossary</translate
                     >.
                 </li>
@@ -140,7 +134,7 @@ export default {
         return {
             EXPORT_FORMATS,
             completed: [],
-            link:'https://docs.google.com/spreadsheets/d/1N_B-T7suVDjD9kVW2l3Z9jmACLwKcWGVrghXpFryGt0/edit?usp=sharing'
+            link: 'https://docs.google.com/spreadsheets/d/1N_B-T7suVDjD9kVW2l3Z9jmACLwKcWGVrghXpFryGt0/edit?usp=sharing',
         };
     },
 
@@ -152,7 +146,7 @@ export default {
             } else if (this.lastGeneratedFormat === this.EXPORT_FORMATS.CSV) {
                 text = 'Download your CSV';
             }
-            return text;
+            return this.$gettext(text);
         },
         flattens() {
             return this.$store.state.selections?.flattens;
