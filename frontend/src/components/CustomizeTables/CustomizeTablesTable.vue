@@ -287,8 +287,8 @@ export default {
             const availableColumns = this.additionalInfo.available_data?.columns?.available;
             if (availableColumns) {
                 let translatedFirstPart = this.$ngettext(
-                    'There is data for %{ n } of the ',
-                    'There is data for %{ n } of the ',
+                    'There is data for %{ n } of the' + '',
+                    'There is data for %{ n } of the' + ' ',
                     availableColumns
                 );
                 let translatedSecondPart = this.$ngettext(
