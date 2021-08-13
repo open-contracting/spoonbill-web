@@ -7,10 +7,11 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.file_storage import MediaAndDataregistryFS
 from core.utils import export_directory_path, instance_directory_path
 from core.validators import url_multi_upload_validator, validate_url_or_path
 
-fs = FileSystemStorage()
+fs = MediaAndDataregistryFS()
 
 
 # Create your models here.
