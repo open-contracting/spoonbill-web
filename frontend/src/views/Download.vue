@@ -140,13 +140,13 @@ export default {
 
     computed: {
         heading() {
-            let text = 'Select how to generate your tables';
+            let text = this.$gettext('Select how to generate your tables');
             if (this.lastGeneratedFormat === this.EXPORT_FORMATS.XLSX) {
-                text = 'Download your XLSX';
+                text = this.$gettext('Download your XLSX');
             } else if (this.lastGeneratedFormat === this.EXPORT_FORMATS.CSV) {
-                text = 'Download your CSV';
+                text = this.$gettext('Download your CSV');
             }
-            return this.$gettext(text);
+            return text;
         },
         flattens() {
             return this.$store.state.selections?.flattens;

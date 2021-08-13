@@ -265,7 +265,7 @@ export default {
                     translated = this.$gettext('There are five arrays in this table', 'There are five arrays in this table');
                     break;
                 default:
-                    translated = this.$gettext(
+                    translated = this.$ngettext(
                         'There is %{ n } array in this table',
                         'There are %{ n } arrays in this table'
                     );
