@@ -1,0 +1,21 @@
+services:
+
+  www-motd:
+    image: nginx:stable
+    volumes:
+    - ./www-motd/pages:/usr/share/nginx/html
+    - ./www-motd/default.conf:/etc/nginx/conf.d/default.conf
+    - /etc/localtime:/etc/localtime:ro
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.www-motd.rule=HostRegexp(`$DOMAIN`)'
+      - 'traefik.http.routers.www-motd.entrypoints=http,https'
+      - 'traefik.http.routers.www-motd.tls=true'
+      - 'traefik.http.routers.www-motd.tls.certresolver=acmec'
+      - 'traefik.http.routers.www-motd.tls.options=default'
+      - 'traefik.http.services.www-motd.loadbalancer.server.port=80'
+      - 'traefik.http.routers.www-motd.priority=80'
+
+  front:
+    labels:
+      - 'traefik.http.routers.www.rule=HostRegexp(`$DOMAIN`) && ( HeadersRegexp(`Cookie`, `motd-read=true`))'
