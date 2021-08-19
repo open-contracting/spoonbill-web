@@ -6,6 +6,7 @@ from django.core.exceptions import SuspiciousFileOperation
 from core.file_storage import safe_join
 
 
+@patch("core.file_storage.DATAREGISTRY_MEDIA_ROOT", "")
 def test_safe_join_no_dataregistry_failed():
     media_root = "/tmp/media"
     path = "/tmp/dataregistry/file.json"
@@ -14,6 +15,7 @@ def test_safe_join_no_dataregistry_failed():
     assert f"The joined path ({path}) is located outside of the base path component ({media_root})" in str(e)
 
 
+@patch("core.file_storage.DATAREGISTRY_MEDIA_ROOT", "")
 def test_safe_join_no_dataregistry_success():
     media_root = "/tmp/media"
     path = "/tmp/media/dataregistry/file.json"

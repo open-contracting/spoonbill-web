@@ -29,10 +29,13 @@ def dataregistry_path_validator(path):
             return
         # Path validation
         reg_dir = str(settings.DATAREGISTRY_MEDIA_ROOT)
+        if settings.DATAREGISTRY_ALLOW_SYMLINKS is True and os.path.islink(reg_dir):
+            reg_dir = str(dataregistry_path_resolver(reg_dir))
+
         reg_dir = reg_dir.rstrip(reg_dir[-1]) if reg_dir[-1] == "/" else reg_dir
 
         if (
-            commonprefix([path, settings.DATAREGISTRY_MEDIA_ROOT]) == str(settings.DATAREGISTRY_MEDIA_ROOT)
+            commonprefix([path, pathlib.Path(reg_dir)]) == str(pathlib.Path(reg_dir))
             and str(os.path.dirname(path)).startswith(reg_dir)
             and pathlib.Path(path).is_file()
         ):
