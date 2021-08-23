@@ -150,7 +150,7 @@ class URLViewSet(viewsets.GenericViewSet):
     **Example (data from OCDS data registry):**
     ```python
     >>> response = request.post('/urls/',
-                                {'urls': 'https://<data-registry.host>/<dataset-query>',
+                                {'urls': ['https://<data-registry.host>/<dataset-query>'],
                                  'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>',
                                  'country': 'United Kingdom',
                                  'period': 'Last 6 months',
