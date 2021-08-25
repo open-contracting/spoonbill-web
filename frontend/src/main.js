@@ -56,12 +56,19 @@ Sentry.init({
 });
 
 Vue.prototype.$error = (e) => {
-    console.error(e);
-    if (e?.response?.data?.detail) {
+    if (Array.isArray(e)) {
         store.commit('openSnackbar', {
-            text: e.response.data.detail,
+            text: e[0],
             color: 'error',
         });
+    } else {
+        console.error(e);
+        if (e?.response?.data?.detail) {
+            store.commit('openSnackbar', {
+                text: e.response.data.detail,
+                color: 'error',
+            });
+        }
     }
 };
 

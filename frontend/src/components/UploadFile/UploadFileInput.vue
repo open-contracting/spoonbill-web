@@ -316,7 +316,6 @@ export default {
          */
         async sendUrl(url) {
             const splitedUrls = url.split('\n');
-
             try {
                 await this.$store.dispatch('closeConnection');
                 this.$store.commit('setUploadDetails', null);
@@ -328,26 +327,15 @@ export default {
                     type: UPLOAD_TYPES.URL,
                 });
                 this.$store.commit('increaseNumberOfUploads');
-                this.$router
-                    .push({
-                        path: '/upload-file',
-                        query: {
-                            ...this.$route.query,
-                            url: data.id,
-                        },
-                    })
-                    .catch(() => {});
+                this.$router.push({ path: '/upload-file', query: { ...this.$route.query, url: data.id } }).catch(() => {});
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                this.$error(e.response.data?.detail?.urls);
             } finally {
                 this.loading.value = false;
             }
         },
 
-        /**
-         * Cancel file sending
-         */
         cancelRequest() {
             this.cancelTokenSource.cancel('Canceled by user');
             this.loading.value = false;

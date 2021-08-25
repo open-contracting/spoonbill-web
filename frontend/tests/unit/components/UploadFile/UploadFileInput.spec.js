@@ -45,8 +45,20 @@ describe('UploadFileInput.vue', () => {
             });
             const url = 'http://mocked-url.com';
             let recivedUrl = url.split('/n');
+            let initialStoreValue = store.state.numberOfUploads;
+            expect(wrapper.vm.loading.value).toBe(false);
             await wrapper.vm.sendUrl(url);
+            expect(wrapper.vm.loading.value).toBe(false);
+
+            expect(store.state.downloadProgress).toBe(0);
+            expect(store.state.numberOfUploads).toBe(initialStoreValue + 1);
+            expect(store.state.downloadProgress).toBe(0);
+            //Api service send url test
             expect(ApiService.sendUrl).toBeCalledWith(recivedUrl);
+            expect(ApiService.sendUrl).toBeCalledTimes(1);
+            //router test
+            wrapper.vm.$router.push = jest.fn();
+            expect(wrapper.vm.$router.push).toBeCalledTimes(0);
         });
 
         test("'cancelRequest' cancels 'sendFile' request", () => {
@@ -59,8 +71,8 @@ describe('UploadFileInput.vue', () => {
             wrapper.vm.createCancelToken();
             wrapper.vm.cancelRequest();
             expect(mockCancelTokenSource.cancel).toBeCalledTimes(1);
+            expect(wrapper.vm.loading.value).toBe(false);
         });
-
         test("'selectUploadType' changes selected upload type", () => {
             const wrapper = mount(UploadFileInput, {
                 localVue,
@@ -72,6 +84,16 @@ describe('UploadFileInput.vue', () => {
             expect(wrapper.vm.uploadType).toBe('url');
             wrapper.vm.selectUploadType('upload');
             expect(wrapper.vm.uploadType).toBe('upload');
+        });
+        test("'showLoading' changes showLoading", () => {
+            const wrapper = mount(UploadFileInput, {
+                localVue,
+                store,
+                vuetify,
+            });
+
+            wrapper.vm.showLoading('test', true);
+            expect(wrapper.vm.fileName).toBe('test');
         });
 
         test("'onOptionSelect' navigates to another step depends on selected option", () => {
