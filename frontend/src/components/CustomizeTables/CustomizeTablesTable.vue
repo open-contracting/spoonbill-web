@@ -126,6 +126,14 @@ export default {
             missingDataMenu: false,
             showMissingDataList: false,
             key: 0,
+            tableArrayInfoText: {
+                none: this.$gettext('There are no arrays in this table'),
+                one: this.$gettext('There is one array in this table'),
+                two: this.$gettext('There are two arrays in this table'),
+                three: this.$gettext('There are three arrays in this table'),
+                four: this.$gettext('There are four arrays in this table'),
+                five: this.$gettext('There are five arrays in this table'),
+            },
         };
     },
 
@@ -241,28 +249,22 @@ export default {
             let arraysCount = Object.keys(this.additionalInfo.arrays).length;
             switch (arraysCount) {
                 case 0:
-                    translated = this.$gettext('There are no arrays in this table', 'There are no arrays in this table');
+                    translated = this.tableArrayInfoText.none;
                     break;
                 case 1:
-                    translated = this.$gettext('There is one array in this table', 'There is one array in this table');
+                    translated = this.tableArrayInfoText.one;
                     break;
                 case 2:
-                    translated = this.$ngettext('There are two arrays in this table', 'There are two arrays in this table');
+                    translated = this.tableArrayInfoText.two;
                     break;
                 case 3:
-                    translated = this.$gettext(
-                        'There are three arrays in this table',
-                        'There are three arrays in this table'
-                    );
+                    translated = this.tableArrayInfoText.three;
                     break;
                 case 4:
-                    translated = this.$gettext(
-                        'There are four arrays in this table',
-                        'There are four arrays in this table"'
-                    );
+                    translated = this.tableArrayInfoText.four;
                     break;
                 case 5:
-                    translated = this.$gettext('There are five arrays in this table', 'There are five arrays in this table');
+                    translated = this.tableArrayInfoText.five;
                     break;
                 default:
                     translated = this.$ngettext(

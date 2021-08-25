@@ -16,7 +16,7 @@
             <v-card-actions class="pa-0 mt-9">
                 <v-spacer></v-spacer>
                 <v-btn color="gray-light" large @click="cancel">
-                    <translate> Cancel </translate>
+                    <translate>Cancel</translate>
                 </v-btn>
                 <v-btn class="ml-4" color="accent" large @click="confirm">
                     <v-img class="mr-2" src="@/assets/icons/arrow-in-circle.svg" />
