@@ -159,7 +159,13 @@ def validate_data(object_id, model=None, lang_code="en"):
         except (ijson.JSONError, ijson.IncompleteJSONError) as e:
             logger.info(
                 "Error while validating data %s" % object_id,
-                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+                extra={
+                    "MESSAGE_ID": "validation_exception",
+                    "MODEL": model,
+                    "ID": object_id,
+                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_ERROR": str(e),
+                },
             )
             message = _("Error while validating data `%s`") % str(e)
             datasource.validation.errors = message
@@ -172,7 +178,13 @@ def validate_data(object_id, model=None, lang_code="en"):
         except OSError as e:
             logger.exception(
                 "Error while validating data %s" % object_id,
-                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+                extra={
+                    "MESSAGE_ID": "validation_exception",
+                    "MODEL": model,
+                    "ID": object_id,
+                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_ERROR": str(e),
+                },
             )
             message = _("Currently, the space limit was reached. Please try again later.")
             datasource.validation.errors = message
@@ -185,7 +197,13 @@ def validate_data(object_id, model=None, lang_code="en"):
         except Exception as e:
             logger.exception(
                 "Error while validating data %s" % object_id,
-                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+                extra={
+                    "MESSAGE_ID": "validation_exception",
+                    "MODEL": model,
+                    "ID": object_id,
+                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_ERROR": str(e),
+                },
             )
             message = _("Error while validating data `%s`") % str(e)
             datasource.validation.errors = message
@@ -431,6 +449,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     "MESSAGE_ID": message_id[e],
                     "DATASOURCE_ID": object_id,
                     "MODEL": model,
+                    "STR_EXCEPTION": e.__class__.__name__,
                     "ERROR": str(e),
                 },
             )
