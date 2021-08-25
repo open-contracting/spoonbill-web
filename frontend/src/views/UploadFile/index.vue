@@ -1,11 +1,14 @@
 <template>
     <v-row>
-        <v-col cols="12" md="8">
+        <v-col cols="12" md="8" :key="key">
             <translate tag="h2" class="page-title">Select a JSON file to flatten</translate>
-
-            <translate tag="p" class="page-description">
+            <translate v-if="canShowDefaultText">
                 The Flatten Tool converts JSON OCDS data to Excel (.xlsx) and helps you to understand what data is contained
                 in the file.
+            </translate>
+            <translate tag="p" class="page-description" v-else>
+                Data you selected needs to be converted into an Excel/CSV file. The Flatten tool converts JSON OCDS data to
+                Excel (.xlsx) and helps users to understand what data is contained in the file.
             </translate>
 
             <translate tag="p" class="page-description" v-if="canShowDefaultText">
@@ -13,8 +16,8 @@
                 select and flatten data that you actually want to use.
             </translate>
             <translate tag="p" class="page-description" v-else>
-                Datasets can be very large and so it is recommended that you only select and flatten data that you actually
-                want to use
+                The file size is very large and has multiple tables. It is recommended that you only flatten data that you
+                actually want to use.
             </translate>
             <upload-file-input class="mt-7" />
         </v-col>
@@ -112,7 +115,13 @@ export default {
     data: function () {
         return {
             panelsValue: [0],
+            key: 0,
         };
+    },
+    watch: {
+        canShowDefaultText() {
+            this.key += 1;
+        },
     },
     components: { AppFAQ, UploadFileInput },
     computed: {

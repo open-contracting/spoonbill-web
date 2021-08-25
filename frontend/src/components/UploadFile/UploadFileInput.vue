@@ -42,16 +42,25 @@
         </template>
 
         <div v-else>
-            <div class="py-3" v-if="showRegistryData">
-                <p class="mb-2" v-if="uploadDetails.country">
-                    <translate tag="span">Data for country</translate>: {{ uploadDetails.country }}
-                </p>
-                <p class="mb-2" v-if="uploadDetails.period">
-                    <translate tag="span">Data for range</translate>: {{ uploadDetails.period }}
-                </p>
-                <p class="mb-0" v-if="uploadDetails.source">
-                    <translate tag="span">Data from</translate>: {{ uploadDetails.source }}
-                </p>
+            <div class="py-6 additional-info" v-if="showRegistryData">
+                <div class="mb-2 d-flex flex-column" v-if="uploadDetails.country">
+                    <translate tag="span">Data for country :</translate>
+                    <div class="additional-item">
+                        {{ uploadDetails.country }}
+                    </div>
+                </div>
+                <div class="mb-2 d-flex flex-column" v-if="uploadDetails.period">
+                    <translate tag="span">Data for range:</translate>
+                    <div class="additional-item">
+                        {{ uploadDetails.period }}
+                    </div>
+                </div>
+                <div class="mb-0 d-flex flex-column" v-if="uploadDetails.source">
+                    <translate tag="span">Data from :</translate>
+                    <div class="additional-item">
+                        {{ uploadDetails.source }}
+                    </div>
+                </div>
             </div>
             <translate tag="h2" class="mt-10 page-title">Select your next action</translate>
             <upload-file-options class="mt-6" @select="onOptionSelect" />
@@ -404,5 +413,25 @@ export default {
             color: map-get($colors, 'gray-dark');
         }
     }
+}
+.additional-info {
+    display: flex;
+    // column-gap: 20px;
+    justify-content: space-around;
+    background: #eeeeee;
+    // border-radius: 2px;
+    border-top-left-radius: 22px;
+    border-bottom-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+.additional-item {
+    font-size: 14px;
+    line-height: 24px;
+
+    display: flex;
+    align-items: center;
+
+    color: #444444;
+    font-weight: 300;
 }
 </style>
