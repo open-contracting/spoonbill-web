@@ -339,7 +339,14 @@ export default {
                     .catch(() => {});
             } catch (e) {
                 /* istanbul ignore next */
-                console.error(e);
+                let error = null;
+                if (e.response.data?.detail?.urls) {
+                    error = e.response.data?.detail?.urls[0];
+                    this.$store.commit('openSnackbar', {
+                        text: error,
+                        color: 'error',
+                    });
+                }
             } finally {
                 this.loading.value = false;
             }
