@@ -4,8 +4,7 @@
             <v-img max-width="175" contain src="@/assets/images/ocp-logo.svg" />
             <div class="lang-selector" style="cursor: pointer">
                 <div class="d-flex lang-selector__option">
-                    <translate tag="div" class="lang" v-if="isEnglish" key="en_US">English</translate>
-                    <translate tag="div" class="lang" v-else key="sp">Spanish</translate>
+                    <div tag="div" class="lang" key="sp">{{ getLangNameByCode(currentLanguage) }}</div>
                     <svg
                         class="ml-2"
                         width="24"
@@ -23,9 +22,15 @@
                         />
                     </svg>
                 </div>
-                <div class="lang-selector__option lang-selector__option--inactive" @click="changeLanguage">
-                    <translate tag="div" class="lang" v-if="isEnglish" key="sp">Spanish</translate>
-                    <translate tag="div" class="lang" v-else key="en_US">English</translate>
+                <div class="lang-selector__option lang-selector__option--inactive">
+                    <div
+                        class="lang mt-2"
+                        v-for="language in filteredLanguages"
+                        :key="language.name"
+                        @click="changeLanguage(language.code)"
+                    >
+                        {{ language.name }}
+                    </div>
                 </div>
             </div>
         </v-container>
@@ -37,16 +42,45 @@ import Vue from 'vue';
 
 export default {
     name: 'LayoutHeader',
-
+    data() {
+        return {
+            languages: [
+                {
+                    code: 'es',
+                    name: this.$gettext('Spanish'),
+                },
+                {
+                    code: 'en_US',
+                    name: this.$gettext('English'),
+                },
+                {
+                    code: 'ru',
+                    name: this.$gettext('Russian'),
+                },
+            ],
+        };
+    },
     computed: {
         isEnglish() {
             return this.$language.current === 'en_US';
         },
+        filteredLanguages() {
+            return this.languages.filter((l) => l.code !== this.currentLanguage);
+        },
+        currentLanguage() {
+            return this.$language.current;
+        },
     },
 
     methods: {
-        changeLanguage() {
-            Vue.config.language = this.isEnglish ? 'es' : 'en_US';
+        changeLanguage(code) {
+            console.log('code', code);
+            Vue.config.language = code;
+        },
+        getLangNameByCode(code) {
+            return this.languages.find((l) => {
+                return l.code === code;
+            }).name;
         },
     },
 };
