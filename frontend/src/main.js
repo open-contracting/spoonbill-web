@@ -14,6 +14,7 @@ const langFromLocalStorage = localStorage.getItem('lang');
 const availableLanguages = {
     en_US: 'English',
     es: 'Español',
+    ru: 'Russian',
 };
 const languagesArray = Object.keys(availableLanguages);
 let defaultLanguage;
