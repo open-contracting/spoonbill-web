@@ -44,7 +44,7 @@
         <div v-else>
             <div class="py-6 additional-info" v-if="showRegistryData">
                 <div class="mb-2 d-flex flex-column" v-if="uploadDetails.country">
-                    <translate tag="span">Data for country :</translate>
+                    <translate tag="span">Data for country:</translate>
                     <div class="additional-item">
                         {{ uploadDetails.country }}
                     </div>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="mb-0 d-flex flex-column" v-if="uploadDetails.source">
-                    <translate tag="span">Data from :</translate>
+                    <translate tag="span">Data from:</translate>
                     <div class="additional-item">
                         {{ uploadDetails.source }}
                     </div>
