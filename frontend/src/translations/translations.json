@@ -1,17 +1,26 @@
 {
-  "en": {
-    "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
-    "English": "English",
-    "Spanish": "Spanish"
-  },
-  "en_US": {
-    "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
-    "English": "English",
-    "Spanish": "Spanish"
-  },
-  "es": {
-    "Convert your OCDS JSON data into Excel": "Convierta sus datos OCDS JSON a Excel",
-    "English": "Ingl\u00e9s",
-    "Spanish": "Espa\u00f1ol"
-  }
+    "en": {
+        "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
+        "English": "English",
+        "Spanish": "Spanish",
+        "Are you sure to go back?": "Are you sure to go back?",
+        "When going to the previous step, all current changes will be reversed": "When going to the previous step, all current changes will be reversed",
+        "Yes, go back": "Yes, go back"
+    },
+    "en_US": {
+        "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
+        "English": "English",
+        "Spanish": "Spanish",
+        "Are you sure to go back?": "Are you sure to go back?",
+        "When going to the previous step, all current changes will be reversed": "When going to the previous step, all current changes will be reversed",
+        "Yes, go back": "Yes, go back"
+    },
+    "es": {
+        "Convert your OCDS JSON data into Excel": "Convierta sus datos OCDS JSON a Excel",
+        "English": "Ingl\u00e9s",
+        "Spanish": "Espa\u00f1ol",
+        "Are you sure to go back?": "Estás segura de volver?",
+        "When going to the previous step, all current changes will be reversed": "Al ir al paso anterior, todos los cambios actuales se revertirán",
+        "Yes, go back": "Si, regresa"
+    }
 }
