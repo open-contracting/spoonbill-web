@@ -15,7 +15,7 @@ describe('LayoutHeader.vue', () => {
     });
 
     describe('methods', () => {
-        test("'changeLanguage' changes current language", () => {
+        test.skip("'changeLanguage' changes current language", () => {
             wrapper.vm.$language.current = 'en_US';
             wrapper.vm.changeLanguage();
             expect(wrapper.vm.$language.current).toBe('es');

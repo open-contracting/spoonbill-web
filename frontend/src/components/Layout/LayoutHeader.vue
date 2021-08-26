@@ -4,7 +4,7 @@
             <v-img max-width="175" contain src="@/assets/images/ocp-logo.svg" />
             <div class="lang-selector" style="cursor: pointer">
                 <div class="d-flex lang-selector__option">
-                    <div tag="div" class="lang" key="sp">{{ getLangNameByCode(currentLanguage) }}</div>
+                    <div tag="div" class="lang" key="sp">{{ getLangNameByCode(currentLanguage).name }}</div>
                     <svg
                         class="ml-2"
                         width="24"
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+/* istanbul ignore file */
+
 import Vue from 'vue';
 
 export default {
@@ -74,13 +76,12 @@ export default {
 
     methods: {
         changeLanguage(code) {
-            console.log('code', code);
             Vue.config.language = code;
         },
         getLangNameByCode(code) {
             return this.languages.find((l) => {
                 return l.code === code;
-            }).name;
+            });
         },
     },
 };
