@@ -27,8 +27,16 @@ export default new Vuex.Store({
         uploadStatus(state) {
             return state.uploadDetails ? state.uploadDetails.status : null;
         },
-        isFileFromDataRegistry() {
-            return true;
+        isFileFromDataRegistry(state) {
+            if (state.uploadDetails) {
+                if (state.uploadDetails.author === 'Dataregistry') {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         },
     },
     mutations: {
