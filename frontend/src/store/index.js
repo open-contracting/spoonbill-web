@@ -27,6 +27,17 @@ export default new Vuex.Store({
         uploadStatus(state) {
             return state.uploadDetails ? state.uploadDetails.status : null;
         },
+        isFileFromDataRegistry(state) {
+            if (state.uploadDetails) {
+                if (state.uploadDetails.author === 'Dataregistry') {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        },
     },
     mutations: {
         openSnackbar(state, { text, color }) {

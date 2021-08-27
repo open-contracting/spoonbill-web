@@ -8,6 +8,9 @@ const routes = [
     {
         path: '/upload-file',
         name: 'upload file',
+        meta: {
+            hideStepper: true,
+        },
         component: () => import('@/views/UploadFile'),
     },
     {

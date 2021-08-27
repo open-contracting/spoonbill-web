@@ -129,7 +129,7 @@ export default {
             if (!this.$store.state.uploadDetails) {
                 return true;
             } else {
-                if (this.$store.state.uploadDetails.type !== 'url') {
+                if (!this.$store.getters.isFileFromDataRegistry) {
                     return true;
                 } else {
                     return false;
