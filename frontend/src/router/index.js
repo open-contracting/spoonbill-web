@@ -37,6 +37,9 @@ const routes = [
         path: '/download',
         name: 'download',
         component: () => import('@/views/Download'),
+        meta: {
+            hideStepper: true,
+        },
     },
     {
         path: '*',
