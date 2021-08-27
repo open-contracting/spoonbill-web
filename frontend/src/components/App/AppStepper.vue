@@ -1,6 +1,6 @@
 <template>
     <v-stepper alt-labels class="app-stepper" :value="value">
-        <v-stepper-header>
+        <v-stepper-header v-if="!hideFirstStep">
             <v-stepper-step :complete="value > 1" complete-icon="mdi-pencil" step="1" @click="navigateTo(1, '/upload-file')">
                 <translate class="text-link" v-if="$store.state.numberOfUploads > 0 || value > 1" key="re">
                     Re-upload file
@@ -13,7 +13,7 @@
             <v-stepper-step
                 :complete="value > 2"
                 complete-icon="mdi-pencil"
-                step="2"
+                :step="2"
                 @click="navigateTo(2, '/select-data', isOcdsLite)"
             >
                 <translate :class="{ 'text-link': value > 2 }">Select data</translate>
@@ -47,6 +47,44 @@
                 <translate>Download</translate>
             </v-stepper-step>
         </v-stepper-header>
+        <v-stepper-header v-else>
+            <v-stepper-step
+                :complete="value > 1"
+                complete-icon="mdi-pencil"
+                :step="1"
+                @click="navigateTo(1, '/select-data', isOcdsLite)"
+            >
+                <translate :class="{ 'text-link': value > 2 }">Select data</translate>
+            </v-stepper-step>
+
+            <v-divider :class="{ active: value > 1, complete: value > 2 }"></v-divider>
+
+            <v-stepper-step
+                :complete="value > 2"
+                complete-icon="mdi-pencil"
+                step="2"
+                @click="navigateTo(2, '/customize-tables', isOcdsLite)"
+            >
+                <translate :class="{ 'text-link': value > 2 }">Preview tables</translate>
+            </v-stepper-step>
+
+            <v-divider :class="{ active: value > 2, complete: value > 3 }"></v-divider>
+
+            <v-stepper-step
+                :complete="value > 3"
+                complete-icon="mdi-pencil"
+                step="3"
+                @click="navigateTo(3, '/edit-headings', isOcdsLite)"
+            >
+                <translate :class="{ 'text-link': value > 3 }">Edit headings</translate>
+            </v-stepper-step>
+
+            <v-divider :class="{ active: value > 3, complete: value > 4 }"></v-divider>
+
+            <v-stepper-step step="4">
+                <translate>Download</translate>
+            </v-stepper-step>
+        </v-stepper-header>
     </v-stepper>
 </template>
 
@@ -58,21 +96,40 @@ export default {
         value() {
             const route = this.$route.name;
             /* istanbul ignore next */
-            switch (route) {
-                case 'select data':
-                    return 2;
-                case 'customize tables':
-                    return 3;
-                case 'edit headings':
-                    return 4;
-                case 'download':
-                    return 5;
-                default:
-                    return 1;
+            if (!this.hideFirstStep) {
+                switch (route) {
+                    case 'select data':
+                        return 2;
+                    case 'customize tables':
+                        return 3;
+                    case 'edit headings':
+                        return 4;
+                    case 'download':
+                        return 5;
+                    default:
+                        return 1;
+                }
+            } else {
+                switch (route) {
+                    case 'select data':
+                        return 1;
+                    case 'customize tables':
+                        return 2;
+                    case 'edit headings':
+                        return 3;
+                    case 'download':
+                        return 4;
+                    default:
+                        return 1;
+                }
             }
         },
         isOcdsLite() {
             return this.$store.state.selections && this.$store.state.selections.kind === 'ocds_lite';
+        },
+        hideFirstStep() {
+            // return this.$store.getters.isFileFromDataRegistry;
+            return this.$store.getters.isFileFromDataRegistry;
         },
     },
 

@@ -27,6 +27,9 @@ export default new Vuex.Store({
         uploadStatus(state) {
             return state.uploadDetails ? state.uploadDetails.status : null;
         },
+        isFileFromDataRegistry() {
+            return true;
+        },
     },
     mutations: {
         openSnackbar(state, { text, color }) {
