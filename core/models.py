@@ -108,6 +108,7 @@ class Url(models.Model):
     period = models.CharField(max_length=255, blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
     order = models.CharField(max_length=2048, blank=True, null=True)
+    author = models.CharField(max_length=2048, blank=True, null=True)
 
     class Meta:
         db_table = "urls"

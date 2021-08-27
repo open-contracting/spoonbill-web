@@ -27,7 +27,7 @@ from core.serializers import (
     UrlSerializer,
 )
 from core.tasks import cleanup_upload, download_data_source, flatten_data, validate_data
-from core.utils import set_column_headings, store_preview_csv
+from core.utils import get_protocol, set_column_headings, store_preview_csv
 
 COLUMNS = "columns"
 COMBINED_COLUMNS = "combined_columns"
@@ -241,6 +241,11 @@ class URLViewSet(viewsets.GenericViewSet):
             if serializer.is_valid():
                 validation_obj = Validation.objects.create()
                 url_obj = Url.objects.create(**serializer.validated_data)
+                protocol = get_protocol(serializer.validated_data["urls"][0])
+                if protocol == "file":
+                    # TODO: add real authorization
+                    url_obj.author = "Dataregistry"
+                    url_obj.save(update_fields=["author"])
                 url_obj.validation = validation_obj
                 url_obj.save(update_fields=["validation"])
                 lang_code = get_language()
