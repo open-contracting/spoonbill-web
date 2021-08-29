@@ -7,7 +7,7 @@ import struct
 import uuid
 from contextlib import contextmanager
 from os.path import commonprefix
-from urllib.parse import unquote, urlparse
+from urllib.parse import unquote, urlsplit
 from zipfile import ZipFile
 
 import ijson
@@ -209,7 +209,7 @@ def get_flatten_options(selection):
 
 
 def get_protocol(url):
-    return urlparse(url).scheme
+    return urlsplit(url).scheme
 
 
 def dataregistry_path_formatter(path):
