@@ -119,8 +119,7 @@ def get_column_headings(datasource, spec, table):
     if "user_friendly" in datasource.headings_type:
         pkg_type = getattr(spec, "pkg_type", "releases" if "Release" in spec.schema["title"] else "records")
         ds_lang = datasource.headings_type[:2]
-        sp_lang = spec.language[:2]
-        schema = spec.schema if sp_lang == ds_lang else get_schema(ds_lang, pkg_type)
+        schema = get_schema(ds_lang, pkg_type)
         schema_headers = SchemaHeaderExtractor(schema)
         for col in columns:
             column_headings[col] = tables[table.name].titles.get(col, col)
