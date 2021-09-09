@@ -80,6 +80,24 @@ class TestTableViews:
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "column_headings", "heading"}
 
+    def test_table_user_friendly_preview(self):
+        selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
+        tables = self.client.get(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+        ).json()
+        response = self.client.patch(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/",
+            data={"headings_type": "es_user_friendly"},
+            content_type="application/json",
+        )
+
+        response = self.client.get(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+        )
+        assert len(response.json()) == 1
+        data = response.json()[0]
+        assert set(data.keys()) == {"id", "name", "preview", "column_headings", "heading"}
+
     def test_table_split_preview(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
         tables = self.client.get(

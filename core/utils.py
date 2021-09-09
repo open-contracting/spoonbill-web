@@ -6,14 +6,19 @@ import re
 import struct
 import uuid
 from contextlib import contextmanager
+from operator import attrgetter
 from os.path import commonprefix
 from urllib.parse import unquote, urlsplit
 from zipfile import ZipFile
 
 import ijson
+import jsonref
 from django.conf import settings
 from django.utils.translation import activate, get_language
+from ocdsextensionregistry import ProfileBuilder
+from spoonbill.common import CURRENT_SCHEMA_TAG, DEFAULT_SCHEMA_URL
 from spoonbill.stats import DataPreprocessor
+from spoonbill.utils import SchemaHeaderExtractor, nonschema_title_formatter
 
 from core.column_headings import headings
 from core.constants import OCDS_LITE_CONFIG
@@ -99,17 +104,35 @@ def transform_to_r(value):
     return value.replace(" ", "_").lower()
 
 
-def get_column_headings(datasource, tables, table):
+def get_column_headings(datasource, spec, table):
+    tables = spec.tables
     heading_formatters = {
         "en_r_friendly": transform_to_r,
         "es_r_friendly": transform_to_r,
-        "en_user_friendly": lambda x: x,
-        "es_user_friendly": lambda x: x,
     }
+
     column_headings = {}
     if datasource.headings_type == "ocds":
         return column_headings
     columns = tables[table.name].columns.keys() if table.split else tables[table.name].combined_columns.keys()
+
+    if "user_friendly" in datasource.headings_type:
+        pkg_type = getattr(spec, "pkg_type", "releases" if "Release" in spec.schema["title"] else "records")
+        ds_lang = datasource.headings_type[:2]
+        sp_lang = spec.language[:2]
+        schema = spec.schema if sp_lang == ds_lang else get_schema(ds_lang, pkg_type)
+        schema_headers = SchemaHeaderExtractor(schema)
+        for col in columns:
+            column_headings[col] = tables[table.name].titles.get(col, col)
+            for k, v in column_headings.items():
+                if v and isinstance(v, list):
+                    column_headings[k] = schema_headers.get_header(v)
+                elif v == []:
+                    column_headings[k] = nonschema_title_formatter(k)
+                else:
+                    column_headings[k] = nonschema_title_formatter(v)
+        return column_headings
+
     for col in columns:
         non_index_based = re.sub(r"\d", "*", col)
         column_headings.update({col: heading_formatters[datasource.headings_type](headings.get(non_index_based, col))})
@@ -122,11 +145,11 @@ def set_column_headings(selection, analyzed_file_path):
     if selection.headings_type.startswith("es"):
         activate("es")
     for table in selection.tables.all():
-        table.column_headings = get_column_headings(selection, spec.tables, table)
+        table.column_headings = get_column_headings(selection, spec, table)
         table.save(update_fields=["column_headings"])
         if table.split:
             for a_table in table.array_tables.all():
-                a_table.column_headings = get_column_headings(selection, spec.tables, a_table)
+                a_table.column_headings = get_column_headings(selection, spec, a_table)
                 a_table.save(update_fields=["column_headings"])
     activate(current_language_code)
 
@@ -234,3 +257,15 @@ def gz_size(filename):
     with open(filename, "rb") as f:
         f.seek(-4, 2)
         return struct.unpack("I", f.read(4))[0]
+
+
+def get_schema(language, pkg_type):
+    url = DEFAULT_SCHEMA_URL[pkg_type][language]
+    getter = attrgetter("release_package_schema") if "releases" in pkg_type else attrgetter("record_package_schema")
+    profile = ProfileBuilder(CURRENT_SCHEMA_TAG, {}, schema_base_url=url)
+    schema = getter(profile)()
+    title = schema.get("title", "").lower()
+    if "package" in title:
+        schema = jsonref.JsonRef.replace_refs(schema)
+        schema = schema["properties"][pkg_type]["items"]
+    return schema

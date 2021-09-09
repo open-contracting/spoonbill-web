@@ -1,11 +1,12 @@
 import os
 import pathlib
+from unittest.mock import patch
 
 import pytest
 from django.conf import settings
 
 from core.models import DataFile
-from core.utils import gz_size, multiple_file_assigner
+from core.utils import get_column_headings, get_schema, gz_size, multiple_file_assigner
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 DATASET_PATH_GZ = f"{DATA_DIR}/sample-dataset.json.gz"
@@ -29,3 +30,10 @@ def test_gz_size():
     gz_uncompressed_size = gz_size(DATASET_PATH_GZ)
     non_gz_file_size = pathlib.Path(DATASET_PATH).stat().st_size
     assert gz_uncompressed_size == non_gz_file_size
+
+
+def test_get_schema():
+    schema = get_schema("es", "releases")
+    assert schema["title"] == "Esquema para una Entrega de Contratación Abierta"
+    schema = get_schema("en", "releases")
+    assert schema["title"] == "Schema for an Open Contracting Release"
