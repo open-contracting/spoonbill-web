@@ -5,6 +5,7 @@ import os
 from datetime import timedelta
 
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -232,6 +233,9 @@ class URLViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
+        username = request.META.get("HTTP_USERNAME", "")
+        password = request.META.get("HTTP_PASSWORD", "")
+        user = authenticate(request, username=username, password=password)
         try:
             urls = request.POST.get("urls", "") or request.data.get("urls", "")
             if not urls:
@@ -243,9 +247,11 @@ class URLViewSet(viewsets.GenericViewSet):
                 url_obj = Url.objects.create(**serializer.validated_data)
                 protocol = get_protocol(serializer.validated_data["urls"][0])
                 if protocol == "file":
-                    # TODO: add real authorization
-                    url_obj.author = "Dataregistry"
-                    url_obj.save(update_fields=["author"])
+                    if user:
+                        url_obj.author = user
+                        url_obj.save(update_fields=["author"])
+                    else:
+                        return Response({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
                 url_obj.validation = validation_obj
                 url_obj.save(update_fields=["validation"])
                 lang_code = get_language()
