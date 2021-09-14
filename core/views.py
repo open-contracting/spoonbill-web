@@ -220,6 +220,38 @@ class URLViewSet(viewsets.GenericViewSet):
         ]
     }
     ```
+    ## **Authorization**
+    Dataregistry paths usage is allowed only to authorized users. In order to send authorized request - header should include following details: \n
+    `"username": <USERNAME>` \n
+    `"password": <PASSWORD>` \n
+    Through terminal commands you may create, delete or edit users in database.
+
+    ### **Creating new users**
+    ```cli
+    $ python manage.py shell
+    >>>from django.contrib.auth.models import User
+    >>>user = User.objects.create_user(username='john', password='johnpassword')
+    >>>user.save()
+    >>>exit()
+    ```
+
+    ### **Delete user**
+    ```cli
+    $ python manage.py shell
+    >>>from django.contrib.auth.models import User
+    >>>user = User.objects.get(username='john')
+    >>>user.delete()
+    >>>exit()
+    ```
+
+    ### **Change user's password**
+    ```cli
+    $ python manage.py changepassword john
+    Changing password for user 'john'
+    Password: <password>
+    Password (again): <password>
+    Password changed successfully for user 'john'
+    ```
     """
 
     permissions_classes = permissions.AllowAny
