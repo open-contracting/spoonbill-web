@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.files.storage import FileSystemStorage
 from django.core.serializers.json import DjangoJSONEncoder
@@ -108,7 +109,7 @@ class Url(models.Model):
     period = models.CharField(max_length=255, blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
     order = models.CharField(max_length=2048, blank=True, null=True)
-    author = models.CharField(max_length=2048, blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = "urls"

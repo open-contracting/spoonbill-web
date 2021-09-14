@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from core.models import DataFile, DataSelection, Flatten, Table, Upload, Url, Validation
@@ -52,6 +53,12 @@ class ValidationSerializer(serializers.ModelSerializer):
         fields = ["id", "task_id", "is_valid", "errors"]
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("username",)
+
+
 class UploadSerializer(serializers.ModelSerializer):
     validation = ValidationSerializer(read_only=True)
     selections = DataSelectionSerializer(read_only=True, many=True)
@@ -80,6 +87,7 @@ class UrlSerializer(serializers.ModelSerializer):
     validation = ValidationSerializer(read_only=True)
     selections = DataSelectionSerializer(read_only=True, many=True)
     files = DataFileSerializer(read_only=True, many=True)
+    author = serializers.SlugRelatedField(slug_field="username", read_only=True)
 
     class Meta:
         model = Url
