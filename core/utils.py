@@ -125,16 +125,11 @@ def get_column_headings(datasource, spec, table):
             column_headings[col] = tables[table.name].titles.get(col, col)
             for k, v in column_headings.items():
                 if v and isinstance(v, list):
-                    column_headings[k] = schema_headers.get_header(k, v)
+                    column_headings[k] = schema_headers.get_header(v)
                 elif v == []:
                     column_headings[k] = nonschema_title_formatter(k)
                 else:
                     column_headings[k] = nonschema_title_formatter(v)
-        for col in column_headings.keys():
-            for char in col:
-                if char.isnumeric() and char != "0":
-                    title_col = col.replace(char, "0")
-                    column_headings[col] = column_headings[title_col]
         return column_headings
 
     for col in columns:
