@@ -1,4 +1,3 @@
-import base64
 import errno
 import json
 import logging
@@ -6,7 +5,6 @@ import os
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -284,15 +282,6 @@ class URLViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
-        auth_header = request.META.get("HTTP_AUTHORIZATION", "")
-        decoded_credentials = ["", ""]
-
-        if auth_header:
-            encoded_credentials = auth_header.split(" ")[1]
-            decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(":")
-        username = decoded_credentials[0]
-        password = decoded_credentials[1]
-        user = authenticate(request, username=username, password=password)
         try:
             urls = request.POST.get("urls", "") or request.data.get("urls", "")
             if not urls:
@@ -304,8 +293,8 @@ class URLViewSet(viewsets.GenericViewSet):
                 url_obj = Url.objects.create(**serializer.validated_data)
                 protocol = get_protocol(serializer.validated_data["urls"][0])
                 if protocol == "file":
-                    if user:
-                        url_obj.author = user
+                    if not request.user.is_anonymous:
+                        url_obj.author = request.user
                         url_obj.save(update_fields=["author"])
                     else:
                         return Response({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
