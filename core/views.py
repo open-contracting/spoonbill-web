@@ -229,16 +229,13 @@ class URLViewSet(viewsets.GenericViewSet):
     ### **Example of authorized request with encoded credentials (python script)**
     ```python
     import requests
-    from base64 import b64encode
 
-    username = 'username'
-    password = 'password'
-    credentials = f"{username}:{password}"
-    encoded_credentials = b64encode(credentials.encode('ascii')).decode('ascii')
+    username = 'johhsmith'
+    password = 'youshallnotpass'
 
     response = requests.post('/urls/',
                              {'urls': ["file://document.json"]},
-                             headers={'Authorization': f'Basic {encoded_credentials}'})
+                             auth=(username, password))
     print(response.json())
     ```
     Through terminal commands you may create, delete or edit users in database.
@@ -292,14 +289,14 @@ class URLViewSet(viewsets.GenericViewSet):
                 validation_obj = Validation.objects.create()
                 url_obj = Url.objects.create(**serializer.validated_data)
                 protocol = get_protocol(serializer.validated_data["urls"][0])
-                if protocol == "file":
-                    if not request.user.is_anonymous:
-                        url_obj.author = request.user
-                        url_obj.save(update_fields=["author"])
-                    else:
-                        return Response({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
+                if request.user.is_authenticated:
+                    url_obj.author = request.user
+                elif protocol == "file":
+                    return Response({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
+                else:
+                    url_obj.author = None
                 url_obj.validation = validation_obj
-                url_obj.save(update_fields=["validation"])
+                url_obj.save(update_fields=["validation", "author"])
                 lang_code = get_language()
                 download_data_source.delay(url_obj.id, model="Url", lang_code=lang_code)
                 return Response(self.get_serializer_class()(url_obj).data, status=status.HTTP_201_CREATED)
