@@ -2,6 +2,7 @@ import json
 import os
 import pathlib
 import shutil
+from base64 import b64encode
 from unittest.mock import patch
 
 import pytest
@@ -227,10 +228,14 @@ class TestUrl:
             password = "test"
             user = User.objects.create_user(username=username, password=password)
             user.save()
+            credentials = f"{username}:{password}"
+            encoded_credentials = b64encode(credentials.encode("ascii")).decode("ascii")
 
             # Relative path
             url = "file://file.json"
-            response = client.post(f"{self.url_prefix}", {"urls": url}, HTTP_USERNAME=username, HTTP_PASSWORD=password)
+            response = client.post(
+                f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}"
+            )
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert os.path.isfile(file)
             assert str(path) == str(file)
@@ -242,7 +247,9 @@ class TestUrl:
 
             # Absolute path
             url = "file://" + str(file)
-            response = client.post(f"{self.url_prefix}", {"urls": url}, HTTP_USERNAME=username, HTTP_PASSWORD=password)
+            response = client.post(
+                f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}"
+            )
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(file)
             assert response.status_code == 201
@@ -255,7 +262,7 @@ class TestUrl:
             assert str(path) == str(forbidden_file)
             assert os.path.isfile(forbidden_file)
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_USERNAME=username, HTTP_PASSWORD=password)
+                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Path that leads outside of data registry folder
@@ -263,7 +270,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(tmp_path) + "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_USERNAME=username, HTTP_PASSWORD=password)
+                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Path that leads to root
@@ -271,8 +278,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_USERNAME=username, HTTP_PASSWORD=password)
-            assert "Input URL is invalid" in str(e)
+                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
 
             # Symlink not allowed
             dest = tmp_path / "data_registry/forbidden_file.json"
@@ -280,23 +286,19 @@ class TestUrl:
             assert os.path.islink(dest)
             url = "file://" + str(tmp_path) + "/data_registry" + "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, headers={"username": username, "password": password})
+                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is on
             with patch("core.validators.settings.DATAREGISTRY_ALLOW_SYMLINKS", True):
                 with pytest.raises(ValueError) as e:
-                    client.post(
-                        f"{self.url_prefix}", {"urls": url}, headers={"HTTP_USERNAME": username, "password": password}
-                    )
+                    client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                     assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is off
             with patch("core.validators.settings.DATAREGISTRY_ALLOW_SYMLINKS", True):
                 with patch("core.validators.settings.DATAREGISTRY_JAIL", False):
-                    client.post(
-                        f"{self.url_prefix}", {"urls": url}, headers={"HTTP_USERNAME": username, "password": password}
-                    )
+                    client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                     assert response.status_code == 201
 
             # Multi upload dataregistry path creation successful
@@ -312,8 +314,7 @@ class TestUrl:
                 f"{self.url_prefix}",
                 json.dumps({"urls": paths}),
                 content_type="application/json",
-                HTTP_USERNAME=username,
-                HTTP_PASSWORD=password,
+                HTTP_AUTHORIZATION=f"Basic {encoded_credentials}",
             )
             url = response.json()
             assert response.status_code == 201
@@ -326,8 +327,7 @@ class TestUrl:
                 f"{self.url_prefix}",
                 json.dumps({"urls": paths}),
                 content_type="application/json",
-                HTTP_USERNAME=username,
-                HTTP_PASSWORD=password,
+                HTTP_AUTHORIZATION=f"Basic {encoded_credentials}",
             )
             assert "Multiple uploads are not available for this type of URL" in response.json()["detail"]["urls"]
 

@@ -1,3 +1,4 @@
+import base64
 import errno
 import json
 import logging
@@ -221,9 +222,27 @@ class URLViewSet(viewsets.GenericViewSet):
     }
     ```
     ## **Authorization**
-    Dataregistry paths usage is allowed only to authorized users. In order to send authorized request - header should include following details: \n
-    `"username": <USERNAME>` \n
-    `"password": <PASSWORD>` \n
+    Only authorized users are allowed to use file URIs (ones that starts with `file://`).
+    User's request may be authorized through HTTP Basic Authorization.
+    In order to send authorized request - HTTP header should include 'Authorization' field; and base64-encoded credentials: \n
+    `"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="` \n
+    Please note, that user's credentials are regular username and password, but those should be encoded before sending a request.
+    Example of encoding credentials you may see below
+    ### **Example of authorized request with encoded credentials (python script)**
+    ```python
+    import requests
+    from base64 import b64encode
+
+    username = 'username'
+    password = 'password'
+    credentials = f"{username}:{password}"
+    encoded_credentials = b64encode(credentials.encode('ascii')).decode('ascii')
+
+    response = requests.post('/urls/',
+                             {'urls': ["file://document.json"]},
+                             headers={'Authorization': f'Basic {encoded_credentials}'})
+    print(response.json())
+    ```
     Through terminal commands you may create, delete or edit users in database.
 
     ### **Creating new users**
@@ -265,8 +284,14 @@ class URLViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
-        username = request.META.get("HTTP_USERNAME", "")
-        password = request.META.get("HTTP_PASSWORD", "")
+        auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+        decoded_credentials = ["", ""]
+
+        if auth_header:
+            encoded_credentials = auth_header.split(" ")[1]
+            decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(":")
+        username = decoded_credentials[0]
+        password = decoded_credentials[1]
         user = authenticate(request, username=username, password=password)
         try:
             urls = request.POST.get("urls", "") or request.data.get("urls", "")
