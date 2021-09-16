@@ -5,7 +5,6 @@ import os
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -221,9 +220,24 @@ class URLViewSet(viewsets.GenericViewSet):
     }
     ```
     ## **Authorization**
-    Dataregistry paths usage is allowed only to authorized users. In order to send authorized request - header should include following details: \n
-    `"username": <USERNAME>` \n
-    `"password": <PASSWORD>` \n
+    Only authorized users are allowed to use file URIs (ones that starts with `file://`).
+    User's request may be authorized through HTTP Basic Authorization.
+    In order to send authorized request - HTTP header should include 'Authorization' field; and base64-encoded credentials: \n
+    `"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="` \n
+    Please note, that user's credentials are regular username and password, but those should be encoded before sending a request.
+    Example of encoding credentials you may see below
+    ### **Example of authorized request with encoded credentials (python script)**
+    ```python
+    import requests
+
+    username = 'johhsmith'
+    password = 'youshallnotpass'
+
+    response = requests.post('/urls/',
+                             {'urls': ["file://document.json"]},
+                             auth=(username, password))
+    print(response.json())
+    ```
     Through terminal commands you may create, delete or edit users in database.
 
     ### **Creating new users**
@@ -265,9 +279,6 @@ class URLViewSet(viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
-        username = request.META.get("HTTP_USERNAME", "")
-        password = request.META.get("HTTP_PASSWORD", "")
-        user = authenticate(request, username=username, password=password)
         try:
             urls = request.POST.get("urls", "") or request.data.get("urls", "")
             if not urls:
@@ -278,14 +289,14 @@ class URLViewSet(viewsets.GenericViewSet):
                 validation_obj = Validation.objects.create()
                 url_obj = Url.objects.create(**serializer.validated_data)
                 protocol = get_protocol(serializer.validated_data["urls"][0])
-                if protocol == "file":
-                    if user:
-                        url_obj.author = user
-                        url_obj.save(update_fields=["author"])
-                    else:
-                        return Response({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
+                if request.user.is_authenticated:
+                    url_obj.author = request.user
+                elif protocol == "file":
+                    return Response({"detail": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
+                else:
+                    url_obj.author = None
                 url_obj.validation = validation_obj
-                url_obj.save(update_fields=["validation"])
+                url_obj.save(update_fields=["validation", "author"])
                 lang_code = get_language()
                 download_data_source.delay(url_obj.id, model="Url", lang_code=lang_code)
                 return Response(self.get_serializer_class()(url_obj).data, status=status.HTTP_201_CREATED)

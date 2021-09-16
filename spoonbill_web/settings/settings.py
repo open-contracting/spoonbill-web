@@ -219,3 +219,11 @@ DATAREGISTRY_JAIL = bool(strtobool(os.getenv("DATAREGISTRY_JAIL", "True")))
 DATAREGISTRY_MEDIA_ROOT = os.getenv("DATAREGISTRY_MEDIA_ROOT", None)
 if DATAREGISTRY_MEDIA_ROOT:
     DATAREGISTRY_MEDIA_ROOT = Path(DATAREGISTRY_MEDIA_ROOT)
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework.authentication.BasicAuthentication",),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}
