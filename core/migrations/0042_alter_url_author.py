@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL("UPDATE urls set author = NULL"),
         migrations.AlterField(
             model_name="url",
             name="author",
