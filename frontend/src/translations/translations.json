@@ -1,37 +1,37 @@
 {
-    "en": {
-        "Are you sure to go back?": "Are you sure to go back?",
-        "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
-        "English": "English",
-        "Spanish": "Spanish",
-        "When going to the previous step, all current changes will be reversed": "When going to the previous step, all current changes will be reversed",
-        "Yes, go back": "Yes, go back",
-        "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible to flatten.": "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be    possible to flatten.",
-        "If you are uncertain whether your data complies with OCDS, use the": "If you are uncertain whether your data complies with OCDS, use the"
-    },
-    "en_US": {
-        "Are you sure to go back?": "Are you sure to go back?",
-        "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
-        "English": "English",
-        "Spanish": "Spanish",
-        "When going to the previous step, all current changes will be reversed": "When going to the previous step, all current changes will be reversed",
-        "Yes, go back": "Yes, go back",
-        "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible to flatten.": "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be    possible to flatten.",
-        "If you are uncertain whether your data complies with OCDS, use the": "If you are uncertain whether your data complies with OCDS, use the"
-    },
-    "es": {
-        "Are you sure to go back?": "Est\u00e1s segura de volver?",
-        "Convert your OCDS JSON data into Excel": "Convierta sus datos OCDS JSON a Excel",
-        "English": "Ingl\u00e9s",
-        "Spanish": "Espa\u00f1ol",
-        "When going to the previous step, all current changes will be reversed": "Al ir al paso anterior, todos los cambios actuales se revertir\u00e1n",
-        "Yes, go back": "Si, regresa"
-    },
-    "ru": {
-        "Are you sure to go back?": "Вы уверены что хотите вернуться назад?",
-        "When going to the previous step, all current changes will be reversed": "При возврате назад все текущие изменения будут отменены",
-        "Yes, go back": "Да, вернуться",
-        "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible to flatten.": "загружаемые данные JSON должны быть в OCDS версии 1.1 или 1.0, в противном случае сгладить их будет невозможно.",
-        "If you are uncertain whether your data complies with OCDS, use the": "Если вы не уверены, соответствуют ли ваши данные OCDS, используйте"
-    }
+  "en": {
+    "Are you sure to go back?": "Are you sure to go back?",
+    "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
+    "English": "English",
+    "If you are uncertain whether your data complies with OCDS, use the": "If you are uncertain whether your data complies with OCDS, use the",
+    "Spanish": "Spanish",
+    "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible to flatten.": "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be    possible to flatten.",
+    "When going to the previous step, all current changes will be reversed": "When going to the previous step, all current changes will be reversed",
+    "Yes, go back": "Yes, go back"
+  },
+  "en_US": {
+    "Are you sure to go back?": "Are you sure to go back?",
+    "Convert your OCDS JSON data into Excel": "Convert your OCDS JSON data into Excel",
+    "English": "English",
+    "If you are uncertain whether your data complies with OCDS, use the": "If you are uncertain whether your data complies with OCDS, use the",
+    "Spanish": "Spanish",
+    "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible to flatten.": "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be    possible to flatten.",
+    "When going to the previous step, all current changes will be reversed": "When going to the previous step, all current changes will be reversed",
+    "Yes, go back": "Yes, go back"
+  },
+  "es": {
+    "Are you sure to go back?": "Est\u00e1s segura de volver?",
+    "Convert your OCDS JSON data into Excel": "Convierta sus datos OCDS JSON a Excel",
+    "English": "Ingl\u00e9s",
+    "Spanish": "Espa\u00f1ol",
+    "When going to the previous step, all current changes will be reversed": "Al ir al paso anterior, todos los cambios actuales se revertir\u00e1n",
+    "Yes, go back": "Si, regresa"
+  },
+  "ru": {
+    "Are you sure to go back?": "\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0432\u0435\u0440\u043d\u0443\u0442\u044c\u0441\u044f \u043d\u0430\u0437\u0430\u0434?",
+    "If you are uncertain whether your data complies with OCDS, use the": "\u0415\u0441\u043b\u0438 \u0432\u044b \u043d\u0435 \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0441\u043e\u043e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0443\u044e\u0442 \u043b\u0438 \u0432\u0430\u0448\u0438 \u0434\u0430\u043d\u043d\u044b\u0435 OCDS, \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439\u0442\u0435",
+    "The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be possible to flatten.": "\u0437\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043c\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 JSON \u0434\u043e\u043b\u0436\u043d\u044b \u0431\u044b\u0442\u044c \u0432 OCDS \u0432\u0435\u0440\u0441\u0438\u0438 1.1 \u0438\u043b\u0438 1.0, \u0432 \u043f\u0440\u043e\u0442\u0438\u0432\u043d\u043e\u043c \u0441\u043b\u0443\u0447\u0430\u0435 \u0441\u0433\u043b\u0430\u0434\u0438\u0442\u044c \u0438\u0445 \u0431\u0443\u0434\u0435\u0442 \u043d\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e.",
+    "When going to the previous step, all current changes will be reversed": "\u041f\u0440\u0438 \u0432\u043e\u0437\u0432\u0440\u0430\u0442\u0435 \u043d\u0430\u0437\u0430\u0434 \u0432\u0441\u0435 \u0442\u0435\u043a\u0443\u0449\u0438\u0435 \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0431\u0443\u0434\u0443\u0442 \u043e\u0442\u043c\u0435\u043d\u0435\u043d\u044b",
+    "Yes, go back": "\u0414\u0430, \u0432\u0435\u0440\u043d\u0443\u0442\u044c\u0441\u044f"
+  }
 }
