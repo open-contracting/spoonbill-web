@@ -69,6 +69,8 @@
 </template>
 
 <script>
+/* istanbul ignore file */
+
 import AppDropzone from '@/components/App/AppDropzone';
 import UploadFileUrlInput from '@/components/UploadFile/UploadFileUrlInput';
 import axios from 'axios';

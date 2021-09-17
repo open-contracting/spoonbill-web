@@ -111,6 +111,7 @@
 <script>
 import UploadFileInput from '@/components/UploadFile/UploadFileInput';
 import AppFAQ from '@/components/App/AppFAQ';
+/* istanbul ignore file */
 
 export default {
     name: 'UploadFile',
