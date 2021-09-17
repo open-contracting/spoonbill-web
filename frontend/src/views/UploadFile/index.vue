@@ -50,8 +50,10 @@
                         <v-expansion-panel-content>
                             <translate>
                                 The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be
-                                possible to flatten. <br />If you are uncertain whether your data complies with OCDS, use the
+                                possible to flatten.
                             </translate>
+                            <br />
+                            <translate> If you are uncertain whether your data complies with OCDS, use the </translate>
 
                             <span>
                                 <a href="https://standard.open-contracting.org/review/" target="_blank">

@@ -49,15 +49,15 @@ export default {
             languages: [
                 {
                     code: 'es',
-                    name: this.$gettext('Spanish'),
+                    name: 'Española',
                 },
                 {
                     code: 'en_US',
-                    name: this.$gettext('English'),
+                    name: 'English',
                 },
                 {
                     code: 'ru',
-                    name: this.$gettext('Russian'),
+                    name: 'Русский',
                 },
             ],
         };
@@ -97,8 +97,11 @@ export default {
 }
 .lang-selector {
     position: relative;
+    min-width: 150px;
     &__option {
         padding: 10px;
+        min-width: 150px;
+
         transition: 0.3s;
         &--inactive {
             display: none;

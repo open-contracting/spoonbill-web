@@ -329,7 +329,6 @@ export default {
                 this.$store.commit('increaseNumberOfUploads');
                 this.$router.push({ path: '/upload-file', query: { ...this.$route.query, url: data.id } }).catch(() => {});
             } catch (e) {
-                /* istanbul ignore next */
                 this.$error(e.response.data?.detail?.urls);
             } finally {
                 this.loading.value = false;
