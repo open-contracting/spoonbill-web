@@ -64,12 +64,19 @@ Vue.prototype.$error = (e) => {
         });
     } else {
         console.error(e);
+        console.log('ERROR', e);
         if (e?.response?.data?.detail) {
             store.commit('openSnackbar', {
                 text: e.response.data.detail,
                 color: 'error',
             });
         }
+        // else {
+        //     store.commit('openSnackbar', {
+        //         text: 'Something went wrong',
+        //         color: 'error',
+        //     });
+        // }
     }
 };
 

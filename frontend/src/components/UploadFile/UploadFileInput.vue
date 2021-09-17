@@ -69,6 +69,8 @@
 </template>
 
 <script>
+/* istanbul ignore file */
+
 import AppDropzone from '@/components/App/AppDropzone';
 import UploadFileUrlInput from '@/components/UploadFile/UploadFileUrlInput';
 import axios from 'axios';
@@ -329,7 +331,6 @@ export default {
                 this.$store.commit('increaseNumberOfUploads');
                 this.$router.push({ path: '/upload-file', query: { ...this.$route.query, url: data.id } }).catch(() => {});
             } catch (e) {
-                /* istanbul ignore next */
                 this.$error(e.response.data?.detail?.urls);
             } finally {
                 this.loading.value = false;
