@@ -115,7 +115,7 @@ describe('CustomizeTablesTable.vue', () => {
                 },
             });
 
-            await wrapper.vm.onSplitSwitchChange();
+            await wrapper.vm.onSplitSwitchChange(true);
             expect(ApiService.changeSplitStatus).toHaveBeenCalledTimes(1);
             expect(ApiService.getTablePreview).toBeCalledTimes(2);
             expect(store.state.selections.tables.find((table) => table.id === 'tenders-table').split).toBe(true);

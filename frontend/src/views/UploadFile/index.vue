@@ -50,8 +50,8 @@
                         <v-expansion-panel-content>
                             <translate>
                                 The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it may not be
-                                possible to flatten.
                             </translate>
+                            <translate> possible to flatten.</translate>
                             <br />
                             <translate> If you are uncertain whether your data complies with OCDS, use the </translate>
 
@@ -111,7 +111,6 @@
 <script>
 import UploadFileInput from '@/components/UploadFile/UploadFileInput';
 import AppFAQ from '@/components/App/AppFAQ';
-/* istanbul ignore file */
 
 export default {
     name: 'UploadFile',
