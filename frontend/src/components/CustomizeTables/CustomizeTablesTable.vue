@@ -46,7 +46,9 @@
             </v-col>
         </v-row>
         <v-switch
-            v-model="isSplit"
+            :input-value="isSplit"
+            @click="onSplitValueChange"
+            readonly
             v-if="canBeSplit && table.include"
             inset
             hide-details
@@ -99,18 +101,25 @@
                 <translate>Save and Continue</translate>
             </v-btn>
         </div>
+        <CustomizeDialog
+            :isOpen="isDialogOpen"
+            @setIsDialogOpen="setIsDialogOpen"
+            @onSplitSwitchChange="onSplitSwitchChange"
+        />
     </div>
 </template>
 
 <script>
+/* istanbul ignore file */
+
 import ApiService from '@/services/ApiService';
 import Papa from 'papaparse';
 import AppTable from '@/components/App/AppTable';
-
+import CustomizeDialog from './CustomizeDialog.vue';
 export default {
     name: 'CustomizeTablesTable',
 
-    components: { AppTable },
+    components: { AppTable, CustomizeDialog },
 
     props: {
         table: {
@@ -125,6 +134,7 @@ export default {
             tables: [],
             missingDataMenu: false,
             showMissingDataList: false,
+            isDialogOpen: false,
             key: 0,
             tableArrayInfoText: {
                 none: this.$gettext('There are no arrays in this table'),
@@ -137,6 +147,20 @@ export default {
         };
     },
 
+    async created() {
+        if (this.canBeSplit) {
+            try {
+                await this.$store.dispatch('updateSplitStatus', {
+                    tableId: this.table.id,
+                    value: true,
+                });
+                await this.getTablePreview(this.table.id);
+            } catch (e) {
+                /* istanbul ignore next */
+                this.$error(e);
+            }
+        }
+    },
     computed: {
         isGoBackAvailable() {
             return this.table.id !== this.$store.state.selections.tables[0].id;
@@ -154,8 +178,12 @@ export default {
             get() {
                 return this.$store.state.selections.tables.find((table) => table.id === this.table.id).split;
             },
-            async set() {
-                await this.onSplitSwitchChange();
+            async set(val) {
+                if (!val) {
+                    this.isDialogOpen = true;
+                } else {
+                    await this.onSplitSwitchChange(val);
+                }
             },
         },
 
@@ -333,6 +361,14 @@ export default {
     },
 
     methods: {
+        onSplitValueChange(val) {
+            val = !this.isSplit;
+            console.log(val);
+            this.isSplit = val;
+        },
+        setIsDialogOpen(val) {
+            this.isDialogOpen = val;
+        },
         /**
          * Change include status of table
          * @param { Object } table
@@ -379,11 +415,11 @@ export default {
             }
         },
 
-        async onSplitSwitchChange() {
+        async onSplitSwitchChange(value) {
             try {
                 await this.$store.dispatch('updateSplitStatus', {
                     tableId: this.table.id,
-                    value: !this.isSplit,
+                    value: value,
                 });
                 await this.getTablePreview(this.table.id);
             } catch (e) {

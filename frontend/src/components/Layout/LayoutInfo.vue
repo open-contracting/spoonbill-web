@@ -8,7 +8,6 @@
 
 <script>
 import AppStepper from '@/components/App/AppStepper';
-/* istanbul ignore file */
 
 export default {
     name: 'LayoutInfo',
