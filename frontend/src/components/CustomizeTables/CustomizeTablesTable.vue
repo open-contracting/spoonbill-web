@@ -148,18 +148,7 @@ export default {
     },
 
     async created() {
-        if (this.canBeSplit) {
-            try {
-                await this.$store.dispatch('updateSplitStatus', {
-                    tableId: this.table.id,
-                    value: true,
-                });
-                await this.getTablePreview(this.table.id);
-            } catch (e) {
-                /* istanbul ignore next */
-                this.$error(e);
-            }
-        }
+        this.onCreated();
     },
     computed: {
         isGoBackAvailable() {
@@ -173,6 +162,9 @@ export default {
         canBeSplit() {
             return Object.values(this.additionalInfo.arrays).some((value) => value >= 5);
         },
+        isMergeAllowed() {
+            return this.table.array_tables.length <= 5;
+        },
 
         isSplit: {
             get() {
@@ -180,7 +172,11 @@ export default {
             },
             async set(val) {
                 if (!val) {
-                    this.isDialogOpen = true;
+                    if (!this.isMergeAllowed) {
+                        this.isDialogOpen = true;
+                    } else {
+                        await this.onSplitSwitchChange(false);
+                    }
                 } else {
                     await this.onSplitSwitchChange(val);
                 }
@@ -354,6 +350,8 @@ export default {
     watch: {
         table: {
             handler(v) {
+                // this.onCreated();
+
                 this.getTablePreview(v.id);
             },
             immediate: true,
@@ -368,6 +366,20 @@ export default {
         },
         setIsDialogOpen(val) {
             this.isDialogOpen = val;
+        },
+        async onCreated() {
+            if (this.canBeSplit) {
+                try {
+                    await this.$store.dispatch('updateSplitStatus', {
+                        tableId: this.table.id,
+                        value: true,
+                    });
+                    await this.getTablePreview(this.table.id);
+                } catch (e) {
+                    /* istanbul ignore next */
+                    this.$error(e);
+                }
+            }
         },
         /**
          * Change include status of table
