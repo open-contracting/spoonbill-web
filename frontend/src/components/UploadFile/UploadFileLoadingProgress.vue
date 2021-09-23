@@ -16,7 +16,9 @@
             </div>
         </div>
 
-        <v-btn class="app-btn" :disabled="!cancelable" large @click="$emit('cancel')" color="gray-light">Cancel</v-btn>
+        <v-btn class="app-btn" :disabled="!cancelable" large @click="$emit('cancel')" color="gray-light">
+            <translate>Cancel</translate>
+        </v-btn>
     </div>
 </template>
 

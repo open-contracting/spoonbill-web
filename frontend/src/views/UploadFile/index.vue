@@ -33,7 +33,7 @@
                             <translate> If you would like to convert CSV data to JSON, please use the older </translate>
                             <span>
                                 <a href="https://open-contracting.github.io/spoonbill/" target="_blank">
-                                    Command-Line tool.
+                                    <translate> Command-Line tool. </translate>
                                 </a>
                             </span>
                             <br />
@@ -57,7 +57,7 @@
 
                             <span>
                                 <a href="https://standard.open-contracting.org/review/" target="_blank">
-                                    Data Review Tool
+                                    <translate> Data Review Tool </translate>
                                 </a>
                             </span>
                             <translate> to check first. </translate>
