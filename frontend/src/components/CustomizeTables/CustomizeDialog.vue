@@ -4,10 +4,14 @@
             <v-card-text class="pa-0">
                 <v-row no-gutters>
                     <v-col cols="11">
-                        <h3 class="pt-1 mb-6 card-title">Not all arrays can be merged</h3>
+                        <h3 class="pt-1 mb-6 card-title">
+                            <translate> Not all arrays can be merged </translate>
+                        </h3>
                         <div class="card-content">
                             <div>
-                                It is not possible to merge some arrays as this will make it too large for use in Excel.
+                                <translate>
+                                    It is not possible to merge some arrays as this will make it too large for use in Excel.
+                                </translate>
                             </div>
                             <div class="options">Options:</div>
                             <div class="radio-wrapper">
@@ -28,8 +32,12 @@
 
             <v-card-actions class="pa-0 mt-9">
                 <v-spacer></v-spacer>
-                <v-btn outlined height="40px" width="88px" class="cancel-btn" @click="dialog = false"> Cancel </v-btn>
-                <v-btn height="40px" width="105px" class="save-btn" @click="onContinueClick"> Continue </v-btn>
+                <v-btn outlined height="40px" width="88px" class="cancel-btn" @click="dialog = false">
+                    <translate> Cancel </translate>
+                </v-btn>
+                <v-btn height="40px" width="105px" class="save-btn" @click="onContinueClick">
+                    <translate> Continue </translate>
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -51,7 +59,7 @@ export default {
             radioOptins: [
                 {
                     value: 'keep',
-                    label: 'Keep all tables unmerged and continue',
+                    label: this.$gettext('Keep all tables unmerged and continue'),
                 },
             ],
         };
