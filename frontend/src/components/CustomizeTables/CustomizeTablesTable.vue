@@ -26,7 +26,6 @@
                     </template>
                 </div>
             </v-col>
-
             <v-col cols="12" md="6">
                 <div class="table-info">
                     <div v-if="availableData.length">
@@ -38,7 +37,7 @@
 
                     <div class="mt-4" v-if="arrays.length">
                         <translate tag="p" class="mb-2">Arrays</translate>
-                        <ul class="app-list">
+                        <ul class="app-list" :key="arraysKey">
                             <li v-for="(item, idx) of arrays" :key="idx">{{ item }}</li>
                         </ul>
                     </div>
@@ -136,14 +135,14 @@ export default {
             showMissingDataList: false,
             isDialogOpen: false,
             key: 0,
-            tableArrayInfoText: {
-                none: this.$gettext('There are no arrays in this table'),
-                one: this.$gettext('There is one array in this table'),
-                two: this.$gettext('There are two arrays in this table'),
-                three: this.$gettext('There are three arrays in this table'),
-                four: this.$gettext('There are four arrays in this table'),
-                five: this.$gettext('There are five arrays in this table'),
-            },
+            arraysKey: 0,
+            tableArrayInfoText: {},
+            none: this.$gettext('There are no arrays in this table'),
+            one: this.$gettext('There is one array in this table'),
+            two: this.$gettext('There are two arrays in this table'),
+            three: this.$gettext('There are three arrays in this table'),
+            four: this.$gettext('There are four arrays in this table'),
+            five: this.$gettext('There are five arrays in this table'),
         };
     },
 
@@ -273,22 +272,22 @@ export default {
             let arraysCount = Object.keys(this.additionalInfo.arrays).length;
             switch (arraysCount) {
                 case 0:
-                    translated = this.tableArrayInfoText.none;
+                    translated = this.none;
                     break;
                 case 1:
-                    translated = this.tableArrayInfoText.one;
+                    translated = this.one;
                     break;
                 case 2:
-                    translated = this.tableArrayInfoText.two;
+                    translated = this.two;
                     break;
                 case 3:
-                    translated = this.tableArrayInfoText.three;
+                    translated = this.three;
                     break;
                 case 4:
-                    translated = this.tableArrayInfoText.four;
+                    translated = this.four;
                     break;
                 case 5:
-                    translated = this.tableArrayInfoText.five;
+                    translated = this.five;
                     break;
                 default:
                     translated = this.$ngettext(
@@ -355,6 +354,15 @@ export default {
                 this.getTablePreview(v.id);
             },
             immediate: true,
+        },
+        $route() {
+            console.log('lang change');
+            this.none = this.$gettext('There are no arrays in this table');
+            this.one = this.$gettext('There is one array in this table');
+            this.two = this.$gettext('There are two arrays in this table');
+            this.three = this.$gettext('There are three arrays in this table');
+            this.four = this.$gettext('There are four arrays in this table');
+            this.five = this.$gettext('There are five arrays in this table');
         },
     },
 
