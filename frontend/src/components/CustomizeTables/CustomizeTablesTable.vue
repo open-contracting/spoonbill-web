@@ -356,7 +356,6 @@ export default {
             immediate: true,
         },
         $route() {
-            console.log('lang change');
             this.none = this.$gettext('There are no arrays in this table');
             this.one = this.$gettext('There is one array in this table');
             this.two = this.$gettext('There are two arrays in this table');
