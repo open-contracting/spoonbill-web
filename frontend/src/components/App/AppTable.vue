@@ -48,7 +48,7 @@
                         <th v-for="(header, i) of headers" :key="`${header} + ${i}`">{{ headings[header] || header }}</th>
                     </tr>
                     <tr>
-                        <th v-for="header of headers" :key="header">{{ header }}</th>
+                        <th v-for="(header, i) of headers" :key="i">{{ header }}</th>
                     </tr>
                 </thead>
                 <tbody>
