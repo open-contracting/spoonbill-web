@@ -1,5 +1,5 @@
 <template>
-    <v-stepper alt-labels class="app-stepper" :value="value">
+    <v-stepper alt-labels class="app-stepper" :value="value" v-if="!isOcdsLite">
         <v-stepper-header v-if="!hideFirstStep">
             <v-stepper-step :complete="value > 1" complete-icon="mdi-pencil" step="1" @click="navigateTo(1, '/upload-file')">
                 <translate class="text-link" v-if="$store.state.numberOfUploads > 0 || value > 1" key="re">
