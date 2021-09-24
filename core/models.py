@@ -159,11 +159,12 @@ class DataSelection(models.Model):
 class Table(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=120)
-    split = models.BooleanField(default=False)
+    split = models.BooleanField(default=True)
     include = models.BooleanField(default=True)
     heading = models.CharField(max_length=31, blank=True, null=True)
     array_tables = models.ManyToManyField("self", blank=True)
     column_headings = models.JSONField(default=dict, encoder=DjangoJSONEncoder, blank=True, null=True)
+    parent = models.CharField(max_length=120, blank=True, null=True)
 
     def __str__(self):
         return f"{self.__class__.__name__} {self.id}"

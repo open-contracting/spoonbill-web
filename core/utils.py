@@ -216,7 +216,7 @@ def get_options_for_table(selections, exclude_tables_list, selection, tables, pa
                 selections[table.name]["only"] = only
             if "repeat" in lite_table_config:
                 selections[table.name]["repeat"] = lite_table_config["repeat"]
-        if table.split:
+        if table.split and selection.kind != selection.OCDS_LITE:
             get_options_for_table(selections, exclude_tables_list, selection, table.array_tables, table, analyzed_data)
 
 
