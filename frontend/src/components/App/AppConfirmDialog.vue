@@ -60,6 +60,11 @@ export default {
          * @return { Promise }
          */
         open(options) {
+            this.defaultOptions.title = this.$gettext('Are you sure to go back?');
+            this.defaultOptions.content = this.$gettext(
+                'When going to the previous step, all current changes will be reversed'
+            );
+            this.defaultOptions.submitBtnText = this.$gettext('Yes, go back');
             const { title, content, submitBtnText, icon } = options || this.defaultOptions;
             this.options.title = title;
             this.options.content = content;
