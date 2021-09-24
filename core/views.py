@@ -467,7 +467,9 @@ class TableViewSet(viewsets.ModelViewSet):
                     },
                 )
                 continue
-            child_table = Table.objects.create(name=child_table_key)
+            child_table = Table.objects.create(
+                name=child_table_key, parent=analyzed_tables[child_table_key].parent.name
+            )
             table.array_tables.add(child_table)
             preview_path = f"{datasource_dir}/{child_table_key}_combined.csv"
             store_preview_csv(COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)

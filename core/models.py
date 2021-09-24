@@ -164,6 +164,7 @@ class Table(models.Model):
     heading = models.CharField(max_length=31, blank=True, null=True)
     array_tables = models.ManyToManyField("self", blank=True)
     column_headings = models.JSONField(default=dict, encoder=DjangoJSONEncoder, blank=True, null=True)
+    parent = models.CharField(max_length=120, blank=True, null=True)
 
     def __str__(self):
         return f"{self.__class__.__name__} {self.id}"
