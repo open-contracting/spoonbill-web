@@ -353,6 +353,7 @@ export default {
 
                 this.getTablePreview(v.id);
             },
+
             immediate: true,
         },
         $route() {
@@ -377,10 +378,10 @@ export default {
         async onCreated() {
             if (this.canBeSplit) {
                 try {
-                    await this.$store.dispatch('updateSplitStatus', {
-                        tableId: this.table.id,
-                        value: true,
-                    });
+                    // await this.$store.dispatch('updateSplitStatus', {
+                    //     tableId: this.table.id,
+                    //     value: true,
+                    // });
                     await this.getTablePreview(this.table.id);
                 } catch (e) {
                     /* istanbul ignore next */

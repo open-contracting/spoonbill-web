@@ -19,6 +19,7 @@
 <script>
 import CustomizeTablesTable from '@/components/CustomizeTables/CustomizeTablesTable';
 import selectionsMixin from '@/mixins/selectionsMixin';
+import ApiService from '@/services/ApiService';
 
 export default {
     name: 'CustomizeTables',
@@ -39,6 +40,24 @@ export default {
 
     async created() {
         await this.getSelections();
+        console.log('created');
+        // console.log('this.tables', this.tables);
+
+        await this.selections.tables.map(async (table) => {
+            // split all tables as default
+            let res = await ApiService.changeSplitStatus(
+                this.$store.state.uploadDetails.type + 's',
+                this.$store.state.uploadDetails.id,
+                this.$store.state.selections.id,
+                table.id,
+                true
+            );
+            this.$store.commit('setSplitStatus', {
+                tableId: table.id,
+                value: true,
+            });
+            return res;
+        });
         if (!this.$route.params.id) {
             await this.$router.push({
                 path: '/customize-tables/' + this.$store.state.selections.tables[0].id,
