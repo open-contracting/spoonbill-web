@@ -52,16 +52,20 @@ export default {
             type: Boolean,
             default: false,
         },
+        unmergebleTables: {
+            type: Array,
+            default: () => [],
+        },
     },
     data: function () {
         return {
             radioGroup: 'keep',
-            radioOptins: [
-                {
-                    value: 'keep',
-                    label: this.$gettext('Keep all tables unmerged and continue'),
-                },
-            ],
+            // radioOptins: [
+            //     {
+            //         value: 'keep',
+            //         label: this.$gettext('Keep all tables unmerged and continue'),
+            //     },
+            // ],
         };
     },
     methods: {
@@ -79,6 +83,30 @@ export default {
             },
             set(val) {
                 this.$emit('setIsDialogOpen', val);
+            },
+        },
+        formattedUnmergebleArrays() {
+            if (this.unmergebleTables.length > 0) {
+                let str = '';
+                this.unmergebleTables.length === 1 ? (str = 'Remove Array table: ') : (str = 'Remove Array tables: ');
+                this.unmergebleTables.map((table, i) => {
+                    str += table.name;
+                    i < this.unmergebleTables.length - 1 ? (str += ' ,') : (str += ' ');
+                });
+                str += 'and merge remaining tables';
+                return str;
+            } else {
+                return null;
+            }
+        },
+
+        radioOptins: {
+            get() {
+                return [
+                    { value: 'delete', label: this.formattedUnmergebleArrays },
+
+                    { value: 'keep', label: this.$gettext('Keep all tables unmerged and continue') },
+                ];
             },
         },
     },

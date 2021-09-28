@@ -1,5 +1,5 @@
 <template>
-    <v-row>
+    <v-row :key="key">
         <v-col class="pt-0" cols="12" v-if="selections">
             <v-tabs centered :value="currentTableIndex">
                 <v-tab v-for="table in selections.tables" :key="table.id" @click="goTo(table.id)">
@@ -27,7 +27,11 @@ export default {
     components: { CustomizeTablesTable },
 
     mixins: [selectionsMixin],
-
+    data: function () {
+        return {
+            key: 0,
+        };
+    },
     computed: {
         currentTableIndex() {
             return this.selections.tables.findIndex((table) => table.id === this.$route.params.id);
@@ -40,7 +44,7 @@ export default {
 
     async created() {
         await this.getSelections();
-        console.log('created');
+
         // console.log('this.tables', this.tables);
 
         await this.selections.tables.map(async (table) => {
@@ -64,6 +68,7 @@ export default {
                 query: this.$route.query,
             });
         }
+        this.key = this.key + 1;
     },
 
     methods: {

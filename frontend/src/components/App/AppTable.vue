@@ -35,7 +35,7 @@
                     <v-img height="16" contain src="@/assets/icons/remove.svg" />
                     <translate class="text-link">Remove</translate>
                 </v-btn>
-                <v-btn text v-else @click="$emit('restore')" key="restore">
+                <v-btn text v-else @click="$emit('restore')" key="restore" :disabled="!canRestore">
                     <v-img height="16" contain src="@/assets/icons/restore.svg" />
                     <translate class="text-link">Restore table</translate>
                 </v-btn>
@@ -114,6 +114,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        parentTable: {
+            type: Object,
+            default: null,
+        },
     },
 
     data() {
@@ -148,6 +152,13 @@ export default {
                 return this.data.slice(0, 5);
             } else {
                 return this.data;
+            }
+        },
+        canRestore() {
+            if (!this.parentTable) {
+                return true;
+            } else {
+                return this.parentTable.include;
             }
         },
     },
