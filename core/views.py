@@ -327,8 +327,11 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
             if serializer.is_valid():
                 datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
                 selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
+                spec = DataPreprocessor.restore(datasource.analyzed_file.path)
                 for table in serializer.data["tables"]:
                     _table = Table.objects.create(**table)
+                    _table.should_split = spec[_table.name].splitted
+                    _table.save()
                     selection.tables.add(_table)
                 datasource.selections.add(selection)
                 return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
@@ -418,6 +421,25 @@ class TableViewSet(viewsets.ModelViewSet):
             for key in ("split", "include", "heading"):
                 if key in request.data:
                     setattr(table, key, request.data[key])
+                    # Remove "grandchildren" (child tables of child tables) if such are present
+                    if key == "include" and request.data[key] is False and table.parent:
+                        parent = table.array_tables.all()[0]
+                        for array_table in list(parent.array_tables.all()):
+                            if array_table.parent == table.name:
+                                array_table.include = False
+                                array_table.save()
+                    if (
+                        key == "split"
+                        and request.data[key] is False
+                        and table.array_tables
+                        and False in [_table.mergeable for _table in list(table.array_tables.all())]
+                    ):
+
+                        return Response(
+                            {"detail": _(f"Cannot merge '{table.name}' - child arrays are too large")},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
                     update_fields.append(key)
             if update_fields:
                 table.save(update_fields=update_fields)
@@ -508,6 +530,9 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,
+                        "mergeable": table.mergeable,
+                        "should_split": table.should_split,
+                        "parent": table.parent,
                     }
                     if selection.headings_type != selection.OCDS:
                         preview["column_headings"] = table.column_headings
@@ -522,6 +547,9 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                             "id": str(child_table.id),
                             "preview": csvfile.read(),
                             "heading": child_table.heading,
+                            "mergeable": child_table.mergeable,
+                            "should_split": child_table.should_split,
+                            "parent": child_table.parent,
                         }
                         if selection.headings_type != selection.OCDS:
                             preview["column_headings"] = child_table.column_headings
@@ -536,6 +564,9 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,
+                        "mergeable": table.mergeable,
+                        "should_split": table.should_split,
+                        "parent": table.parent,
                     }
                     if selection.headings_type != selection.OCDS:
                         preview["column_headings"] = table.column_headings

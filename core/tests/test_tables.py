@@ -60,7 +60,7 @@ class TestTableViews:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading"}
+        assert set(data.keys()) == {"id", "name", "preview", "heading", "should_split", "parent", "mergeable"}
 
     def test_table_r_friendly_preview(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
@@ -78,7 +78,16 @@ class TestTableViews:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "column_headings", "heading"}
+        assert set(data.keys()) == {
+            "id",
+            "name",
+            "preview",
+            "column_headings",
+            "heading",
+            "should_split",
+            "parent",
+            "mergeable",
+        }
 
     def test_table_user_friendly_preview(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
@@ -96,7 +105,16 @@ class TestTableViews:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "column_headings", "heading"}
+        assert set(data.keys()) == {
+            "id",
+            "name",
+            "preview",
+            "column_headings",
+            "heading",
+            "should_split",
+            "parent",
+            "mergeable",
+        }
 
     def test_table_split_preview(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
@@ -123,7 +141,16 @@ class TestTableViews:
         )
         assert len(response.json()) == 4
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
+        assert set(data.keys()) == {
+            "id",
+            "name",
+            "preview",
+            "heading",
+            "column_headings",
+            "should_split",
+            "parent",
+            "mergeable",
+        }
 
     def test_table_split_include_preview(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
@@ -156,9 +183,18 @@ class TestTableViews:
         response = self.client.get(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 3
+        assert len(response.json()) == 2
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
+        assert set(data.keys()) == {
+            "id",
+            "name",
+            "preview",
+            "heading",
+            "column_headings",
+            "should_split",
+            "parent",
+            "mergeable",
+        }
 
     def test_table_split_no_left_space(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)

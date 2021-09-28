@@ -8,12 +8,14 @@ from unittest.mock import patch
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files import File
 from django.test import override_settings
 
 from core.models import Url
 from core.serializers import UrlSerializer
 from core.utils import dataregistry_path_formatter, dataregistry_path_resolver
 
+from .conftest import ANALYZED_DATA_PATH
 from .utils import create_data_selection, get_data_selections
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
@@ -64,6 +66,7 @@ class TestUrl:
         assert url["source"] is None
 
         url_obj = Url.objects.get(id=url["id"])
+
         download_datasource_task.delay.assert_called_once_with(url_obj.id, model="Url", lang_code="en-us")
 
         response = client.post(
@@ -92,9 +95,13 @@ class TestUrl:
         assert UrlSerializer(url_obj).data == response.json()
 
     def test_create_selections_successful(self, client, url_obj):
+        with open(ANALYZED_DATA_PATH, "rb") as af:
+            url_obj.analyzed_file.save("new", af)
         create_data_selection(client, url_obj, prefix=self.url_prefix)
 
     def test_get_selections_successful(self, client, url_obj):
+        with open(ANALYZED_DATA_PATH, "rb") as af:
+            url_obj.analyzed_file.save("new", af)
         get_data_selections(client, url_obj, self.url_prefix)
 
     def test_delete_table(self, client, url_obj_w_files):
@@ -119,6 +126,8 @@ class TestUrl:
         assert not response.json()["include"]
 
     def test_list_tables(self, client, url_obj):
+        with open(ANALYZED_DATA_PATH, "rb") as af:
+            url_obj.analyzed_file.save("new", af)
         selection = create_data_selection(client, url_obj, self.url_prefix)
         response = client.get(f"{self.url_prefix}{url_obj.id}/selections/{selection['id']}/tables/")
         assert len(response.json()) == 2
@@ -132,7 +141,7 @@ class TestUrl:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading"}
+        assert set(data.keys()) == {"id", "name", "preview", "heading", "should_split", "parent", "mergeable"}
 
     def test_table_r_friendly_preview(self, client, url_obj_w_files):
         selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
@@ -148,7 +157,16 @@ class TestUrl:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
+        assert set(data.keys()) == {
+            "id",
+            "name",
+            "preview",
+            "heading",
+            "column_headings",
+            "should_split",
+            "parent",
+            "mergeable",
+        }
 
     def test_table_split_preview(self, client, url_obj_w_files):
         selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
@@ -173,7 +191,16 @@ class TestUrl:
         )
         assert len(response.json()) == 4
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
+        assert set(data.keys()) == {
+            "id",
+            "name",
+            "preview",
+            "heading",
+            "column_headings",
+            "should_split",
+            "parent",
+            "mergeable",
+        }
 
     def test_table_split_include_preview(self, client, url_obj_w_files):
         selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
@@ -204,9 +231,18 @@ class TestUrl:
         response = client.get(
             f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
-        assert len(response.json()) == 3
+        assert len(response.json()) == 2
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading", "column_headings"}
+        assert set(data.keys()) == {
+            "id",
+            "name",
+            "preview",
+            "heading",
+            "column_headings",
+            "should_split",
+            "parent",
+            "mergeable",
+        }
 
     def test_table_split_failed(self, client, url_obj_w_files):
         selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
