@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from spoonbill.common import TABLE_THRESHOLD
 from spoonbill.stats import DataPreprocessor
 
 from core.constants import OCDS_LITE_CONFIG
@@ -467,8 +468,13 @@ class TableViewSet(viewsets.ModelViewSet):
                     },
                 )
                 continue
+
+            parent_arrays = analyzed_tables[child_table_key].parent.arrays
+            child_path = analyzed_tables[child_table_key].path[0]
+            array_size = parent_arrays[child_path]
+            mergeable = False if array_size >= TABLE_THRESHOLD else True
             child_table = Table.objects.create(
-                name=child_table_key, parent=analyzed_tables[child_table_key].parent.name
+                name=child_table_key, parent=analyzed_tables[child_table_key].parent.name, mergeable=mergeable
             )
             table.array_tables.add(child_table)
             preview_path = f"{datasource_dir}/{child_table_key}_combined.csv"

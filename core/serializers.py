@@ -8,7 +8,7 @@ from core.models import DataFile, DataSelection, Flatten, Table, Upload, Url, Va
 class ArrayTablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
-        fields = ("id", "name", "include", "heading", "parent")
+        fields = ("id", "name", "include", "heading", "parent", "mergeable")
 
 
 class DataFileSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class TablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
         read_only_fields = ("array_tables",)
-        fields = ("id", "name", "split", "array_tables", "include", "heading", "parent")
+        fields = ("id", "name", "split", "array_tables", "include", "heading")
 
 
 class FlattenSerializer(serializers.ModelSerializer):
