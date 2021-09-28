@@ -418,6 +418,13 @@ class TableViewSet(viewsets.ModelViewSet):
             for key in ("split", "include", "heading"):
                 if key in request.data:
                     setattr(table, key, request.data[key])
+                    # Remove "grandchildren" (child tables of child tables) if such are present
+                    if key == "include" and request.data["include"] is False and table.parent:
+                        parent = table.array_tables.all()[0]
+                        for array_table in list(parent.array_tables.all()):
+                            if array_table.parent == table.name:
+                                array_table.include = False
+                                array_table.save()
                     update_fields.append(key)
             if update_fields:
                 table.save(update_fields=update_fields)
