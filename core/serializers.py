@@ -27,7 +27,7 @@ class TablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
         read_only_fields = ("array_tables",)
-        fields = ("id", "name", "split", "array_tables", "include", "heading")
+        fields = ("id", "name", "split", "array_tables", "include", "heading", "should_split")
 
 
 class FlattenSerializer(serializers.ModelSerializer):
