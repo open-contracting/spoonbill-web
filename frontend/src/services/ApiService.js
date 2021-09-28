@@ -29,12 +29,15 @@ export default {
      * @param { string } id - id of upload or URL
      * @param { string[] } selectedTables - array of tables names
      */
-    createSelections(type, id, selectedTables) {
-        return axios.post(`${type}/${id}/selections/`, {
+    async createSelections(type, id, selectedTables) {
+        const response = await axios.post(`${type}/${id}/selections/`, {
             tables: selectedTables.map((tableName) => {
                 return { name: tableName };
             }),
         });
+        console.log('response', response);
+        // response.data.tables.forEach((table) => {});
+        return response;
     },
 
     /**

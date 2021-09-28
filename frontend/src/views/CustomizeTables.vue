@@ -1,5 +1,5 @@
 <template>
-    <v-row>
+    <v-row :key="key">
         <v-col class="pt-0" cols="12" v-if="selections">
             <v-tabs centered :value="currentTableIndex">
                 <v-tab v-for="table in selections.tables" :key="table.id" @click="goTo(table.id)">
@@ -19,6 +19,7 @@
 <script>
 import CustomizeTablesTable from '@/components/CustomizeTables/CustomizeTablesTable';
 import selectionsMixin from '@/mixins/selectionsMixin';
+import ApiService from '@/services/ApiService';
 
 export default {
     name: 'CustomizeTables',
@@ -26,7 +27,11 @@ export default {
     components: { CustomizeTablesTable },
 
     mixins: [selectionsMixin],
-
+    data: function () {
+        return {
+            key: 0,
+        };
+    },
     computed: {
         currentTableIndex() {
             return this.selections.tables.findIndex((table) => table.id === this.$route.params.id);
@@ -39,12 +44,31 @@ export default {
 
     async created() {
         await this.getSelections();
+
+        // console.log('this.tables', this.tables);
+
+        await this.selections.tables.map(async (table) => {
+            // split all tables as default
+            let res = await ApiService.changeSplitStatus(
+                this.$store.state.uploadDetails.type + 's',
+                this.$store.state.uploadDetails.id,
+                this.$store.state.selections.id,
+                table.id,
+                true
+            );
+            this.$store.commit('setSplitStatus', {
+                tableId: table.id,
+                value: true,
+            });
+            return res;
+        });
         if (!this.$route.params.id) {
             await this.$router.push({
                 path: '/customize-tables/' + this.$store.state.selections.tables[0].id,
                 query: this.$route.query,
             });
         }
+        this.key = this.key + 1;
     },
 
     methods: {

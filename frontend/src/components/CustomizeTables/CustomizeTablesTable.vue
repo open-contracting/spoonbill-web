@@ -69,6 +69,7 @@
                 highlight-name
                 @remove="removeTable(table)"
                 @restore="changeIncludeStatus(table, true)"
+                :parentTable="getParentTable(table)"
             />
         </div>
         <app-table
@@ -104,6 +105,7 @@
             :isOpen="isDialogOpen"
             @setIsDialogOpen="setIsDialogOpen"
             @onSplitSwitchChange="onSplitSwitchChange"
+            :unmergebleTables="unmergebleTables"
         />
     </div>
 </template>
@@ -161,8 +163,11 @@ export default {
         canBeSplit() {
             return Object.values(this.additionalInfo.arrays).some((value) => value >= 5);
         },
+        unmergebleTables() {
+            return this.tables.filter((table) => !table.mergeable);
+        },
         isMergeAllowed() {
-            return this.table.array_tables.length <= 5;
+            return this.unmergebleTables > 0;
         },
 
         isSplit: {
@@ -353,6 +358,7 @@ export default {
 
                 this.getTablePreview(v.id);
             },
+
             immediate: true,
         },
         $route() {
@@ -368,7 +374,7 @@ export default {
     methods: {
         onSplitValueChange(val) {
             val = !this.isSplit;
-            console.log(val);
+
             this.isSplit = val;
         },
         setIsDialogOpen(val) {
@@ -377,10 +383,10 @@ export default {
         async onCreated() {
             if (this.canBeSplit) {
                 try {
-                    await this.$store.dispatch('updateSplitStatus', {
-                        tableId: this.table.id,
-                        value: true,
-                    });
+                    // await this.$store.dispatch('updateSplitStatus', {
+                    //     tableId: this.table.id,
+                    //     value: true,
+                    // });
                     await this.getTablePreview(this.table.id);
                 } catch (e) {
                     /* istanbul ignore next */
@@ -392,15 +398,59 @@ export default {
          * Change include status of table
          * @param { Object } table
          */
-        async removeTable(table) {
-            const confirmed = await this.$root.openConfirmDialog({
-                title: this.$gettext('Are you sure?'),
-                content: this.$gettext('Removing this table will mean it will not be included in flattened Excel file'),
-                submitBtnText: this.$gettext('Yes, remove table and continue'),
-                icon: require('@/assets/icons/remove.svg'),
+        isTableHaveChild(table) {
+            return this.tables.some((t) => {
+                return t.parent === table.name;
             });
-            if (confirmed) {
-                await this.changeIncludeStatus(table, false);
+        },
+        getParentTable(child) {
+            return this.tables.find((table) => table.name === child.parent);
+        },
+        getChildTablesNames(table) {
+            let filteredTables = this.tables.filter((t) => {
+                return t.parent === table.name;
+            });
+            let str = '';
+            filteredTables.forEach((t, i) => {
+                str += i === filteredTables.length - 1 ? ` ${t.name} ` : ` ${t.name},`;
+            });
+
+            return {
+                tables: filteredTables,
+                str,
+            };
+        },
+        async removeTable(table) {
+            if (this.isTableHaveChild(table)) {
+                const childTables = this.getChildTablesNames(table);
+                const confirmed = await this.$root.openConfirmDialog({
+                    title: this.$gettext('Are you sure?'),
+                    content:
+                        this.$gettext('It is not possible to remove only Array table: ') +
+                        this.table.name +
+                        this.$gettext(' without Sub-array tables.  Additionally, the following Sub-array tables:') +
+                        childTables.str +
+                        this.$gettext('will be removed.'),
+                    submitBtnText: this.$gettext('Yes, remove tables and continue'),
+                    icon: require('@/assets/icons/remove.svg'),
+                });
+                if (confirmed) {
+                    await this.changeIncludeStatus(table, false);
+                    childTables.tables.map(async (table) => {
+                        await this.changeIncludeStatus(table, false);
+                        return table;
+                    });
+                }
+            } else {
+                const confirmed = await this.$root.openConfirmDialog({
+                    title: this.$gettext('Are you sure?'),
+                    content: this.$gettext('Removing this table will mean it will not be included in flattened Excel file'),
+                    submitBtnText: this.$gettext('Yes, remove table and continue'),
+                    icon: require('@/assets/icons/remove.svg'),
+                });
+                if (confirmed) {
+                    await this.changeIncludeStatus(table, false);
+                }
             }
         },
 
@@ -473,6 +523,7 @@ export default {
                         headers: parsed.data[0],
                         data: parsed.data.slice(1),
                         include: true,
+                        ...preview,
                     };
                 })
             );
