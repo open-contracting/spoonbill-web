@@ -161,13 +161,13 @@ export default {
         },
 
         canBeSplit() {
-            return Object.values(this.additionalInfo.arrays).some((value) => value >= 5);
+            return this.tables.length >= 1;
         },
         unmergebleTables() {
-            return this.tables.filter((table) => !table.mergeable);
+            return this.tables.filter((table) => table.mergeable === false && table.include);
         },
         isMergeAllowed() {
-            return this.unmergebleTables > 0;
+            return this.unmergebleTables <= 0;
         },
 
         isSplit: {
@@ -492,8 +492,13 @@ export default {
                 });
                 await this.getTablePreview(this.table.id);
             } catch (e) {
+            
                 /* istanbul ignore next */
                 this.$error(e);
+                this.$store.commit('openSnackbar', {
+                    color: 'error',
+                    text: e,
+                });
             }
         },
 

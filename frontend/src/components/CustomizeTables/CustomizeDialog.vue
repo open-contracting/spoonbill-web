@@ -70,7 +70,7 @@ export default {
     },
     methods: {
         async onContinueClick() {
-            if (this.radioGroup === 'remove') {
+            if (this.radioGroup === 'delete') {
                 this.$emit('onSplitSwitchChange', false);
             }
             this.dialog = false;
@@ -88,12 +88,14 @@ export default {
         formattedUnmergebleArrays() {
             if (this.unmergebleTables.length > 0) {
                 let str = '';
-                this.unmergebleTables.length === 1 ? (str = 'Remove Array table: ') : (str = 'Remove Array tables: ');
+                this.unmergebleTables.length === 1
+                    ? (str = this.$gettext('Remove Array table: '))
+                    : (str = this.$gettext('Remove Array tables: '));
                 this.unmergebleTables.map((table, i) => {
                     str += table.name;
-                    i < this.unmergebleTables.length - 1 ? (str += ' ,') : (str += ' ');
+                    i < this.unmergebleTables.length - 1 ? (str += ', ') : (str += ' ');
                 });
-                str += 'and merge remaining tables';
+                str += this.$gettext('and merge remaining tables');
                 return str;
             } else {
                 return null;
