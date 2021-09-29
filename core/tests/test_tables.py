@@ -4,6 +4,7 @@ import pytest
 from django.conf import settings
 from rest_framework import status
 
+from core.models import Table
 from core.tests.utils import create_data_selection
 
 
@@ -122,6 +123,11 @@ class TestTableViews:
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
 
+        for table in tables:
+            _table = Table.objects.get(id=table["id"])
+            _table.should_split = True
+            _table.save()
+
         response = self.client.patch(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
@@ -157,6 +163,11 @@ class TestTableViews:
         tables = self.client.get(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
+
+        for table in tables:
+            _table = Table.objects.get(id=table["id"])
+            _table.should_split = True
+            _table.save()
 
         response = self.client.patch(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
@@ -198,14 +209,20 @@ class TestTableViews:
 
     def test_table_split_no_left_space(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
+
         tables = self.client.get(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
+
+        _table = Table.objects.get(id=tables[1]["id"])
+        _table.should_split = True
+        _table.save()
+
         mocked_split = self.mocker.patch("core.views.store_preview_csv")
         mocked_split.side_effect = OSError(errno.ENOSPC, "No left space.")
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[1]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -217,6 +234,10 @@ class TestTableViews:
         tables = self.client.get(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
+        for table in tables:
+            _table = Table.objects.get(id=table["id"])
+            _table.should_split = True
+            _table.save()
 
         response = self.client.patch(
             f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",

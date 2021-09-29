@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.test import override_settings
 
-from core.models import Url
+from core.models import Table, Url
 from core.serializers import UrlSerializer
 from core.utils import dataregistry_path_formatter, dataregistry_path_resolver
 
@@ -172,6 +172,9 @@ class TestUrl:
         selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
         tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
 
+        _table = Table.objects.get(id=tables[0]["id"])
+        _table.should_split = True
+        _table.save()
         response = client.patch(
             f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
@@ -205,6 +208,10 @@ class TestUrl:
     def test_table_split_include_preview(self, client, url_obj_w_files):
         selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
         tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
+        for table in tables:
+            _table = Table.objects.get(id=table["id"])
+            _table.should_split = True
+            _table.save()
 
         response = client.patch(
             f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",

@@ -411,10 +411,11 @@ class TableViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         try:
-            if "url_id" in kwargs:
-                datasource = Url.objects.get(id=kwargs["url_id"])
-            elif "upload_id" in kwargs:
-                datasource = Upload.objects.get(id=kwargs["upload_id"])
+            datasource = (
+                Url.objects.get(id=kwargs["url_id"])
+                if "url_id" in kwargs
+                else Upload.objects.get(id=kwargs["upload_id"])
+            )
             table = Table.objects.get(id=kwargs["id"])
             spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             update_fields = []
@@ -428,6 +429,7 @@ class TableViewSet(viewsets.ModelViewSet):
                             if array_table.parent == table.name:
                                 array_table.include = False
                                 array_table.save()
+                    # Forbid merge of table if any of child arrays is unmergeable
                     if (
                         key == "split"
                         and request.data[key] is False
@@ -437,6 +439,16 @@ class TableViewSet(viewsets.ModelViewSet):
 
                         return Response(
                             {"detail": _(f"Cannot merge '{table.name}' - child arrays are too large")},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    # Forbid split when arrays for split are absent in table
+                    if key == "split" and request.data[key] is True and table.should_split is False:
+                        return Response(
+                            {
+                                "detail": _(
+                                    f"Cannot split '{table.name}' - there are no arrays to split, or present arrays are not large enough for split"
+                                )
+                            },
                             status=status.HTTP_400_BAD_REQUEST,
                         )
 
@@ -476,6 +488,8 @@ class TableViewSet(viewsets.ModelViewSet):
             )
 
     def _split_table(self, table, analyzed_tables, datasource, child_tables):
+        if table.should_split is False:
+            return
         datasource_dir = os.path.dirname(datasource.files.all()[0].file.path)
         for child_table_key in child_tables:
             analyzed_child_table = analyzed_tables.get(child_table_key, {})
