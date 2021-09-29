@@ -141,7 +141,7 @@ class TestUrl:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading", "should_split", "parent", "mergeable"}
+        assert set(data.keys()) == {"id", "name", "preview", "heading", "should_split", "parent"}
 
     def test_table_r_friendly_preview(self, client, url_obj_w_files):
         selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
@@ -165,7 +165,6 @@ class TestUrl:
             "column_headings",
             "should_split",
             "parent",
-            "mergeable",
         }
 
     def test_table_split_preview(self, client, url_obj_w_files):
@@ -199,7 +198,6 @@ class TestUrl:
             "column_headings",
             "should_split",
             "parent",
-            "mergeable",
         }
 
     def test_table_split_include_preview(self, client, url_obj_w_files):
@@ -241,7 +239,6 @@ class TestUrl:
             "column_headings",
             "should_split",
             "parent",
-            "mergeable",
         }
 
     def test_table_split_failed(self, client, url_obj_w_files):

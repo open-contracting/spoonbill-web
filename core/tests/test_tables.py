@@ -60,7 +60,7 @@ class TestTableViews:
         )
         assert len(response.json()) == 1
         data = response.json()[0]
-        assert set(data.keys()) == {"id", "name", "preview", "heading", "should_split", "parent", "mergeable"}
+        assert set(data.keys()) == {"id", "name", "preview", "heading", "should_split", "parent"}
 
     def test_table_r_friendly_preview(self):
         selection = create_data_selection(self.client, self.validated_datasource, self.url_prefix)
@@ -86,7 +86,6 @@ class TestTableViews:
             "heading",
             "should_split",
             "parent",
-            "mergeable",
         }
 
     def test_table_user_friendly_preview(self):
@@ -113,7 +112,6 @@ class TestTableViews:
             "heading",
             "should_split",
             "parent",
-            "mergeable",
         }
 
     def test_table_split_preview(self):
@@ -149,7 +147,6 @@ class TestTableViews:
             "column_headings",
             "should_split",
             "parent",
-            "mergeable",
         }
 
     def test_table_split_include_preview(self):
@@ -193,7 +190,6 @@ class TestTableViews:
             "column_headings",
             "should_split",
             "parent",
-            "mergeable",
         }
 
     def test_table_split_no_left_space(self):
