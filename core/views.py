@@ -411,10 +411,11 @@ class TableViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         try:
-            if "url_id" in kwargs:
-                datasource = Url.objects.get(id=kwargs["url_id"])
-            elif "upload_id" in kwargs:
-                datasource = Upload.objects.get(id=kwargs["upload_id"])
+            datasource = (
+                Url.objects.get(id=kwargs["url_id"])
+                if "url_id" in kwargs
+                else Upload.objects.get(id=kwargs["upload_id"])
+            )
             table = Table.objects.get(id=kwargs["id"])
             spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             update_fields = []
@@ -422,12 +423,21 @@ class TableViewSet(viewsets.ModelViewSet):
                 if key in request.data:
                     setattr(table, key, request.data[key])
                     # Remove "grandchildren" (child tables of child tables) if such are present
-                    if key == "include" and request.data[key] is False and table.parent:
-                        parent = table.array_tables.all()[0]
-                        for array_table in list(parent.array_tables.all()):
-                            if array_table.parent == table.name:
-                                array_table.include = False
+                    if key in ("split", "include") and request.data[key] is False:
+                        if table.array_tables and not table.parent:
+                            for array_table in list(table.array_tables.all()):
+                                setattr(array_table, key, False)
                                 array_table.save()
+                        if table.array_tables and table.parent:
+                            parent = table.array_tables.all()[0]
+                            for array_table in list(parent.array_tables.all()):
+                                setattr(
+                                    array_table,
+                                    key,
+                                    False if array_table.parent == table.name else getattr(array_table, key),
+                                )
+                                array_table.save()
+                    # Forbid merge of table if any of child arrays is unmergeable
                     if (
                         key == "split"
                         and request.data[key] is False
