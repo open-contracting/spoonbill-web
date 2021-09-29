@@ -475,7 +475,7 @@ class TableViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             )
 
-    def _split_table(self, table, analyzed_tables, datasource, child_tables):
+    def _split_table(self, table, analyzed_tables, datasource, child_tables, mergeable=None):
         datasource_dir = os.path.dirname(datasource.files.all()[0].file.path)
         for child_table_key in child_tables:
             analyzed_child_table = analyzed_tables.get(child_table_key, {})
@@ -494,7 +494,8 @@ class TableViewSet(viewsets.ModelViewSet):
             parent_arrays = analyzed_tables[child_table_key].parent.arrays
             child_path = analyzed_tables[child_table_key].path[0]
             array_size = parent_arrays[child_path]
-            mergeable = False if array_size >= TABLE_THRESHOLD else True
+            if mergeable is None or mergeable is True:
+                mergeable = False if array_size >= TABLE_THRESHOLD else True
             child_table = Table.objects.create(
                 name=child_table_key, parent=analyzed_tables[child_table_key].parent.name, mergeable=mergeable
             )
@@ -502,7 +503,9 @@ class TableViewSet(viewsets.ModelViewSet):
             preview_path = f"{datasource_dir}/{child_table_key}_combined.csv"
             store_preview_csv(COLUMNS, PREVIEW_ROWS, analyzed_tables[child_table_key], preview_path)
             if analyzed_child_table.child_tables:
-                self._split_table(table, analyzed_tables, datasource, analyzed_child_table.child_tables)
+                self._split_table(
+                    table, analyzed_tables, datasource, analyzed_child_table.child_tables, mergeable=mergeable
+                )
 
 
 class TablePreviewViewSet(viewsets.GenericViewSet):
@@ -530,7 +533,6 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,
-                        "mergeable": table.mergeable,
                         "should_split": table.should_split,
                         "parent": table.parent,
                     }
@@ -564,7 +566,6 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         "id": str(table.id),
                         "preview": csvfile.read(),
                         "heading": table.heading,
-                        "mergeable": table.mergeable,
                         "should_split": table.should_split,
                         "parent": table.parent,
                     }
