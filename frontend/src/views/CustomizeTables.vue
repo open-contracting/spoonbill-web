@@ -45,8 +45,6 @@ export default {
     async created() {
         await this.getSelections();
 
-        // console.log('this.tables', this.tables);
-
         await this.selections.tables.map(async (table) => {
             // split all tables as default
             let res = await ApiService.changeSplitStatus(

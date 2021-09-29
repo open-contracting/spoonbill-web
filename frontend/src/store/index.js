@@ -146,6 +146,11 @@ export default new Vuex.Store({
                 });
             } catch (e) {
                 /* istanbul ignore next */
+
+                commit('openSnackbar', {
+                    text: e?.response?.data?.detail,
+                    color: 'error',
+                });
                 console.error(e);
             }
         },
