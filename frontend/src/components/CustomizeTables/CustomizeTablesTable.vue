@@ -492,7 +492,7 @@ export default {
                 });
                 await this.getTablePreview(this.table.id);
             } catch (e) {
-            
+
                 /* istanbul ignore next */
                 this.$error(e);
                 this.$store.commit('openSnackbar', {
