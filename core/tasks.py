@@ -500,6 +500,13 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
             spec = DataPreprocessor.restore(datasource.analyzed_file.path)
             total_rows = spec.total_items
             opt = get_flatten_options(selection)
+            # In case of exclusion of child tables, 'split' of root table should be set to 'False' for proper export
+            # TODO: There should be better way to handle this (probably on library side)
+            if "exclude" in opt:
+                for _table in opt["exclude"]:
+                    _parent = spec.tables[_table].parent
+                    if _parent != "" and _parent.name in opt["selection"]:
+                        opt["selection"][_parent.name]["split"] = False
             logger.debug(
                 "Generate options for export",
                 extra={
