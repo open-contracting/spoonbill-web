@@ -105,7 +105,7 @@ class Url(models.Model):
     available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
     unavailable_tables = ArrayField(models.CharField(max_length=50), default=list)
     root_key = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=60, blank=True, null=True)
+    country = models.CharField(max_length=255, blank=True, null=True)
     period = models.CharField(max_length=255, blank=True, null=True)
     source = models.CharField(max_length=255, blank=True, null=True)
     order = models.CharField(max_length=2048, blank=True, null=True)

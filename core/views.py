@@ -442,7 +442,8 @@ class TableViewSet(viewsets.ModelViewSet):
                         key == "split"
                         and request.data[key] is False
                         and table.array_tables
-                        and False in [_table.mergeable for _table in list(table.array_tables.all())]
+                        and False
+                        in [_table.mergeable for _table in list(table.array_tables.all()) if _table.include is True]
                     ):
 
                         return Response(
