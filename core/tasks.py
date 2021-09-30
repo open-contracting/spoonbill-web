@@ -159,7 +159,13 @@ def validate_data(object_id, model=None, lang_code="en"):
         except (ijson.JSONError, ijson.IncompleteJSONError) as e:
             logger.info(
                 "Error while validating data %s" % object_id,
-                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+                extra={
+                    "MESSAGE_ID": "validation_exception",
+                    "MODEL": model,
+                    "ID": object_id,
+                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_ERROR": str(e),
+                },
             )
             message = _("Error while validating data `%s`") % str(e)
             datasource.validation.errors = message
@@ -172,9 +178,19 @@ def validate_data(object_id, model=None, lang_code="en"):
         except OSError as e:
             logger.exception(
                 "Error while validating data %s" % object_id,
-                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+                extra={
+                    "MESSAGE_ID": "validation_exception",
+                    "MODEL": model,
+                    "ID": object_id,
+                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_ERROR": str(e),
+                },
             )
-            message = _("Currently, the space limit was reached. Please try again later.")
+            message = (
+                _("Currently, the space limit was reached. Please try again later.")
+                if "[Errno 28]" in str(e)
+                else _("Something went wrong during processing of your file, please contact support")
+            )
             datasource.validation.errors = message
             datasource.validation.is_valid = False
             datasource.validation.save(update_fields=["errors", "is_valid"])
@@ -185,7 +201,13 @@ def validate_data(object_id, model=None, lang_code="en"):
         except Exception as e:
             logger.exception(
                 "Error while validating data %s" % object_id,
-                extra={"MESSAGE_ID": "validation_exception", "MODEL": model, "ID": object_id, "STR_ERROR": str(e)},
+                extra={
+                    "MESSAGE_ID": "validation_exception",
+                    "MODEL": model,
+                    "ID": object_id,
+                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_ERROR": str(e),
+                },
             )
             message = _("Error while validating data `%s`") % str(e)
             datasource.validation.errors = message
@@ -418,23 +440,27 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 {"type": "task.download_data_source", "error": _("Datasource %s not found") % object_id},
             )
         except (OSError, Exception) as e:
-            e = type(e).__name__
             message_id = {"OSError": "download_no_left_space", "Exception": "download_exception"}
             message = {
-                "OSError": "Currently, the space limit was reached. Please try again later.",
+                "OSError": "Something went wrong during processing of your file, please contact support",
                 "Exception": "Something went wrong. Contact with support service.",
             }
             log_level = {"OSError": logger.info, "Exception": logger.exception}
-            log_level[e](
+            log_level[type(e).__name__](
                 "Error while download datasource %s" % object_id,
                 extra={
-                    "MESSAGE_ID": message_id[e],
+                    "MESSAGE_ID": message_id[type(e).__name__],
                     "DATASOURCE_ID": object_id,
                     "MODEL": model,
                     "ERROR": str(e),
+                    "STR_EXCEPTION": e.__class__.__name__,
                 },
             )
-            datasource.error = _(message[e])
+            datasource.error = (
+                _("Currently, the space limit was reached. Please try again later.")
+                if "[Errno 28]" in str(e)
+                else _(message[type(e).__name__])
+            )
             datasource.status = "failed"
             datasource.save(update_fields=["status", "error"])
             async_to_sync(channel_layer.group_send)(
@@ -557,7 +583,11 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
             )
             logger.info("Flatten %s for %s model failed: %s" % (flatten_id, model, e), extra=extra)
             flatten.status = "failed"
-            flatten.error = _("Currently, the space limit was reached. Please try again later.")
+            flatten.error = (
+                _("Currently, the space limit was reached. Please try again later.")
+                if "[Errno 28]" in str(e)
+                else _("Something went wrong during processing of your file, please contact support")
+            )
             flatten.save(update_fields=["error", "status"])
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{datasource.id}",
