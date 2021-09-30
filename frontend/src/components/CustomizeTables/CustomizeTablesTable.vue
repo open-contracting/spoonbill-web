@@ -485,6 +485,11 @@ export default {
         },
 
         async onSplitSwitchChange(value) {
+            if (value === false) {
+                await this.unmergebleTables.map(async (table) => {
+                    return await this.changeIncludeStatus(table, false);
+                });
+            }
             try {
                 await this.$store.dispatch('updateSplitStatus', {
                     tableId: this.table.id,
@@ -492,7 +497,6 @@ export default {
                 });
                 await this.getTablePreview(this.table.id);
             } catch (e) {
-
                 /* istanbul ignore next */
                 this.$error(e);
                 this.$store.commit('openSnackbar', {
