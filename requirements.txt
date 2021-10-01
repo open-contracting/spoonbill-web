@@ -4,8 +4,6 @@
 #
 #    pip-compile
 #
-spoonbill==1.0.9b8
-    # via -r requirements.in
 aioredis==1.3.1
     # via channels-redis
 alabaster==0.7.12
@@ -33,8 +31,6 @@ babel==2.9.1
     # via sphinx
 billiard==3.6.4.0
     # via celery
-cached-property==1.5.2
-    # via kombu
 celery==5.1.0
     # via
     #   -r requirements.in
@@ -46,22 +42,14 @@ certifi==2020.12.5
     #   sentry-sdk
 cffi==1.14.5
     # via cryptography
-channels-redis==3.2.0
-    # via -r requirements.in
 channels==3.0.3
     # via
     #   -r requirements.in
     #   channels-redis
+channels-redis==3.2.0
+    # via -r requirements.in
 chardet==4.0.0
     # via requests
-click-didyoumean==0.0.3
-    # via celery
-click-logging==1.0.1
-    # via spoonbill
-click-plugins==1.1.1
-    # via celery
-click-repl==0.1.6
-    # via celery
 click==7.1.2
     # via
     #   celery
@@ -70,6 +58,14 @@ click==7.1.2
     #   click-plugins
     #   click-repl
     #   spoonbill
+click-didyoumean==0.0.3
+    # via celery
+click-logging==1.0.1
+    # via spoonbill
+click-plugins==1.1.1
+    # via celery
+click-repl==0.1.6
+    # via celery
 constantly==15.1.0
     # via twisted
 cryptography==3.4.7
@@ -81,6 +77,15 @@ daphne==3.0.2
     # via
     #   -r requirements.in
     #   channels
+django==3.2.5
+    # via
+    #   -r requirements.in
+    #   channels
+    #   django-celery-beat
+    #   django-cors-headers
+    #   django-timezone-field
+    #   djangorestframework
+    #   drf-nested-routers
 django-celery-beat==2.2.0
     # via -r requirements.in
 django-celery-results==2.0.1
@@ -91,15 +96,6 @@ django-timezone-field==4.1.2
     # via django-celery-beat
 django-transfer==0.4
     # via -r requirements.in
-django==3.2.4
-    # via
-    #   -r requirements.in
-    #   channels
-    #   django-celery-beat
-    #   django-cors-headers
-    #   django-timezone-field
-    #   djangorestframework
-    #   drf-nested-routers
 djangorestframework==3.12.4
     # via
     #   -r requirements.in
@@ -136,11 +132,6 @@ ijson==3.1.4
     #   spoonbill
 imagesize==1.2.0
     # via sphinx
-importlib-metadata==4.2.0
-    # via
-    #   kombu
-    #   markdown
-    #   sqlalchemy
 incremental==21.3.0
     # via twisted
 itsdangerous==2.0.1
@@ -179,12 +170,12 @@ prompt-toolkit==3.0.18
     # via click-repl
 psycopg2==2.8.6
     # via -r requirements.in
-pyasn1-modules==0.2.8
-    # via service-identity
 pyasn1==0.4.8
     # via
     #   pyasn1-modules
     #   service-identity
+pyasn1-modules==0.2.8
+    # via service-identity
 pycparser==2.20
     # via cffi
 pygments==2.9.0
@@ -211,8 +202,6 @@ pyyaml==5.4.1
     # via -r requirements.in
 redis==3.5.3
     # via -r requirements.in
-requests-cache==0.6.3
-    # via ocdsextensionregistry
 requests==2.25.1
     # via
     #   -r requirements.in
@@ -222,6 +211,10 @@ requests==2.25.1
     #   sphinx
     #   spoonbill
     #   transifex-client
+requests-cache==0.6.3
+    # via ocdsextensionregistry
+scalpl==0.4.2
+    # via spoonbill
 sentry-sdk==1.1.0
     # via -r requirements.in
 service-identity==21.1.0
@@ -241,12 +234,12 @@ smmap==4.0.0
     # via gitdb
 snowballstemmer==2.1.0
     # via sphinx
-sphinx-rtd-theme==0.5.2
-    # via -r requirements.in
 sphinx==4.0.2
     # via
     #   -r requirements.in
     #   sphinx-rtd-theme
+sphinx-rtd-theme==0.5.2
+    # via -r requirements.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
@@ -259,6 +252,8 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
+spoonbill==1.0.9b8
+    # via -r requirements.in
 sqlalchemy==1.4.15
     # via -r requirements.in
 sqlparse==0.4.2
@@ -271,11 +266,6 @@ twisted[tls]==21.2.0
     # via daphne
 txaio==21.2.1
     # via autobahn
-typing-extensions==3.10.0.0
-    # via
-    #   asgiref
-    #   gitpython
-    #   importlib-metadata
 url-normalize==1.4.3
     # via requests-cache
 urllib3==1.26.5
@@ -292,8 +282,6 @@ wcwidth==0.2.5
     # via prompt-toolkit
 xlsxwriter==1.4.3
     # via spoonbill
-zipp==3.4.1
-    # via importlib-metadata
 zope.interface==5.4.0
     # via twisted
 
