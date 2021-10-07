@@ -9,15 +9,13 @@
                         </h3>
                         <div class="card-content">
                             <div>
-                                <translate>
-                                    It is not possible to merge some arrays as this will make it too large for use in Excel.
-                                </translate>
+                                {{ unmergedTablesText }}
                             </div>
                             <div class="options">Options:</div>
                             <div class="radio-wrapper">
                                 <v-radio-group v-model="radioGroup">
                                     <v-radio
-                                        color="indigo"
+                                        color="primary"
                                         v-for="item in radioOptins"
                                         :key="item.value"
                                         :label="item.label"
@@ -55,6 +53,10 @@ export default {
         unmergebleTables: {
             type: Array,
             default: () => [],
+        },
+        parentTableName: {
+            type: String,
+            default: '',
         },
     },
     data: function () {
@@ -101,6 +103,25 @@ export default {
                 return null;
             }
         },
+        unmergedTablesText() {
+            if (this.unmergebleTables.length > 0) {
+                let str = '';
+                this.unmergebleTables.length === 1
+                    ? (str = this.$gettext('It is not possible to merge Array table: '))
+                    : (str = this.$gettext('It is not possible to merge Array tables: '));
+
+                this.unmergebleTables.map((table, i) => {
+                    str += table.name;
+                    i < this.unmergebleTables.length - 1 ? (str += ', ') : (str += ' ');
+                });
+                str += this.$gettext('into Main table: ');
+                str += this.parentTableName + ' ';
+                str += this.$gettext('as this will make it too large for use in Excel');
+                return str;
+            } else {
+                return null;
+            }
+        },
 
         radioOptins: {
             get() {
@@ -140,10 +161,10 @@ export default {
     margin-top: 10px;
 }
 .save-btn {
-    background-color: indigo !important;
-    color: white;
+    background-color: map-get($colors, 'accent') !important;
+    color: map-get($colors, 'primary');
 }
 .cancel-btn {
-    color: indigo;
+    color: map-get($colors, 'primary') !important;
 }
 </style>

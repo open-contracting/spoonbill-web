@@ -102,6 +102,7 @@
             </v-btn>
         </div>
         <CustomizeDialog
+            :parentTableName="table.name"
             :isOpen="isDialogOpen"
             @setIsDialogOpen="setIsDialogOpen"
             @onSplitSwitchChange="onSplitSwitchChange"
