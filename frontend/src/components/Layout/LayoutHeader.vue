@@ -1,7 +1,9 @@
 <template>
     <v-app-bar app color="darkest" height="100" elevation="0">
         <v-container class="d-flex align-center justify-space-between">
-            <v-img max-width="175" contain src="@/assets/images/ocp-logo.svg" />
+            <router-link to="/">
+                <v-img max-width="175" contain src="@/assets/images/ocp-logo.svg" />
+            </router-link>
             <div class="lang-selector" style="cursor: pointer">
                 <div class="d-flex lang-selector__option">
                     <div tag="div" class="lang" key="sp">{{ getLangNameByCode(currentLanguage).name }}</div>
