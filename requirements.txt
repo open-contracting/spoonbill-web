@@ -252,7 +252,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-spoonbill==1.0.9b9
+spoonbill==1.0.9b10
     # via -r requirements.in
 sqlalchemy==1.4.15
     # via -r requirements.in
