@@ -15,7 +15,7 @@ jobs:
       CI: true
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:13
         env:
           POSTGRES_PASSWORD: spoonbillpwd
           POSTGRES_USER: spoonbilluser
