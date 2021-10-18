@@ -546,13 +546,14 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         "heading": table.heading,
                         "should_split": table.should_split,
                         "parent": table.parent,
+                        "include": table.include,
                     }
                     if selection.headings_type != selection.OCDS:
                         preview["column_headings"] = table.column_headings
                 data.append(preview)
                 for child_table in table.array_tables.all():
-                    if not child_table.include:
-                        continue
+                    # if not child_table.include:
+                    #     continue
                     preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
                     with open(preview_path) as csvfile:
                         preview = {
@@ -563,6 +564,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                             "mergeable": child_table.mergeable,
                             "should_split": child_table.should_split,
                             "parent": child_table.parent,
+                            "include": child_table.include,
                         }
                         if selection.headings_type != selection.OCDS:
                             preview["column_headings"] = child_table.column_headings
@@ -579,6 +581,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         "heading": table.heading,
                         "should_split": table.should_split,
                         "parent": table.parent,
+                        "include": table.include,
                     }
                     if selection.headings_type != selection.OCDS:
                         preview["column_headings"] = table.column_headings
