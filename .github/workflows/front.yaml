@@ -102,7 +102,7 @@ jobs:
               export TX_TOKEN=${{ secrets.TX_TOKEN }}
               tx pull -a -f
       - name: Build container image
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2.7.0
         with:
           path: ./frontend
           build_args: VUE_APP_API_URL=${{ secrets.API_URL }},VUE_APP_WEBSOCKET_URL=${{ secrets.WEBSOCKET_URL }},VUE_APP_SENTRY_DSN=${{ secrets.SENTRY_DSN }},SENTRY_ENVIRONMENT=${{ secrets.SENTRY_ENVIRONMENT }}
