@@ -41,9 +41,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-${{ secrets.CACHE_NAME }}-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ secrets.CACHE_NAME }}-
+            ${{ runner.os }}-pip-
       - name: Install requirements
         run: pip install -r requirements_dev.txt
       - name: Run pre-commit
@@ -55,8 +55,8 @@ jobs:
         run: |
             sed -i 1d .envrc
             source .envrc
-            pytest  --cov-report xml --cov-fail-under=${{ secrets.COVERAGE_PERCENT }}
+            pytest  --cov-report xml --cov-fail-under=60
             git fetch --all
-            diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=${{ secrets.COVERAGE_PERCENT }}
+            diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=60
         env:
           DEBUG: True

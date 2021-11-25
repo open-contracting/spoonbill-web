@@ -46,9 +46,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-${{ secrets.CACHE_NAME }}-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ secrets.CACHE_NAME }}-
+            ${{ runner.os }}-pip-
       - name: Install requirements
         run: pip install -r requirements_dev.txt
       - name: Run pre-commit
@@ -60,7 +60,7 @@ jobs:
         run: |
             sed -i 1d .envrc
             source .envrc
-            pytest --cov-fail-under=${{ secrets.COVERAGE_PERCENT }}
+            pytest --cov-fail-under=60
         env:
           DEBUG: True
       - name: Test frontend
@@ -105,11 +105,11 @@ jobs:
         uses: docker/build-push-action@v1
         with:
           path: ./frontend
-          build_args: VUE_APP_API_URL=${{ secrets.API_URL }},VUE_APP_WEBSOCKET_URL=${{ secrets.WEBSOCKET_URL }},VUE_APP_SENTRY_DSN=${{ secrets.SENTRY_DSN }},SENTRY_ENVIRONMENT=${{ secrets.SENTRY_ENVIRONMENT }}
-          username: ${{ secrets.R_USER }}
-          password: ${{ secrets.R_SECRET }}
+          build_args: VUE_APP_API_URL=/api/,VUE_APP_WEBSOCKET_URL=/api/ws
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/${{ secrets.FRONT_IMAGE_NAME }}
+          repository: ${{ github.repository }}/front
           tag_with_sha: true
           tag_with_ref: true
           tags: latest

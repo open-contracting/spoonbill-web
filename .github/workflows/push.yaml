@@ -49,9 +49,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-${{ secrets.CACHE_NAME }}-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ secrets.CACHE_NAME }}-
+            ${{ runner.os }}-pip-
       - name: Install requirements
         run: pip install -r requirements_dev.txt
       - name: Run pre-commit
@@ -63,7 +63,7 @@ jobs:
         run: |
             sed -i 1d .envrc
             source .envrc
-            pytest --cov-fail-under=${{ secrets.COVERAGE_PERCENT }}
+            pytest --cov-fail-under=60
         env:
           DEBUG: True
       - name: Test frontend
@@ -108,21 +108,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: open-contracting/spoonbill-test
-          token: ${{ secrets.CHECKOUT_PAT }}
           path: 'test'
       - name: Install requirements
         run: pip install -r test/requirements.txt
       - uses: nanasess/setup-chromedriver@v1.0.5
       - name: create env file
         run: |
-              echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-              echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-              echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-              echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+              echo "POSTGRES_USER=spoonbilluser" >> .env
+              echo "POSTGRES_PASSWORD=spoonbillpwd" >> .env
+              echo "POSTGRES_DB=spoonbill" >> .env
               echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
-              echo "CELERY_BACKEND=db+postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres/${{ secrets.POSTGRES_DB }}" >> .env
-              echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
-              echo "SENTRY_ENVIRONMENT=tests" >> .env
+              echo "CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill" >> .env
               echo "API_PREFIX=api/" >> .env
               echo "JOB_FILES_TIMEOUT=5" >> .env
       - name: "Download translate files from transifex for front"
@@ -156,7 +152,7 @@ jobs:
               docker ps
               cd ./test
               if [ "${{ github.event.inputs.SKIP_TEST }}" != "true" ]; then
-              DOMAIN_URL=http://127.0.0.1/api SITE_URL=http://127.0.0.1 POSTGRES_HOST=127.0.0.1 POSTGRES_DB=${{ secrets.POSTGRES_DB }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} python -m robot -n noncritical tests
+              DOMAIN_URL=http://127.0.0.1/api SITE_URL=http://127.0.0.1 POSTGRES_HOST=127.0.0.1 POSTGRES_DB=spoonbill POSTGRES_USER=spoonbilluser POSTGRES_PASSWORD=spoonbillpwd python -m robot -n noncritical tests
               fi
       - uses: actions/upload-artifact@v2
         if: always()
@@ -169,10 +165,10 @@ jobs:
       - name: Build container image
         uses: docker/build-push-action@v1
         with:
-          username: ${{ secrets.R_USER }}
-          password: ${{ secrets.R_SECRET }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/${{ secrets.IMAGE_NAME }}
+          repository: ${{ github.repository }}/app
           tag_with_sha: true
           tag_with_ref: true
           tags: latest
