@@ -167,7 +167,7 @@ jobs:
             test/log.html
             test/report.html
       - name: Build container image
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2.7.0
         with:
           username: ${{ secrets.R_USER }}
           password: ${{ secrets.R_SECRET }}
