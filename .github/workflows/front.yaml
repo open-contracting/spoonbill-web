@@ -113,26 +113,3 @@ jobs:
           tag_with_sha: true
           tag_with_ref: true
           tags: latest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    env:
-      CI: true
-    steps:
-      - uses: benjlevesque/short-sha@v1.2
-        id: short-sha
-        with:
-          length: 7
-      - name: Deploy docker-compose
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-              cd git
-              docker login -u ${{ secrets.R_USER }} -p ${{ secrets.R_SECRET }}  docker.pkg.github.com/${{ github.repository }}/
-              docker-compose -f docker-compose.deploy.yaml pull front &&
-              docker-compose -f docker-compose.deploy.yaml stop front &&
-              docker-compose -f docker-compose.deploy.yaml up -d front
