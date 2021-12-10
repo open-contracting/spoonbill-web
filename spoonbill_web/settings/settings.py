@@ -189,7 +189,7 @@ MEDIA_URL = "/files/" if not API_PREFIX else f"{API_PREFIX}files/"
 
 # Managing files
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440
-FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", '/data/tmp/')
+FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", "/data/tmp/")
 
 # Channels
 ASGI_APPLICATION = "spoonbill_web.asgi.application"
