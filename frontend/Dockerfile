@@ -1,8 +1,12 @@
-FROM node:10 as builder
-WORKDIR /app
+FROM node:10 as build-stage-vue
+
+WORKDIR /workdir
+
 COPY package*.json ./
 RUN npm install
+
 COPY . .
+
 ARG VUE_APP_API_URL
 ARG VUE_APP_WEBSOCKET_URL
 ARG VUE_APP_SENTRY_DSN
@@ -18,7 +22,8 @@ RUN VUE_APP_API_URL=${VUE_APP_API_URL} \
     SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT} \
     npm run build
 
-FROM nginx:stable
-WORKDIR /app
+FROM nginxinc/nginx-unprivileged:latest as production-stage
+USER root
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist/ /app/
+COPY --from=build-stage-vue --chown=nginx:root /workdir/dist /usr/share/nginx/html/static
+USER nginx
