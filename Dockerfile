@@ -13,6 +13,8 @@ RUN groupadd -r runner && useradd --no-log-init -r -g runner runner
 RUN mkdir -p /data/tmp && chown -R runner:runner /data/tmp
 # Must match the settings.MEDIA_ROOT default value.
 RUN mkdir -p /data/media && chown -R runner:runner /data/media
+# Must match the settings.DATAREGISTRY_MEDIA_ROOT default value.
+RUN mkdir -p /data/exporter && chown -R runner:runner /data/exporter
 
 WORKDIR /workdir
 USER runner:runner
