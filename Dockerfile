@@ -14,7 +14,7 @@ RUN mkdir -p /data/tmp && chown -R runner:runner /data/tmp
 # Must match the settings.MEDIA_ROOT default value.
 RUN mkdir -p /data/media && chown -R runner:runner /data/media
 # Must match the settings.DATAREGISTRY_MEDIA_ROOT default value.
-RUN mkdir -p /data/exporter && chown -R runner:runner /data/exporter
+RUN mkdir -p /data/storage/exporter_dumps && chown -R runner:runner /data/storage/exporter_dumps
 
 WORKDIR /workdir
 USER runner:runner
@@ -26,4 +26,4 @@ ENV WEB_CONCURRENCY=2
 RUN python manage.py compilemessages && python manage.py collectstatic --noinput
 
 EXPOSE 8000
-CMD ["gunicorn", "spoonbill_web.wsgi", "--bind", "0.0.0.0:8000", "--worker-tmp-dir", "/dev/shm", "--threads", "2", "--name", "{{ cookiecutter.project_slug }}"]
+CMD ["gunicorn", "spoonbill_web.wsgi", "--bind", "0.0.0.0:8000", "--worker-tmp-dir", "/dev/shm", "--threads", "2", "--name", "spoonbill-web"]
