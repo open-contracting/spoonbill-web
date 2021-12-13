@@ -14,7 +14,7 @@ RUN mkdir -p /data/tmp && chown -R runner:runner /data/tmp
 # Must match the settings.MEDIA_ROOT default value.
 RUN mkdir -p /data/media && chown -R runner:runner /data/media
 # Must match the settings.DATAREGISTRY_MEDIA_ROOT default value.
-RUN mkdir -p /data/storage/exporter_dumps && chown -R runner:runner /data/storage/exporter_dumps
+RUN mkdir -p /data/exporter && chown -R runner:runner /data/exporter
 
 WORKDIR /workdir
 USER runner:runner
