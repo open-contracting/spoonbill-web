@@ -9,6 +9,7 @@ django-cors-headers
 django-transfer
 djangorestframework
 drf-nested-routers
+furo
 ijson
 markdown
 psycopg2
@@ -18,7 +19,6 @@ redis
 requests
 sentry-sdk
 sphinx
-sphinx_rtd_theme
 sqlalchemy
 transifex-client
 spoonbill
