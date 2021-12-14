@@ -54,7 +54,7 @@ jobs:
       - name: Run tests
         run: |
             FILE_UPLOAD_TEMP_DIR=/tmp/
-            MEDIA_ROOT=/tmp
+            MEDIA_ROOT=/tmp/
             sed -i 1d .envrc
             source .envrc
             pytest  --cov-report xml --cov-fail-under=60
