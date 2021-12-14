@@ -31,7 +31,7 @@ services:
     build: .
     image: app
     pull_policy: if_not_present
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
+    command: sh -c "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 spoonbill_web.asgi:application"
     container_name: app
     labels:
       - 'traefik.enable=true'
@@ -54,7 +54,7 @@ services:
     networks:
       - main
     volumes:
-      - temporary-data:/tmp
+      - temporary-data:/data/tmp
     restart: on-failure
   postgres:
     container_name: postgres
@@ -91,7 +91,7 @@ services:
       - postgres
       - redis
     volumes:
-      - temporary-data:/tmp
+      - temporary-data:/data/tmp
     hostname: celery_worker
     networks:
       - main
