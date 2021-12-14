@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      FILE_UPLOAD_TEMP_DIR: /tmp/
+      MEDIA_ROOT: /tmp/
     steps:
       - name: checkout
         uses: actions/checkout@v2
