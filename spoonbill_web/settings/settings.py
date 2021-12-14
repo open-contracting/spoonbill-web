@@ -184,12 +184,12 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "")
 
 JOB_FILES_TIMEOUT = int(os.getenv("JOB_FILES_TIMEOUT", 1))  # days
 
-MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/tmp/")
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media/")
 MEDIA_URL = "/files/" if not API_PREFIX else f"{API_PREFIX}files/"
 
 # Managing files
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440
-FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR")
+FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", "/data/tmp/")
 
 # Channels
 ASGI_APPLICATION = "spoonbill_web.asgi.application"
@@ -216,7 +216,7 @@ DATAREGISTRY_ALLOW_SYMLINKS = bool(strtobool(os.getenv("DATAREGISTRY_ALLOW_SYMLI
 
 DATAREGISTRY_JAIL = bool(strtobool(os.getenv("DATAREGISTRY_JAIL", "True")))
 
-DATAREGISTRY_MEDIA_ROOT = os.getenv("DATAREGISTRY_MEDIA_ROOT", None)
+DATAREGISTRY_MEDIA_ROOT = os.getenv("DATAREGISTRY_MEDIA_ROOT", "/data/exporter")
 if DATAREGISTRY_MEDIA_ROOT:
     DATAREGISTRY_MEDIA_ROOT = Path(DATAREGISTRY_MEDIA_ROOT)
 
