@@ -52,9 +52,6 @@ jobs:
             pre-commit autoupdate
             pre-commit run --all-files
       - name: Run tests
-        env:
-            FILE_UPLOAD_TEMP_DIR: /tmp/
-            MEDIA_ROOT: /tmp/
         run: |
             sed -i 1d .envrc
             source .envrc
@@ -63,3 +60,5 @@ jobs:
             diff-cover ./coverage.xml --compare-branch=origin/main --fail-under=60
         env:
           DEBUG: True
+          FILE_UPLOAD_TEMP_DIR: /tmp/
+          MEDIA_ROOT: /tmp/
