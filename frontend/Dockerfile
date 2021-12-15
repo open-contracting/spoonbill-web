@@ -10,7 +10,6 @@ COPY . .
 ARG VUE_APP_API_URL
 ARG VUE_APP_WEBSOCKET_URL
 ARG VUE_APP_SENTRY_DSN
-ARG SENTRY_ENVIRONMENT
 ENV VUE_APP_API_URL ${VUE_APP_API_URL:-http://localhost/api/}
 ENV VUE_APP_WEBSOCKET_URL ${VUE_APP_WEBSOCKET_URL:-ws://localhost/api/ws}
 ENV VUE_APP_SENTRY_DSN ${VUE_APP_SENTRY_DSN}
@@ -19,7 +18,6 @@ RUN npm run gettext-compile locale/*/lang.po || true
 RUN VUE_APP_API_URL=${VUE_APP_API_URL} \
     VUE_APP_WEBSOCKET_URL=${VUE_APP_WEBSOCKET_URL} \
     VUE_APP_SENTRY_DSN=${VUE_APP_SENTRY_DSN} \
-    SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT} \
     npm run build
 
 FROM nginxinc/nginx-unprivileged:latest as production-stage
