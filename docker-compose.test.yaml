@@ -119,8 +119,8 @@ services:
     build:
       context: ./frontend
       args:
-        VUE_APP_API_URL: http://127.0.0.1:8080/api/
-        VUE_APP_WEBSOCKET_URL: ws://127.0.0.1:8080/api/ws
+        VUE_APP_API_URL: http://127.0.0.1/api/
+        VUE_APP_WEBSOCKET_URL: ws://127.0.0.1/api/ws
     image: front
     container_name: front
     labels:
