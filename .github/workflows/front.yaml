@@ -124,7 +124,6 @@ jobs:
           build_args: |
             VUE_APP_API_URL=/api/
             VUE_APP_WEBSOCKET_URL=/api/ws
-          repository: ${{ github.repository }}/front
           cache-from: type=registry,ref=${{ github.repository }}/front:latest
           cache-to: type=inline
           tags: ${{ github.repository }}/front:latest
