@@ -169,13 +169,22 @@ jobs:
             test/output.xml
             test/log.html
             test/report.html
-      - name: Build container image
-        uses: docker/build-push-action@v2.7.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/app
-          tag_with_sha: true
-          tag_with_ref: true
-          tags: latest
+
+      - name: Build container image
+        uses: docker/build-push-action@v2.7.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          cache-from: type=registry,ref=${{ github.repository }}/app:latest
+          cache-to: type=inline
+          tags: ${{ github.repository }}/app:latest
