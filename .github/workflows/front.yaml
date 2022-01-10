@@ -121,9 +121,7 @@ jobs:
         with:
           context: ./frontend
           push: true
-          build_args: |
+          build-args: |
             VUE_APP_API_URL=/api/
             VUE_APP_WEBSOCKET_URL=/api/ws
-          cache-from: type=registry,ref=${{ github.repository }}/front:latest
-          cache-to: type=inline
           tags: ${{ github.repository }}/front:latest

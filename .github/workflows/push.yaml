@@ -186,6 +186,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          cache-from: type=registry,ref=${{ github.repository }}/app:latest
-          cache-to: type=inline
           tags: ${{ github.repository }}/app:latest
