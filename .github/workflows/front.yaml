@@ -128,3 +128,5 @@ jobs:
             VUE_APP_API_URL=/api/
             VUE_APP_WEBSOCKET_URL=/api/ws
           tags: ghcr.io/${{ github.repository }}/front:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

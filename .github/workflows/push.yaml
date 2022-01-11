@@ -189,3 +189,5 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}/app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
