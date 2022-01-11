@@ -119,12 +119,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v1
-        with:
-          images: ghcr.io/${{ github.repository }}/front
-
       - name: Build container image
         uses: docker/build-push-action@v2.7.0
         with:
@@ -133,5 +127,4 @@ jobs:
           build-args: |
             VUE_APP_API_URL=/api/
             VUE_APP_WEBSOCKET_URL=/api/ws
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/${{ github.repository }}/front:latest
