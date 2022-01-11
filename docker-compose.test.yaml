@@ -45,7 +45,7 @@ services:
     env_file:
       - .env
     environment:
-      - DJANGO_ENV=production
+      - DJANGO_ENV=test
       - ALLOWED_HOSTS=127.0.0.1,localhost
       - DB_HOST=postgres
       - REDIS_HOST=redis
@@ -81,7 +81,8 @@ services:
     env_file:
       - .env
     environment:
-      - DJANGO_ENV=production
+      - DJANGO_ENV=test
+      - ALLOWED_HOSTS=127.0.0.1,localhost
       - DB_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER=redis://redis:6379/0
