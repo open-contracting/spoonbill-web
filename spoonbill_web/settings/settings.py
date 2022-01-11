@@ -22,6 +22,8 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 from yaml import safe_load as load
 
+production = os.getenv("DJANGO_ENV") == "production"
+
 # Sentry
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 if SENTRY_DSN:
@@ -53,11 +55,11 @@ logging.config.dictConfig(LOGGING)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "v3ry$3cr3tk3yf0rdj@ng0")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("DEBUG", True))
+DEBUG = not production
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
 if "ALLOWED_HOSTS" in os.environ:
-    ALLOWED_HOSTS.extend(os.getenv("DJANGO_ALLOWED_HOSTS", "").split())
+    ALLOWED_HOSTS.extend(os.getenv("ALLOWED_HOSTS").split(","))
 
 # Application definition
 
