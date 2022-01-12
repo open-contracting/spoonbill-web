@@ -45,7 +45,7 @@ services:
     env_file:
       - .env
     environment:
-      - DJANGO_ENV=test
+      - DJANGO_ENV=production
       - ALLOWED_HOSTS=127.0.0.1,localhost
       - DB_HOST=postgres
       - REDIS_HOST=redis
@@ -81,7 +81,7 @@ services:
     env_file:
       - .env
     environment:
-      - DJANGO_ENV=test
+      - DJANGO_ENV=production
       - ALLOWED_HOSTS=127.0.0.1,localhost
       - DB_HOST=postgres
       - REDIS_HOST=redis
@@ -133,6 +133,8 @@ services:
     networks:
       - main
     restart: on-failure
+    volumes:
+      - temporary-data:/data/media
 
 networks:
   main:
