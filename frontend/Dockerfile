@@ -26,6 +26,6 @@ COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build-stage-vue --chown=nginx:root /workdir/dist /usr/share/nginx/html/static
 
 # Must match the settings.MEDIA_ROOT default value.
-RUN mkdir -p /data/media && chown -R nginx:nginx /data/media
+RUN mkdir -p /data/media && chown -R nginx:root /data/media
 
 USER nginx
