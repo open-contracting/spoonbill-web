@@ -12,7 +12,7 @@ alabaster==0.7.12
     # via
     #   -r requirements.txt
     #   sphinx
-amqp==5.0.6
+amqp==5.0.9
     # via
     #   -r requirements.txt
     #   kombu
@@ -58,7 +58,7 @@ billiard==3.6.4.0
     #   celery
 black==21.12b0
     # via -r requirements_dev.in
-celery==5.1.0
+celery==5.2.3
     # via
     #   -r requirements.txt
     #   django-celery-beat
@@ -84,7 +84,7 @@ chardet==4.0.0
     # via
     #   -r requirements.txt
     #   requests
-click==7.1.2
+click==8.0.3
     # via
     #   -r requirements.txt
     #   black
@@ -107,7 +107,7 @@ click-plugins==1.1.1
     # via
     #   -r requirements.txt
     #   celery
-click-repl==0.1.6
+click-repl==0.2.0
     # via
     #   -r requirements.txt
     #   celery
@@ -245,7 +245,7 @@ jsonref==0.2
     #   ocdskit
     #   ocdsmerge
     #   spoonbill
-kombu==5.1.0
+kombu==5.2.3
     # via
     #   -r requirements.txt
     #   celery
@@ -365,7 +365,7 @@ python-slugify==4.0.1
     # via
     #   -r requirements.txt
     #   transifex-client
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements.txt
     #   babel
