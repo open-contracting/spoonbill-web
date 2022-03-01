@@ -41,7 +41,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: Set up Python
-        uses: actions/setup-python@v2.3.2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - uses: ruby/setup-ruby@v1
@@ -111,7 +111,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: Set up Python
-        uses: actions/setup-python@v2.3.2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - name: Check out tests repository
