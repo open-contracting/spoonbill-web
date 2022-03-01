@@ -477,7 +477,7 @@ tomli==1.2.2
     # via black
 transifex-client==0.14.2
     # via -r requirements.txt
-twisted[tls]==21.2.0
+twisted[tls]==22.1.0
     # via
     #   -r requirements.txt
     #   daphne
@@ -485,8 +485,11 @@ txaio==21.2.1
     # via
     #   -r requirements.txt
     #   autobahn
-typing-extensions==4.0.1
-    # via black
+typing-extensions==4.1.1
+    # via
+    #   -r requirements.txt
+    #   black
+    #   twisted
 url-normalize==1.4.3
     # via
     #   -r requirements.txt
