@@ -477,7 +477,7 @@ tomli==1.2.2
     # via black
 transifex-client==0.14.2
     # via -r requirements.txt
-twisted[tls]==22.1.0
+twisted[tls]==22.2.0
     # via
     #   -r requirements.txt
     #   daphne
