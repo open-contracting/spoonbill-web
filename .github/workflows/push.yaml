@@ -121,7 +121,7 @@ jobs:
           path: 'test'
       - name: Install requirements
         run: pip install -r test/requirements.txt
-      - uses: nanasess/setup-chromedriver@v1.0.5
+      - uses: nanasess/setup-chromedriver@v1.0.7
       - name: create env file
         run: |
               echo "POSTGRES_USER=spoonbilluser" >> .env
