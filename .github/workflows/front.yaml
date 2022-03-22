@@ -47,7 +47,7 @@ jobs:
           node-version: '10'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
