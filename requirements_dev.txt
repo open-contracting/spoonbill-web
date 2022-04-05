@@ -476,7 +476,9 @@ toml==0.10.2
 tomli==1.2.2
     # via black
 transifex-client==0.14.2
-    # via -r requirements.txt
+    # via
+    #   -r requirements.txt
+    #   -r requirements_dev.in
 twisted[tls]==22.2.0
     # via
     #   -r requirements.txt
