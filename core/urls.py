@@ -1,5 +1,4 @@
-from django.conf.urls import url
-from django.urls import include
+from django.urls import include, path
 
 from core.routing import (
     router,
@@ -12,11 +11,11 @@ from core.routing import (
 )
 
 urlpatterns = [
-    url(r"^", include(router.urls)),
-    url(r"^", include(upload_selection_router.urls)),
-    url(r"^", include(upload_table_router.urls)),
-    url(r"^", include(url_selection_router.urls)),
-    url(r"^", include(url_table_router.urls)),
-    url(r"^", include(upload_preview_router.urls)),
-    url(r"^", include(url_preview_router.urls)),
+    path("", include(router.urls)),
+    path("", include(upload_selection_router.urls)),
+    path("", include(upload_table_router.urls)),
+    path("", include(url_selection_router.urls)),
+    path("", include(url_table_router.urls)),
+    path("", include(upload_preview_router.urls)),
+    path("", include(url_preview_router.urls)),
 ]
