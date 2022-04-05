@@ -186,7 +186,7 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "db+postgresql://postgres:po
 
 JOB_FILES_TIMEOUT = int(os.getenv("JOB_FILES_TIMEOUT", 1))  # days
 
-MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media/")
+MEDIA_ROOT = os.path.abspath(os.getenv("MEDIA_ROOT", "/data/media/"))
 MEDIA_URL = "/media/"
 
 # Managing files
