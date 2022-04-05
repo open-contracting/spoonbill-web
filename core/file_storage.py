@@ -38,7 +38,7 @@ def safe_join(base, *paths):
                 return final_path
 
         raise SuspiciousFileOperation(
-            "The joined path ({}) is located outside of the base path " "component ({})".format(final_path, base_path)
+            f"The joined path ({final_path}) is located outside of the base path " "component ({base_path})"
         )
     return final_path
 

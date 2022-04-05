@@ -39,7 +39,7 @@ TABLES_ORDER = (
 
 def instance_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/<id>/<filename>
-    return "{0}/{1}.json".format(instance.id, uuid.uuid4().hex)
+    return f"{instance.id}/{uuid.uuid4().hex}.json"
 
 
 def export_directory_path(instance, filename):
@@ -47,7 +47,7 @@ def export_directory_path(instance, filename):
     selection = instance.dataselection_set.all()[0]
     ds_set = selection.url_set.all() or selection.upload_set.all()
     ds = ds_set[0]
-    return "{0}/{1}".format(ds.id, filename.split("/")[-1])
+    return f"{ds.id}/{filename.split('/')[-1]}"
 
 
 def retrieve_tables(analyzed_data):
