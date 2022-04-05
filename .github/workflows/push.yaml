@@ -8,10 +8,8 @@ on:
           default: 'false'
   push:
     branches:
-       - master
        - main
     paths-ignore:
-       - 'frontend/**'
        - 'docs/**'
 
 jobs:
@@ -61,8 +59,8 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Install requirements
         run: |
-            pip install --upgrade coveralls
             pip install -r requirements_dev.txt
+            pip install --upgrade coveralls
       - name: Run tests
         run: |
             sed -i 1d .envrc
@@ -95,6 +93,14 @@ jobs:
             push_translations: false
             push_sources: true
         uses: docker://sergioisidoro/github-transifex-action:v0.2.0
+      - name: "Upload translate files to transifex for front"
+        run: |
+              sudo apt-get install gettext
+              cd ./frontend
+              npm run gettext-extract
+              pip install transifex-client
+              export TX_TOKEN=${{ secrets.TX_TOKEN }}
+              tx push -s
 
   build:
     runs-on: ubuntu-latest
@@ -128,12 +134,14 @@ jobs:
               echo "CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill" >> .env
               echo "API_PREFIX=api/" >> .env
               echo "JOB_FILES_TIMEOUT=5" >> .env
+
       - name: "Download translate files from transifex for front"
         run: |
               pip install transifex-client
               cd ./frontend
               export TX_TOKEN=${{ secrets.TX_TOKEN }}
-              tx pull -a
+              tx pull -a -f
+
       - name: "Download translate files from transifex"
         uses: docker://sergioisidoro/github-transifex-action:v0.2.0
         with:
@@ -186,5 +194,17 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}/app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build container image
+        uses: docker/build-push-action@v2.10.0
+        with:
+          context: ./frontend
+          push: true
+          build-args: |
+            VUE_APP_API_URL=/api/
+            VUE_APP_WEBSOCKET_URL=/api/ws
+          tags: ghcr.io/${{ github.repository }}/front:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
