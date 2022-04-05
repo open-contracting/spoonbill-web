@@ -40,6 +40,7 @@ jobs:
           PYTHONWARNINGS: error
           CELERY_BROKER: redis://localhost:${{ job.services.redis.ports[6379] }}/0
           CELERY_BACKEND: db+postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+          DB_PORT: ${{ job.services.postgres.ports[5432] }}
           MEDIA_ROOT: /tmp/
           FILE_UPLOAD_TEMP_DIR: /tmp/
         run: |
