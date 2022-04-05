@@ -83,7 +83,6 @@ channels-redis==3.2.0
 chardet==4.0.0
     # via
     #   -r requirements.txt
-    #   diff-cover
     #   requests
 click==8.0.3
     # via
@@ -132,8 +131,6 @@ daphne==3.0.2
     # via
     #   -r requirements.txt
     #   channels
-diff-cover==6.4.5
-    # via -r requirements_dev.in
 distlib==0.3.1
     # via virtualenv
 django==3.2.12
@@ -232,7 +229,6 @@ itsdangerous==2.0.1
 jinja2==3.0.1
     # via
     #   -r requirements.txt
-    #   diff-cover
     #   sphinx
 json-merge-patch==0.2
     # via
@@ -296,9 +292,7 @@ pip-tools==6.5.1
 platformdirs==2.4.0
     # via black
 pluggy==0.13.1
-    # via
-    #   diff-cover
-    #   pytest
+    # via pytest
 pre-commit==2.13.0
     # via -r requirements_dev.in
 prompt-toolkit==3.0.18
@@ -329,7 +323,6 @@ pyflakes==2.3.1
 pygments==2.9.0
     # via
     #   -r requirements.txt
-    #   diff-cover
     #   furo
     #   sphinx
 pyopenssl==20.0.1
