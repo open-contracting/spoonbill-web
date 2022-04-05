@@ -449,7 +449,7 @@ class TableViewSet(viewsets.ModelViewSet):
                     ):
 
                         return Response(
-                            {"detail": _(f"Cannot merge '{table.name}' - child arrays are too large")},
+                            {"detail": _("Cannot merge '%(table_name)s' - child arrays are too large") % {'table_name': table.name}},
                             status=status.HTTP_400_BAD_REQUEST,
                         )
 

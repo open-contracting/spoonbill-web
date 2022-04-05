@@ -57,10 +57,7 @@ def get_serializer_by_model(str_model, log_context=None):
         extra = {"MESSAGE_ID": "model_not_registered", "MODEL": str_model}
         if log_context:
             extra.update(log_context)
-        logger.info(
-            "Model %s not registered in getters" % str_model,
-            extra=extra,
-        )
+        logger.info("Model %s not registered in getters", str_model, extra=extra)
         return None, None
     else:
         return getters[str_model]["model"], getters[str_model]["serializer"]()
@@ -90,7 +87,7 @@ def validate_data(object_id, model=None, lang_code="en"):
                 {"type": "task.validate", "datasource": serializer.to_representation(instance=datasource)},
             )
 
-            logger.debug("Start validation for %s file" % object_id)
+            logger.debug("Start validation for %s file", object_id)
             paths = [pathlib.Path(file.file.path) for file in datasource.files.all()]
             workdir = paths[0].parent
             filenames = [pathlib.Path(path).name for path in paths]
@@ -149,14 +146,15 @@ def validate_data(object_id, model=None, lang_code="en"):
         except ObjectDoesNotExist:
             logger_context["MODEL"] = model
             logger_context["MESSAGE_ID"] = "datasource_not_found"
-            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            logger.info("Datasource %s %s not found", model, object_id, extra=logger_context)
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{object_id}",
                 {"type": "task.validate", "error": _("Datasource %s not found") % object_id},
             )
         except (ijson.JSONError, ijson.IncompleteJSONError) as e:
             logger.info(
-                "Error while validating data %s" % object_id,
+                "Error while validating data %s",
+                object_id,
                 extra={
                     "MESSAGE_ID": "validation_exception",
                     "MODEL": model,
@@ -175,7 +173,8 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
         except OSError as e:
             logger.exception(
-                "Error while validating data %s" % object_id,
+                "Error while validating data %s",
+                object_id,
                 extra={
                     "MESSAGE_ID": "validation_exception",
                     "MODEL": model,
@@ -198,7 +197,8 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
         except Exception as e:
             logger.exception(
-                "Error while validating data %s" % object_id,
+                "Error while validating data %s",
+                object_id,
                 extra={
                     "MESSAGE_ID": "validation_exception",
                     "MODEL": model,
@@ -232,17 +232,18 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
         except ObjectDoesNotExist:
             logger_context["MODEL"] = model
             logger_context["MESSAGE_ID"] = "datasource_not_found"
-            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            logger.info("Datasource %s %s not found", model, object_id, extra=logger_context)
             return
         urls = getattr(datasource, "urls", [])
         protocol = None if not urls else get_protocol(urls[0])
         if protocol == "file":
-            logger.debug("Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT" % (datasource.id))
+            logger.debug("Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT", datasource.id)
             return
         if datasource.expired_at > timezone.now():
             logger.debug(
-                "Skip datasource cleanup %s, expired_at in future %s"
-                % (datasource.id, datasource.expired_at.isoformat())
+                "Skip datasource cleanup %s, expired_at in future %s",
+                datasource.id,
+                datasource.expired_at.isoformat(),
             )
             cleanup_upload.apply_async((datasource.id, model, lang_code), eta=datasource.expired_at)
             return
@@ -250,7 +251,7 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
         for path in datasource_paths:
             shutil.rmtree(path, ignore_errors=True)
         datasource.delete()
-        logger.debug("Remove all data from %s" % (datasource_paths))
+        logger.debug("Remove all data from %s", datasource_paths)
 
 
 @celery_app.task
@@ -279,7 +280,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 },
             )
             logger.debug(
-                "Start download for %s" % object_id,
+                "Start download for %s",
+                object_id,
                 extra={"MESSAGE_ID": "download_start", "UPLOAD_ID": object_id, "URL": datasource.urls},
             )
 
@@ -296,7 +298,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 r = requests.get(datasource.urls[0], stream=True)
                 if r.status_code != 200:
                     logger.error(
-                        "Error while downloading data file for %s" % object_id,
+                        "Error while downloading data file for %s",
+                        object_id,
                         extra={
                             "MESSAGE_ID": "download_failed",
                             "DATASOURCE_ID": object_id,
@@ -304,7 +307,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                             "STATUS_CODE": r.status_code,
                         },
                     )
-                    datasource.error = _(f"{r.status_code}: {r.reason}")
+                    datasource.error = f"{r.status_code}: {r.reason}"
                     datasource.status = "failed"
                     datasource.save(update_fields=["error", "status"])
                     async_to_sync(channel_layer.group_send)(
@@ -357,7 +360,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     r = requests.get(datasource.analyzed_data_url, stream=True)
                     if r.status_code != 200:
                         logger.error(
-                            "Error while downloading data file for %s" % object_id,
+                            "Error while downloading data file for %s",
+                            object_id,
                             extra={
                                 "MESSAGE_ID": "download_failed",
                                 "DATASOURCE_ID": object_id,
@@ -365,7 +369,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                                 "STATUS_CODE": r.status_code,
                             },
                         )
-                        datasource.error = _(f"{r.status_code}: {r.reason}")
+                        datasource.error = f"{r.status_code}: {r.reason}"
                         datasource.status = "failed"
                         datasource.save(update_fields=["error", "status"])
                         async_to_sync(channel_layer.group_send)(
@@ -414,7 +418,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 },
             )
             logger.info(
-                "Complete download for %s" % object_id,
+                "Complete download for %s",
+                object_id,
                 extra={
                     "MESSAGE_ID": "download_complete",
                     "UPLOAD_ID": object_id,
@@ -426,13 +431,14 @@ def download_data_source(object_id, model=None, lang_code="en"):
             datasource.validation.task_id = task.id
             datasource.validation.save(update_fields=["task_id"])
             logger.info(
-                "Schedule validation for %s" % object_id,
+                "Schedule validation for %s",
+                object_id,
                 extra={"MESSAGE_ID": "schedule_validation", "UPLOAD_ID": object_id},
             )
         except ObjectDoesNotExist:
             logger_context["MODEL"] = model
             logger_context["MESSAGE_ID"] = "datasource_not_found"
-            logger.info("Datasource %s %s not found" % (model, object_id), extra=logger_context)
+            logger.info("Datasource %s %s not found", model, object_id, extra=logger_context)
             async_to_sync(channel_layer.group_send)(
                 f"datasource_{object_id}",
                 {"type": "task.download_data_source", "error": _("Datasource %s not found") % object_id},
@@ -445,7 +451,8 @@ def download_data_source(object_id, model=None, lang_code="en"):
             }
             log_level = {"OSError": logger.info, "Exception": logger.exception}
             log_level[type(e).__name__](
-                "Error while download datasource %s" % object_id,
+                "Error while download datasource %s",
+                object_id,
                 extra={
                     "MESSAGE_ID": message_id[type(e).__name__],
                     "DATASOURCE_ID": object_id,
@@ -482,7 +489,7 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
                 "TASK": "flatten_data",
                 "FLATTEN_ID": flatten_id,
             }
-            logger.info("Model %s not registered in getters" % model, extra=extra)
+            logger.info("Model %s not registered in getters", model, extra=extra)
             return
         try:
             serializer = FlattenSerializer()
@@ -580,13 +587,13 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
         except ObjectDoesNotExist:
             extra = deepcopy(logger_context)
             extra["MESSAGE_ID"] = "flatten_not_found"
-            logger.info("Flatten %s for %s model not found" % (flatten_id, model), extra=extra)
+            logger.info("Flatten %s for %s model not found", flatten_id, model, extra=extra)
         except OSError as e:
             extra = deepcopy(logger_context)
             extra.update(
                 {"MESSAGE_ID": "flatten_no_left_space", "DATASOURCE_ID": str(datasource.id), "ERROR_MSG": str(e)}
             )
-            logger.info("Flatten %s for %s model failed: %s" % (flatten_id, model, e), extra=extra)
+            logger.info("Flatten %s for %s model failed: %s", flatten_id, model, e, extra=extra)
             flatten.status = "failed"
             flatten.error = (
                 _("Currently, the space limit was reached. Please try again later.")
@@ -604,7 +611,10 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
             extra["MESSAGE_ID"] = "flatten_failed"
             extra["ERROR_MESSAGE"] = error_message
             logger.error(
-                "Flatten %s for %s datasource %s failed" % (flatten_id, model, datasource.id),
+                "Flatten %s for %s datasource %s failed",
+                flatten_id,
+                model,
+                datasource.id,
                 extra=extra,
                 exc_info=True,
             )

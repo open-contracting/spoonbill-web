@@ -89,7 +89,9 @@ class TestValidateDataTask(BaseUploadTestSuite):
         model = "Upload"
         validate_data(obj_id, model=model)
         mocked_logger.info.assert_called_once_with(
-            "Datasource %s %s not found" % (self.model, obj_id),
+            "Datasource %s %s not found",
+            self.model,
+            obj_id,
             extra={
                 "MESSAGE_ID": "datasource_not_found",
                 "MODEL": model,
@@ -155,7 +157,9 @@ class TestCleanupUploadTask(BaseUploadTestSuite):
         obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
         cleanup_upload(obj_id, model=self.model)
         mocked_logger.info.assert_called_once_with(
-            "Datasource %s %s not found" % (self.model, obj_id),
+            "Datasource %s %s not found",
+            self.model,
+            obj_id,
             extra={
                 "MESSAGE_ID": "datasource_not_found",
                 "MODEL": self.model,
@@ -173,7 +177,8 @@ class TestCleanupUploadTask(BaseUploadTestSuite):
         assert not url_obj.deleted
         assert not task
         mocked_logger.debug.called_once_with(
-            "Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT" % (url_obj.id)
+            "Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT",
+            url_obj.id
         )
 
 
@@ -262,7 +267,9 @@ class TestDownloadDataSource:
         obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
         download_data_source(obj_id, model=self.model)
         mocked_logger.info.assert_called_once_with(
-            "Datasource %s %s not found" % (self.model, obj_id),
+            "Datasource %s %s not found",
+            self.model,
+            obj_id,
             extra={
                 "MESSAGE_ID": "datasource_not_found",
                 "MODEL": self.model,
@@ -298,7 +305,8 @@ class TestFlattenDataTask:
         flatten_data(flatten_id, model=model)
 
         mocked_logger.info.assert_called_once_with(
-            "Model %s not registered in getters" % model,
+            "Model %s not registered in getters",
+            model,
             extra={
                 "MESSAGE_ID": "model_not_registered",
                 "MODEL": model,
@@ -312,7 +320,9 @@ class TestFlattenDataTask:
         flatten_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
         flatten_data(flatten_id, model=self.model)
         mocked_logger.info.assert_called_once_with(
-            "Flatten %s for %s model not found" % (flatten_id, self.model),
+            "Flatten %s for %s model not found",
+            flatten_id,
+            self.model,
             extra={
                 "MESSAGE_ID": "flatten_not_found",
                 "MODEL": self.model,
