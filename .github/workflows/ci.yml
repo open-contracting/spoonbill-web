@@ -28,13 +28,13 @@ jobs:
       # Check requirements.txt contains production requirements.
       - run: ./manage.py --help
       - run: pip install -r requirements_dev.txt
-      - name: Run Vue tests
-        working-directory: frontend
-        run: |
-          npm install
-          npm run test:unit
-          gem install coveralls-lcov
-          coveralls-lcov -v -n coverage/lcov.info > coverage.json
+      # - name: Run Vue tests
+      #   working-directory: frontend
+      #   run: |
+      #     npm install
+      #     npm run test:unit
+      #     gem install coveralls-lcov
+      #     coveralls-lcov -v -n coverage/lcov.info > coverage.json
       - name: Run Django tests
         env:
           PYTHONWARNINGS: error
