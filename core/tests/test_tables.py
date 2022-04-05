@@ -251,13 +251,13 @@ class TestTableViews:
         )
         assert response.status_code == status.HTTP_200_OK
 
-        mocked_split = self.mocker.MagicMock()
+        mocked_split = self.mocker.patch("core.views.store_preview_csv")
         mocked_split.side_effect = OSError(errno.ENOSPC, "No left space.")
-        with self.mocker.patch("core.views.store_preview_csv", mocked_split):
-            response = self.client.get(
-                f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
-                f"{tables[0]['id']}/preview/"
-            )
+
+        response = self.client.get(
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/preview/"
+        )
         assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
         assert response.json() == {"detail": "Currently, the space limit was reached. Please try again later."}
 
