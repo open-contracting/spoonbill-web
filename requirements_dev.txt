@@ -299,7 +299,7 @@ prompt-toolkit==3.0.18
     # via
     #   -r requirements.txt
     #   click-repl
-psycopg2==2.8.6
+psycopg2==2.9.1
     # via -r requirements.txt
 py==1.10.0
     # via pytest
