@@ -43,7 +43,7 @@ def analyzed():
     file_ = open(ANALYZED_DATA_PATH, "rb")
     yield file_
 
-    file_.close
+    file_.close()
 
 
 @pytest.fixture
