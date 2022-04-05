@@ -18,6 +18,14 @@ git clone git@github.com:open-contracting/spoonbill-web.git
 cd spoonbill-web
 ```
 
+### Tests outside Docker
+
+Replace PostgreSQL connection details, as needed.
+
+```shell
+env PYTHONWARNINGS=error POSTGRES_DB=spoonbill_web POSTGRES_USER=username POSTGRES_PASSWORD= MEDIA_ROOT=tmp/ FILE_UPLOAD_TEMP_DIR=tmp/ pytest --cov core --cov spoonbill_web --no-migrations
+```
+
 ### Installation use direnv
 
 ```shell
