@@ -56,7 +56,8 @@ class TestTableViews:
         ).json()
 
         response = self.client.get(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 1
         data = response.json()[0]
@@ -74,7 +75,8 @@ class TestTableViews:
         )
 
         response = self.client.get(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 1
         data = response.json()[0]
@@ -101,7 +103,8 @@ class TestTableViews:
         )
 
         response = self.client.get(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 1
         data = response.json()[0]
@@ -123,7 +126,8 @@ class TestTableViews:
         ).json()
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -137,7 +141,8 @@ class TestTableViews:
         assert response.status_code == status.HTTP_200_OK
 
         response = self.client.get(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 4
         data = response.json()[0]
@@ -159,7 +164,8 @@ class TestTableViews:
         ).json()
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -174,14 +180,16 @@ class TestTableViews:
         assert response.status_code == status.HTTP_200_OK
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{array_tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{array_tables[0]['id']}/",
             data={"include": False},
             content_type="application/json",
         )
         assert response.status_code == status.HTTP_200_OK
 
         response = self.client.get(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 4
         data = response.json()[0]
@@ -205,7 +213,8 @@ class TestTableViews:
         mocked_split.side_effect = OSError(errno.ENOSPC, "No left space.")
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -219,7 +228,8 @@ class TestTableViews:
         ).json()
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -234,7 +244,8 @@ class TestTableViews:
         assert response.status_code == status.HTTP_200_OK
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{array_tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{array_tables[0]['id']}/",
             data={"include": False},
             content_type="application/json",
         )
@@ -244,7 +255,8 @@ class TestTableViews:
         mocked_split.side_effect = OSError(errno.ENOSPC, "No left space.")
         with self.mocker.patch("core.views.store_preview_csv", mocked_split):
             response = self.client.get(
-                f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+                f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+                f"{tables[0]['id']}/preview/"
             )
         assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
         assert response.json() == {"detail": "Currently, the space limit was reached. Please try again later."}
@@ -258,7 +270,8 @@ class TestTableViews:
         mocked_open.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
 
         response = self.client.patch(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -275,7 +288,8 @@ class TestTableViews:
         mocked_open.return_value.__enter__.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
 
         response = self.client.get(
-            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"{self.url_prefix}{self.validated_datasource.id}/selections/{selection['id']}/tables/"
+            f"{tables[0]['id']}/preview/"
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {"detail": "Datasource expired."}

@@ -4,7 +4,7 @@ from os.path import abspath, dirname, join, normcase, sep
 from django.core.exceptions import SuspiciousFileOperation
 from django.core.files.storage import FileSystemStorage
 
-from core.utils import dataregistry_path_formatter, dataregistry_path_resolver, get_protocol
+from core.utils import dataregistry_path_resolver
 from spoonbill_web.settings.settings import DATAREGISTRY_ALLOW_SYMLINKS, DATAREGISTRY_MEDIA_ROOT
 
 

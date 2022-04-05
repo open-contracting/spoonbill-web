@@ -1,7 +1,6 @@
 import os
 import pathlib
 from os.path import commonprefix
-from urllib.parse import unquote, urlparse
 
 from django.conf import settings
 from django.core.exceptions import ValidationError

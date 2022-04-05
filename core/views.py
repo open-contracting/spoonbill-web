@@ -1,5 +1,4 @@
 import errno
-import json
 import logging
 import os
 from datetime import timedelta
@@ -186,7 +185,8 @@ class URLViewSet(viewsets.GenericViewSet):
     }
     ```
 
-    After receiving this response you need to redirect user to the following URL: `https://<spoonbill-web.host>/#/upload-file?lang=<lang-code>&url=<received-id>`
+    After receiving this response you need to redirect user to the following URL:
+    `https://<spoonbill-web.host>/#/upload-file?lang=<lang-code>&url=<received-id>`
     e.g. `https://<spoonbill-web.host>/#/upload-file?lang=en_US|es&url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412`
 
     ## Dataregistry path URLs
@@ -223,9 +223,11 @@ class URLViewSet(viewsets.GenericViewSet):
     ## **Authorization**
     Only authorized users are allowed to use file URIs (ones that starts with `file://`).
     User's request may be authorized through HTTP Basic Authorization.
-    In order to send authorized request - HTTP header should include 'Authorization' field; and base64-encoded credentials: \n
+    In order to send authorized request - HTTP header should include 'Authorization' field;
+    and base64-encoded credentials: \n
     `"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="` \n
-    Please note, that user's credentials are regular username and password, but those should be encoded before sending a request.
+    Please note, that user's credentials are regular username and password,
+    but those should be encoded before sending a request.
     Example of encoding credentials you may see below
     ### **Example of authorized request with encoded credentials (python script)**
     ```python

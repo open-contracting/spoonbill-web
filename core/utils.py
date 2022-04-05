@@ -7,11 +7,9 @@ import struct
 import uuid
 from contextlib import contextmanager
 from operator import attrgetter
-from os.path import commonprefix
-from urllib.parse import unquote, urlsplit
+from urllib.parse import urlsplit
 from zipfile import ZipFile
 
-import ijson
 import jsonref
 from django.conf import settings
 from django.utils.translation import activate, get_language

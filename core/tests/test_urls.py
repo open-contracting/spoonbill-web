@@ -8,7 +8,6 @@ from unittest.mock import patch
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.files import File
 from django.test import override_settings
 
 from core.models import Url

@@ -1,12 +1,11 @@
 import os
 import pathlib
-from unittest.mock import patch
 
 import pytest
 from django.conf import settings
 
 from core.models import DataFile
-from core.utils import get_column_headings, get_schema, gz_size, multiple_file_assigner
+from core.utils import get_schema, gz_size, multiple_file_assigner
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 DATASET_PATH_GZ = f"{DATA_DIR}/sample-dataset.json.gz"

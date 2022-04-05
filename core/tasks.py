@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import pathlib
@@ -6,7 +5,6 @@ import shutil
 import time
 from copy import deepcopy
 from datetime import timedelta
-from urllib.parse import unquote, urlparse
 
 import ijson
 import requests

@@ -10,7 +10,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from rest_framework import status
 
-from core.models import DataFile, Upload
+from core.models import Upload
 from core.serializers import UploadSerializer
 from core.tests.utils import create_data_selection, get_data_selections
 
