@@ -1,4 +1,4 @@
-FROM node:10 as build-stage-vue
+FROM node:16 as build-stage-vue
 
 WORKDIR /workdir
 
