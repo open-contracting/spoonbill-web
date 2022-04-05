@@ -74,6 +74,7 @@ jobs:
   transifex:
     needs: build
     if: github.event_name == 'push' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
