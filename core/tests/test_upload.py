@@ -76,7 +76,7 @@ class TestUploadViews:
         )
 
         # cleanup test data
-        shutil.rmtree(f"{self.settings.MEDIA_ROOT}{upload_obj.files.all()[0].id}")
+        shutil.rmtree(os.path.join(self.settings.MEDIA_ROOT, str(upload_obj.files.all()[0].id)))
 
     def test_get_non_existed_upload(self):
         response = self.client.get(f"{self.url_prefix}some-invalid-id/")

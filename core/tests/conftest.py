@@ -89,7 +89,7 @@ def upload_obj(validation_obj, dataset):
     obj.save()
     yield obj
 
-    shutil.rmtree(f"{settings.MEDIA_ROOT}{obj.id}", ignore_errors=True)
+    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, str(obj.id)), ignore_errors=True)
 
 
 @pytest.fixture
@@ -104,7 +104,7 @@ def upload_obj_validated(upload_obj, analyzed, available_tables):
     upload_obj.save(update_fields=["available_tables", "unavailable_tables"])
     yield upload_obj
 
-    shutil.rmtree(f"{settings.MEDIA_ROOT}{upload_obj.id}", ignore_errors=True)
+    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, str(upload_obj.id)), ignore_errors=True)
 
 
 @pytest.fixture
@@ -130,7 +130,7 @@ def url_obj_w_files(url_obj, dataset, analyzed):
 
     yield url_obj
 
-    shutil.rmtree(f"{settings.MEDIA_ROOT}{url_obj.id}", ignore_errors=True)
+    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, str(url_obj.id)), ignore_errors=True)
 
 
 @pytest.fixture
@@ -143,4 +143,4 @@ def mocked_request(mocker, url_obj):
     request.get.return_value = response
     yield request
 
-    shutil.rmtree(f"{settings.MEDIA_ROOT}{url_obj.id}", ignore_errors=True)
+    shutil.rmtree(os.path.join(settings.MEDIA_ROOT, str(url_obj.id)), ignore_errors=True)

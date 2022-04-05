@@ -20,7 +20,7 @@ def test_multiple_file_assigner():
     files = multiple_file_assigner(files, paths)
 
     file_paths = [file.file.path for file in files]
-    media_paths = [settings.MEDIA_ROOT + path for path in paths]
+    media_paths = [os.path.join(settings.MEDIA_ROOT, path) for path in paths]
 
     assert file_paths == media_paths
 
