@@ -38,5 +38,5 @@ repos:
     - id: detect-private-key
     - id: end-of-file-fixer
     - id: pretty-format-json
-      args: [ '--autofix' ]
+      args: [ '--autofix', '--no-sort-keys' ]
     - id: trailing-whitespace
