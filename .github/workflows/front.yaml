@@ -54,12 +54,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Install requirements
-        run: pip install -r requirements_dev.txt
-      - name: Run pre-commit
         run: |
-            pip install --upgrade pre-commit coveralls
-            pre-commit autoupdate
-            pre-commit run --all-files
+            pip install -r requirements_dev.txt
+            pip install --upgrade coveralls
       - name: Run tests
         run: |
             sed -i 1d .envrc
