@@ -88,9 +88,9 @@ django==3.2.12
     #   django-timezone-field
     #   djangorestframework
     #   drf-nested-routers
-django-celery-beat==2.2.0
+django-celery-beat==2.2.1
     # via -r requirements.in
-django-celery-results==2.0.1
+django-celery-results==2.3.0
     # via -r requirements.in
 django-cors-headers==3.7.0
     # via -r requirements.in
@@ -288,7 +288,7 @@ wcwidth==0.2.5
     # via prompt-toolkit
 xlsxwriter==1.4.3
     # via spoonbill
-zope.interface==5.4.0
+zope-interface==5.4.0
     # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:

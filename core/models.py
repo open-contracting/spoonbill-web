@@ -45,7 +45,7 @@ class Upload(models.Model):
         (VALIDATION, _("Validation")),
     ]
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    files = models.ManyToManyField("DataFile", blank=True, null=True)
+    files = models.ManyToManyField("DataFile", blank=True)
     analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_VALIDATION)
@@ -91,7 +91,7 @@ class Url(models.Model):
     )
     analyzed_data_url = models.CharField(max_length=2048, validators=[validate_url_or_path], blank=True, null=True)
     analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
-    files = models.ManyToManyField("DataFile", blank=True, null=True)
+    files = models.ManyToManyField("DataFile", blank=True)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=QUEUED_DOWNLOAD)
     created_at = models.DateTimeField(auto_now_add=True)
