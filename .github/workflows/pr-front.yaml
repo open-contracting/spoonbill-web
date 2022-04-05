@@ -2,7 +2,6 @@ name: pull-request-front
 on:
   pull_request:
     branches:
-       - master
        - main
     paths:
        - 'frontend/**'
