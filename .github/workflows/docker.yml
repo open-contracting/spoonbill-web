@@ -1,0 +1,107 @@
+name: Deploy
+on:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+        SKIP_TEST:
+          description: 'Skip Docker image test'
+          required: true
+          default: 'false'
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+
+      # Prepare the test/ directory.
+      - uses: actions/checkout@v3
+        with:
+          repository: open-contracting/spoonbill-test
+          path: test
+      - name: "Download Django files from Transifex"
+        uses: docker://sergioisidoro/github-transifex-action:v0.2.0
+        with:
+          TX_TOKEN: ${{ secrets.TX_TOKEN }}
+          git_flow: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pull_sources: false
+          pull_translations: true
+          push_sources: false
+          push_translations: false
+      - run: pip install transifex-client
+      - name: "Download Vue files from Transifex"
+        working-directory: frontend
+        env:
+          TX_TOKEN: ${{ secrets.TX_TOKEN }}
+        run: tx pull -a
+      - name: Copy translation files for tests
+        run: |
+          cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
+          cp spoonbill_web/locale/es/LC_MESSAGES/django.po  test/resources/backend_es.po
+          cp frontend/locale/es/lang.po test/resources/front_es.po
+
+      # Test the images.
+      - uses: nanasess/setup-chromedriver@v1.0.7
+      - run: pip install -r test/requirements.txt
+      - name: Create .env file
+        run: |
+          echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
+          echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
+      - name: Run tests
+        if: github.event.inputs.SKIP_TEST != 'true'
+        env:
+          POSTGRES_PASSWORD: postgres
+          # See https://github.com/open-contracting/spoonbill-test
+          SITE_URL: http://127.0.0.1
+        run: |
+          docker-compose -f docker-compose.test.yaml build
+          docker-compose -f docker-compose.test.yaml pull
+          docker-compose -f docker-compose.test.yaml up -d --wait
+          docker-compose -f docker-compose.test.yaml logs app
+          docker ps
+          cd test
+          python -m robot -n noncritical tests
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          path: |
+            test/log.html
+            test/output.xml
+            test/report.html
+
+      # Upload the images.
+      # https://github.com/docker/login-action#github-container-registry
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # https://github.com/docker/setup-buildx-action#usage
+      - uses: docker/setup-buildx-action@v1
+      # https://github.com/docker/build-push-action#usage
+      - uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: .
+          tags: |
+            ghcr.io/${{ github.repository }}/app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: ./frontend
+          tags: |
+            ghcr.io/${{ github.repository }}/front:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VUE_APP_API_URL=/api/
+            VUE_APP_WEBSOCKET_URL=/api/ws

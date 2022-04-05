@@ -118,10 +118,10 @@ WSGI_APPLICATION = "spoonbill_web.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "db"),
-        "USER": os.getenv("POSTGRES_USER", "user"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "user"),
-        "HOST": os.getenv("DB_HOST", "postgres"),
+        "NAME": os.getenv("POSTGRES_DB", "postgres"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
         "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
@@ -165,7 +165,7 @@ USE_TZ = True
 LOCALE_PATHS = [f"{BASE_DIR}/core/locale", f"{BASE_DIR}/spoonbill_web/locale"]
 
 # Routes
-API_PREFIX = os.getenv("API_PREFIX", "")
+API_PREFIX = os.getenv("API_PREFIX", "api/")
 APPEND_SLASH = False
 
 # Static files (CSS, JavaScript, Images)
@@ -181,8 +181,8 @@ CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 
 # Celery config
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER", "")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "db+postgresql://postgres:postgres@localhost/postgres")
 
 JOB_FILES_TIMEOUT = int(os.getenv("JOB_FILES_TIMEOUT", 1))  # days
 
