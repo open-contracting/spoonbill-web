@@ -4,6 +4,7 @@ import GetTextPlugin from 'vue-gettext';
 import translations from '@/translations/translations.json';
 
 Vue.use(Vuetify);
+Vue.config.devtools = false;
 Vue.config.productionTip = false;
 
 Vue.use(GetTextPlugin, {
