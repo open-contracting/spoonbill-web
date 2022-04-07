@@ -326,13 +326,13 @@ class TestUrl:
             assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is on
-            with patch("core.validators.settings.DATAREGISTRY_ALLOW_SYMLINKS", True):
+            with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True):
                 with pytest.raises(ValueError) as e:
                     client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                     assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is off
-            with patch("core.validators.settings.DATAREGISTRY_ALLOW_SYMLINKS", True):
+            with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True):
                 with patch("core.validators.settings.DATAREGISTRY_JAIL", False):
                     client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                     assert response.status_code == 201
