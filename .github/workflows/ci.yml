@@ -9,21 +9,17 @@ jobs:
       - uses: actions/setup-python@v3
         with:
           python-version: 3.8
-      - uses: actions/setup-node@v3.1.0
+          cache: pip
+          cache-dependency-path: '**/requirements*.txt'
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: npm
-          cache-dependency-path: "**/package-lock.json"
+          cache-dependency-path: '**/package-lock.json'
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6
           bundler-cache: true
-      - uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', 'setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
       - run: pip install -r requirements.txt
       # Check requirements.txt contains production requirements.
       - run: ./manage.py --help
@@ -81,17 +77,13 @@ jobs:
       - uses: actions/setup-python@v3
         with:
           python-version: 3.8
-      - uses: actions/setup-node@v3.1.0
+          cache: pip
+          cache-dependency-path: '**/requirements*.txt'
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: npm
-          cache-dependency-path: "**/package-lock.json"
-      - uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', 'setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          cache-dependency-path: '**/package-lock.json'
       - run: pip install -r requirements_dev.txt
       - name: Install gettext
         run: |
