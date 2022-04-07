@@ -261,7 +261,7 @@ mypy-extensions==0.4.3
     # via black
 nodeenv==1.6.0
     # via pre-commit
-ocdsextensionregistry==0.1.5
+ocdsextensionregistry==0.1.12
     # via
     #   -r requirements.txt
     #   ocdskit

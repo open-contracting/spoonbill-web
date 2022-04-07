@@ -156,7 +156,7 @@ markupsafe==2.0.1
     # via jinja2
 msgpack==1.0.2
     # via channels-redis
-ocdsextensionregistry==0.1.5
+ocdsextensionregistry==0.1.12
     # via
     #   ocdskit
     #   spoonbill
