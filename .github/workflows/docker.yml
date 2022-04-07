@@ -26,22 +26,7 @@ jobs:
         with:
           repository: open-contracting/spoonbill-test
           path: test
-      - name: "Download Django files from Transifex"
-        uses: docker://sergioisidoro/github-transifex-action:v0.2.0
-        with:
-          TX_TOKEN: ${{ secrets.TX_TOKEN }}
-          git_flow: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pull_sources: false
-          pull_translations: true
-          push_sources: false
-          push_translations: false
       - run: pip install transifex-client
-      - name: "Download Vue files from Transifex"
-        working-directory: frontend
-        env:
-          TX_TOKEN: ${{ secrets.TX_TOKEN }}
-        run: tx pull -a
       - name: Copy translation files for tests
         run: |
           cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
