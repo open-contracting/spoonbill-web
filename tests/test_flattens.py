@@ -2,7 +2,7 @@ import pytest
 from django.conf import settings
 
 from core.models import Flatten
-from core.tests.utils import create_data_selection, create_flatten
+from tests.utils import create_data_selection, create_flatten
 
 
 @pytest.mark.django_db

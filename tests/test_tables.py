@@ -4,7 +4,7 @@ import pytest
 from django.conf import settings
 from rest_framework import status
 
-from core.tests.utils import create_data_selection
+from tests.utils import create_data_selection
 
 
 @pytest.mark.django_db

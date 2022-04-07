@@ -12,7 +12,7 @@ from rest_framework import status
 
 from core.models import Upload
 from core.serializers import UploadSerializer
-from core.tests.utils import create_data_selection, get_data_selections
+from tests.utils import create_data_selection, get_data_selections
 
 from .utils import Task
 

@@ -7,3 +7,7 @@ line_length = 119
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = 'spoonbill_web.settings.settings'
+
+[tool.coverage.run]
+# CI sets the --no-migrations flag.
+omit = ['*/migrations/*']
