@@ -46,6 +46,9 @@ describe('Download.vue', () => {
             expect(ApiService.createFlatten).toBeCalledTimes(1);
         });
 
+        // The next three tests seem to cause the "Event { isTrusted: [Getter] }" console error messages.
+        // Defining connection.onclose in store/index.js just shows that the error code is 1006.
+        // https://github.com/open-contracting/spoonbill-web/issues/428
         test("'scheduleFlattenGeneration' sends request to schedule flatten generation", async () => {
             await store.dispatch('fetchSelections', 'test-id');
             await wrapper.vm.scheduleFlattenGeneration('flatten id');
