@@ -50,8 +50,7 @@ def test_dataregistry_path_validatator_symlink_not_allowed(mock_islink):
     assert "No file found on this address" in str(e)
 
 
-@override_settings(DATAREGISTRY_MEDIA_ROOT="/tmp/data_registry/")
-@patch("core.validators.settings.DATAREGISTRY_JAIL", False)
+@override_settings(DATAREGISTRY_MEDIA_ROOT="/tmp/data_registry/", DATAREGISTRY_JAIL=False)
 @patch("pathlib.Path.is_file", return_value=True)
 def test_dataregistry_path_validatator_no_jail(mock_isfile):
     path = "file:///random/folder/file.json"

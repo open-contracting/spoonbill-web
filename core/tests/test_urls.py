@@ -332,10 +332,9 @@ class TestUrl:
                     assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is off
-            with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True):
-                with patch("core.validators.settings.DATAREGISTRY_JAIL", False):
-                    client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
-                    assert response.status_code == 201
+            with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True, DATAREGISTRY_JAIL=False):
+                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                assert response.status_code == 201
 
             # Multi upload dataregistry path creation successful
             paths = []
