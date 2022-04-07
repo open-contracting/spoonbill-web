@@ -238,7 +238,7 @@ jest.mock('@/services/ApiService', () => {
                                 preview: 'col1,col2,col3↵cell11,cell12,cell13↵cell21,cell22,cell23',
                             },
                             {
-                                id: 'table 2',
+                                id: `${tableId}-2`,
                                 name: 'Awards_b.csv',
                                 preview: 'col1,col2,col3↵cell11,cell12,cell13↵cell21,cell22,cell23',
                             },
