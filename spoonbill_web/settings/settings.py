@@ -181,7 +181,7 @@ CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 
 # Celery config
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER", "redis://localhost:6379/0")
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "db+postgresql://postgres:postgres@localhost/postgres")
 
 JOB_FILES_TIMEOUT = int(os.getenv("JOB_FILES_TIMEOUT", 1))  # days
@@ -199,7 +199,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.getenv("REDIS_HOST", "127.0.0.1"), 6379)],
+            "hosts": [os.getenv("REDIS_URL", "redis://localhost:6379/0")],
         },
     },
 }

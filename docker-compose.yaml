@@ -47,13 +47,12 @@ services:
       - SECRET_KEY=qgop1_i7%*3r9-=z-+_mz4r-!tool@(-a_r(g@k6jb6w5r13%m
       - DJANGO_ALLOWED_HOSTS=127.0.0.1 localhost
       - ALLOWED_HOSTS=127.0.0.1 localhost
-      - CELERY_BROKER=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
       - CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill
       - POSTGRES_DB=spoonbill
       - POSTGRES_USER=spoonbilluser
       - POSTGRES_PASSWORD=spoonbillpwd
       - DB_HOST=postgres
-      - REDIS_HOST=redis
       - API_PREFIX=api/
     image: app-image
     networks:
@@ -91,13 +90,12 @@ services:
     environment:
       - DEBUG=1
       - SECRET_KEY=qgop1_i7%*3r9-=z-+_mz4r-!tool@(-a_r(g@k6jb6w5r13%m
-      - CELERY_BROKER=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
       - CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill
       - POSTGRES_DB=spoonbill
       - POSTGRES_USER=spoonbilluser
       - POSTGRES_PASSWORD=spoonbillpwd
       - DB_HOST=postgres
-      - REDIS_HOST=redis
     depends_on:
       - app
       - postgres
@@ -115,7 +113,7 @@ services:
     environment:
       - DEBUG=1
       - SECRET_KEY=qgop1_i7%*3r9-=z-+_mz4r-!tool@(-a_r(g@k6jb6w5r13%m
-      - CELERY_BROKER=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
       - CELERY_BACKEND=db+postgresql://spoonbilluser:spoonbillpwd@postgres/spoonbill
       - POSTGRES_DB=spoonbill
       - POSTGRES_USER=spoonbilluser

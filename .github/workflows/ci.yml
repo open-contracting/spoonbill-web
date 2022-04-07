@@ -34,7 +34,7 @@ jobs:
       - name: Run Django tests
         env:
           PYTHONWARNINGS: error
-          CELERY_BROKER: redis://localhost:${{ job.services.redis.ports[6379] }}/0
+          REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/0
           CELERY_BACKEND: db+postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
           MEDIA_ROOT: /tmp/
@@ -43,7 +43,7 @@ jobs:
           ./manage.py migrate
           ./manage.py makemigrations --check --dry-run
           ./manage.py check --fail-level WARNING
-          pytest --cov core --cov spoonbill_web --no-migrations
+          pytest -W error --cov core --cov spoonbill_web --no-migrations
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github --merge=frontend/coverage.json

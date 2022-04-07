@@ -47,8 +47,7 @@ services:
     environment:
       - DJANGO_ENV=production
       - DB_HOST=postgres
-      - REDIS_HOST=redis
-      - CELERY_BROKER=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
     networks:
       - main
     volumes:
@@ -82,8 +81,7 @@ services:
     environment:
       - DJANGO_ENV=production
       - DB_HOST=postgres
-      - REDIS_HOST=redis
-      - CELERY_BROKER=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - app
       - postgres
@@ -103,8 +101,7 @@ services:
       - .env
     environment:
       - DB_HOST=postgres
-      - REDIS_HOST=redis
-      - CELERY_BROKER=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - app
       - postgres
