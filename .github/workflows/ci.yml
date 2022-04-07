@@ -46,7 +46,7 @@ jobs:
           pytest -W error --cov core --cov spoonbill_web --no-migrations
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github --merge=frontend/coverage.json
+        run: coveralls --service=github # --merge=frontend/coverage.json
     services:
       postgres:
         image: postgres:13
