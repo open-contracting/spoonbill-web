@@ -45,8 +45,9 @@ pip install -r requirements_dev.txt
 
 ```shell
 docker-compose up -d postgres redis
-python manage.py makemigrations && python manage.py migrate
-python manage.py runserver
+./manage.py makemigrations
+./manage.py migrate
+./manage.py runserver
 ```
 
 ### Celery
@@ -61,7 +62,6 @@ celery -A spoonbill_web worker -l INFO --concurrency=2
 ```shell
 celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
-
 
 ## Pre-Commit
 
@@ -84,23 +84,46 @@ Configuration placed in file `.pre-commit-config.yaml`
 [More about pre-commit](https://pre-commit.com/)
 
 
-## Internationalization and Transifex
+## Internationalization
 
-### Generate pot files
+### Django
+
+Extract messages:
 
 ```shell
-python manage.py makemessages --all --keep-pot
+./manage.py makemessages --all --keep-pot
 ```
 
-### Push pot files to transifex
+Push to Transifex:
 
 ```shell
 tx push -st
 ```
 
-### Pull translations and compile message files
+Pull from Transifex:
 
 ```shell
 tx pull -a
+```
+
+Compile messages:
+
+```shell
 django-admin compilemessages
 ```
+
+### Vue
+
+Change into the `frontend/` directory:
+
+```shell
+cd frontend
+```
+
+Extract messages:
+
+```shell
+npm run gettext-extract
+```
+
+Push and pull messages from Transifex as above.
