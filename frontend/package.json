@@ -21,6 +21,7 @@
     "@vue/cli-service": "~5.0.4",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/test-utils": "^1.0.3",
+    "@vue/vue2-jest": "",
     "babel-eslint": "^10.1.0",
     "easygettext": "^2.17.0",
     "eslint": "^7.5.0",
