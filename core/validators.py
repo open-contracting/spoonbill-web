@@ -18,17 +18,17 @@ def dataregistry_path_validator(path):
         # Formatting full path
         path = dataregistry_path_formatter(path)
         # Symlink validation
-        if os.path.islink(path) and settings.DATAREGISTRY_ALLOW_SYMLINKS is False:
+        if not settings.DATAREGISTRY_ALLOW_SYMLINKS and os.path.islink(path):
             raise ValidationError(_message)
         # Resolving path
         path = dataregistry_path_resolver(path)
 
         # Skip check if jail is off
-        if settings.DATAREGISTRY_JAIL is False and pathlib.Path(path).is_file():
+        if not settings.DATAREGISTRY_JAIL and pathlib.Path(path).is_file():
             return
         # Path validation
         reg_dir = str(settings.DATAREGISTRY_MEDIA_ROOT)
-        if settings.DATAREGISTRY_ALLOW_SYMLINKS is True and os.path.islink(reg_dir):
+        if settings.DATAREGISTRY_ALLOW_SYMLINKS and os.path.islink(reg_dir):
             reg_dir = str(dataregistry_path_resolver(reg_dir))
 
         reg_dir = reg_dir.rstrip(reg_dir[-1]) if reg_dir[-1] == "/" else reg_dir
