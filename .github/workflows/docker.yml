@@ -62,7 +62,8 @@ jobs:
         run: |
           docker-compose -f docker-compose.test.yaml build
           docker-compose -f docker-compose.test.yaml pull
-          docker-compose -f docker-compose.test.yaml up -d --wait
+          docker-compose -f docker-compose.test.yaml up -d
+          sleep 10
           docker-compose -f docker-compose.test.yaml logs app
           docker ps
       - name: Run tests
