@@ -234,10 +234,6 @@ json-merge-patch==0.2
     # via
     #   -r requirements.txt
     #   ocdsextensionregistry
-jsonpointer==2.1
-    # via
-    #   -r requirements.txt
-    #   spoonbill
 jsonref==0.2
     # via
     #   -r requirements.txt
@@ -455,7 +451,7 @@ sphinxcontrib-serializinghtml==1.1.5
     # via
     #   -r requirements.txt
     #   sphinx
-spoonbill==1.0.9b10
+spoonbill==1.0.10
     # via -r requirements.txt
 sqlalchemy==1.4.15
     # via -r requirements.txt
