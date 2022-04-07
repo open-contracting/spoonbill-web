@@ -91,7 +91,7 @@ Configuration placed in file `.pre-commit-config.yaml`
 Extract messages:
 
 ```shell
-./manage.py makemessages --all --keep-pot
+./manage.py makemessages -a
 ```
 
 Push to Transifex:

@@ -1,0 +1,799 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-04 19:59+0000\n"
+"PO-Revision-Date: 2021-04-13 13:02+0000\n"
+"Language-Team: Russian (https://www.transifex.com/open-contracting-partnership-1/teams/117704/ru/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: core/column_headings.py:4
+msgid "Amendment Amended Release (identifier)"
+msgstr ""
+
+#: core/column_headings.py:5
+msgid "Amendment Date"
+msgstr ""
+
+#: core/column_headings.py:6
+msgid "Amendment Description"
+msgstr ""
+
+#: core/column_headings.py:7
+msgid "Amendment Id"
+msgstr ""
+
+#: core/column_headings.py:8
+msgid "Amendment Rationale"
+msgstr ""
+
+#: core/column_headings.py:9
+msgid "Amendment Amending Release (identifier)"
+msgstr ""
+
+#: core/column_headings.py:10 core/column_headings.py:197
+msgid "Contract Period Duration (days)"
+msgstr ""
+
+#: core/column_headings.py:11 core/column_headings.py:198
+msgid "Contract Period End Date"
+msgstr ""
+
+#: core/column_headings.py:12 core/column_headings.py:199
+msgid "Contract Period Maximum Extent"
+msgstr ""
+
+#: core/column_headings.py:13 core/column_headings.py:200
+msgid "Contract Period Start Date"
+msgstr ""
+
+#: core/column_headings.py:14
+msgid "Award Date"
+msgstr ""
+
+#: core/column_headings.py:15
+msgid "Award Description"
+msgstr ""
+
+#: core/column_headings.py:16
+msgid "Award Id"
+msgstr ""
+
+#: core/column_headings.py:17 core/column_headings.py:21
+#: core/column_headings.py:34 core/column_headings.py:38
+#: core/column_headings.py:83 core/column_headings.py:87
+#: core/column_headings.py:100 core/column_headings.py:104
+#: core/column_headings.py:209 core/column_headings.py:213
+#: core/column_headings.py:226 core/column_headings.py:230
+msgid "Classification Description"
+msgstr ""
+
+#: core/column_headings.py:18 core/column_headings.py:22
+#: core/column_headings.py:35 core/column_headings.py:39
+#: core/column_headings.py:84 core/column_headings.py:88
+#: core/column_headings.py:101 core/column_headings.py:105
+#: core/column_headings.py:210 core/column_headings.py:214
+#: core/column_headings.py:227 core/column_headings.py:231
+msgid "Classification Id"
+msgstr ""
+
+#: core/column_headings.py:19 core/column_headings.py:23
+#: core/column_headings.py:36 core/column_headings.py:40
+#: core/column_headings.py:85 core/column_headings.py:89
+#: core/column_headings.py:102 core/column_headings.py:106
+#: core/column_headings.py:211 core/column_headings.py:215
+#: core/column_headings.py:228 core/column_headings.py:232
+msgid "Classification Scheme"
+msgstr ""
+
+#: core/column_headings.py:20 core/column_headings.py:24
+#: core/column_headings.py:37 core/column_headings.py:41
+#: core/column_headings.py:86 core/column_headings.py:90
+#: core/column_headings.py:103 core/column_headings.py:107
+#: core/column_headings.py:212 core/column_headings.py:216
+#: core/column_headings.py:229 core/column_headings.py:233
+msgid "Classification Uri"
+msgstr ""
+
+#: core/column_headings.py:25 core/column_headings.py:42
+#: core/column_headings.py:91 core/column_headings.py:108
+#: core/column_headings.py:217 core/column_headings.py:234
+msgid "Item Description"
+msgstr ""
+
+#: core/column_headings.py:26 core/column_headings.py:43
+#: core/column_headings.py:92 core/column_headings.py:109
+#: core/column_headings.py:218 core/column_headings.py:235
+msgid "Item Id"
+msgstr ""
+
+#: core/column_headings.py:27 core/column_headings.py:44
+#: core/column_headings.py:93 core/column_headings.py:110
+#: core/column_headings.py:219 core/column_headings.py:236
+msgid "Item Quantity"
+msgstr ""
+
+#: core/column_headings.py:28 core/column_headings.py:45
+#: core/column_headings.py:94 core/column_headings.py:111
+#: core/column_headings.py:220 core/column_headings.py:237
+msgid "Unit Id"
+msgstr ""
+
+#: core/column_headings.py:29 core/column_headings.py:46
+#: core/column_headings.py:95 core/column_headings.py:112
+#: core/column_headings.py:221 core/column_headings.py:238
+msgid "Unit Name"
+msgstr ""
+
+#: core/column_headings.py:30 core/column_headings.py:47
+#: core/column_headings.py:96 core/column_headings.py:113
+#: core/column_headings.py:222 core/column_headings.py:239
+msgid "Unit Scheme"
+msgstr ""
+
+#: core/column_headings.py:31 core/column_headings.py:48
+#: core/column_headings.py:97 core/column_headings.py:114
+#: core/column_headings.py:223 core/column_headings.py:240
+msgid "Unit Uri"
+msgstr ""
+
+#: core/column_headings.py:32 core/column_headings.py:49
+#: core/column_headings.py:57 core/column_headings.py:71
+#: core/column_headings.py:81 core/column_headings.py:98
+#: core/column_headings.py:115 core/column_headings.py:135
+#: core/column_headings.py:224 core/column_headings.py:241
+#: core/column_headings.py:265
+msgid "Value Amount"
+msgstr ""
+
+#: core/column_headings.py:33 core/column_headings.py:50
+#: core/column_headings.py:58 core/column_headings.py:72
+#: core/column_headings.py:82 core/column_headings.py:99
+#: core/column_headings.py:116 core/column_headings.py:136
+#: core/column_headings.py:225 core/column_headings.py:242
+#: core/column_headings.py:266
+msgid "Value Currency"
+msgstr ""
+
+#: core/column_headings.py:51
+msgid "Award Status"
+msgstr ""
+
+#: core/column_headings.py:52 core/column_headings.py:54
+#: core/column_headings.py:256 core/column_headings.py:258
+msgid "Organization Reference Id"
+msgstr ""
+
+#: core/column_headings.py:53 core/column_headings.py:55
+#: core/column_headings.py:257 core/column_headings.py:259
+msgid "Organization Reference Name"
+msgstr ""
+
+#: core/column_headings.py:56
+msgid "Award Title"
+msgstr ""
+
+#: core/column_headings.py:59
+msgid "Contract Award Id"
+msgstr ""
+
+#: core/column_headings.py:60
+msgid "Contract Date Signed"
+msgstr ""
+
+#: core/column_headings.py:61
+msgid "Contract Description"
+msgstr ""
+
+#: core/column_headings.py:62
+msgid "Contract Id"
+msgstr ""
+
+#: core/column_headings.py:63 core/column_headings.py:73
+msgid "Transaction Information Date"
+msgstr ""
+
+#: core/column_headings.py:64 core/column_headings.py:74
+msgid "Transaction Information Id"
+msgstr ""
+
+#: core/column_headings.py:65 core/column_headings.py:75
+msgid "Payee Organization Id"
+msgstr ""
+
+#: core/column_headings.py:66 core/column_headings.py:76
+msgid "Payee Organization Name"
+msgstr ""
+
+#: core/column_headings.py:67 core/column_headings.py:77
+msgid "Payer Organization Id"
+msgstr ""
+
+#: core/column_headings.py:68 core/column_headings.py:78
+msgid "Payer Organization Name"
+msgstr ""
+
+#: core/column_headings.py:69 core/column_headings.py:79
+msgid "Transaction Information Data Source"
+msgstr ""
+
+#: core/column_headings.py:70 core/column_headings.py:80
+msgid "Transaction Information Linked Spending"
+msgstr ""
+
+#: core/column_headings.py:117
+msgid "Period Duration (days)"
+msgstr ""
+
+#: core/column_headings.py:118
+msgid "Period End Date"
+msgstr ""
+
+#: core/column_headings.py:119
+msgid "Period Maximum Extent"
+msgstr ""
+
+#: core/column_headings.py:120
+msgid "Period Start Date"
+msgstr ""
+
+#: core/column_headings.py:121 core/column_headings.py:127
+msgid "Related Process Relationship Id"
+msgstr ""
+
+#: core/column_headings.py:122 core/column_headings.py:128
+msgid "Related Process Identifier"
+msgstr ""
+
+#: core/column_headings.py:123 core/column_headings.py:129
+msgid "Related Process Relationship"
+msgstr ""
+
+#: core/column_headings.py:124 core/column_headings.py:130
+msgid "Related Process Scheme"
+msgstr ""
+
+#: core/column_headings.py:125 core/column_headings.py:131
+msgid "Related Process Title"
+msgstr ""
+
+#: core/column_headings.py:126 core/column_headings.py:132
+msgid "Related Process Uri"
+msgstr ""
+
+#: core/column_headings.py:133
+msgid "Contract Status"
+msgstr ""
+
+#: core/column_headings.py:134
+msgid "Contract Title"
+msgstr ""
+
+#: core/column_headings.py:137
+msgid "Document Date Modified"
+msgstr ""
+
+#: core/column_headings.py:138
+msgid "Document Date Published"
+msgstr ""
+
+#: core/column_headings.py:139
+msgid "Document Description"
+msgstr ""
+
+#: core/column_headings.py:140
+msgid "Document Type"
+msgstr ""
+
+#: core/column_headings.py:141
+msgid "Document Format"
+msgstr ""
+
+#: core/column_headings.py:142
+msgid "Document Id"
+msgstr ""
+
+#: core/column_headings.py:143
+msgid "Document Language"
+msgstr ""
+
+#: core/column_headings.py:144
+msgid "Document Title"
+msgstr ""
+
+#: core/column_headings.py:145
+msgid "Document Url"
+msgstr ""
+
+#: core/column_headings.py:146
+msgid "Milestone Code"
+msgstr ""
+
+#: core/column_headings.py:147
+msgid "Milestone Date Met"
+msgstr ""
+
+#: core/column_headings.py:148
+msgid "Milestone Date Modified"
+msgstr ""
+
+#: core/column_headings.py:149
+msgid "Milestone Description"
+msgstr ""
+
+#: core/column_headings.py:150
+msgid "Milestone Due Date"
+msgstr ""
+
+#: core/column_headings.py:151
+msgid "Milestone Id"
+msgstr ""
+
+#: core/column_headings.py:152
+msgid "Milestone Status"
+msgstr ""
+
+#: core/column_headings.py:153
+msgid "Milestone Title"
+msgstr ""
+
+#: core/column_headings.py:154
+msgid "Milestone Type"
+msgstr ""
+
+#: core/column_headings.py:155 core/column_headings.py:159
+msgid "Identifier Id"
+msgstr ""
+
+#: core/column_headings.py:156 core/column_headings.py:160
+msgid "Identifier Legal Name"
+msgstr ""
+
+#: core/column_headings.py:157 core/column_headings.py:161
+msgid "Identifier Scheme"
+msgstr ""
+
+#: core/column_headings.py:158 core/column_headings.py:162
+msgid "Identifier Uri"
+msgstr ""
+
+#: core/column_headings.py:163
+msgid "Address Country Name"
+msgstr ""
+
+#: core/column_headings.py:164
+msgid "Address Locality"
+msgstr ""
+
+#: core/column_headings.py:165
+msgid "Address Postal Code"
+msgstr ""
+
+#: core/column_headings.py:166
+msgid "Address Region"
+msgstr ""
+
+#: core/column_headings.py:167
+msgid "Address Street"
+msgstr ""
+
+#: core/column_headings.py:168
+msgid "Contact Point Email"
+msgstr ""
+
+#: core/column_headings.py:169
+msgid "Contact Point Fax Number"
+msgstr ""
+
+#: core/column_headings.py:170
+msgid "Contact Point Name"
+msgstr ""
+
+#: core/column_headings.py:171
+msgid "Contact Point Telephone"
+msgstr ""
+
+#: core/column_headings.py:172
+msgid "Contact Point Url"
+msgstr ""
+
+#: core/column_headings.py:173
+msgid "Organization Entity Id"
+msgstr ""
+
+#: core/column_headings.py:174
+msgid "Primary Identifier Id"
+msgstr ""
+
+#: core/column_headings.py:175
+msgid "Primary Identifier Legal Name"
+msgstr ""
+
+#: core/column_headings.py:176
+msgid "Primary Identifier Scheme"
+msgstr ""
+
+#: core/column_headings.py:177
+msgid "Primary Identifier Uri"
+msgstr ""
+
+#: core/column_headings.py:178
+msgid "Organization Common Name"
+msgstr ""
+
+#: core/column_headings.py:179 core/column_headings.py:180
+msgid "Organization Party Roles"
+msgstr ""
+
+#: core/column_headings.py:181
+msgid "Amount"
+msgstr ""
+
+#: core/column_headings.py:182
+msgid "Amount Currency"
+msgstr ""
+
+#: core/column_headings.py:183
+msgid "Budget Source"
+msgstr ""
+
+#: core/column_headings.py:184
+msgid "Budget Id"
+msgstr ""
+
+#: core/column_headings.py:185
+msgid "Budget Project Title"
+msgstr ""
+
+#: core/column_headings.py:186
+msgid "Budget Project Identifier"
+msgstr ""
+
+#: core/column_headings.py:187
+msgid "Budget Linked Information"
+msgstr ""
+
+#: core/column_headings.py:188
+msgid "Planning Rationale"
+msgstr ""
+
+#: core/column_headings.py:189 core/column_headings.py:190
+msgid "Tender Additional Procurement Categories"
+msgstr ""
+
+#: core/column_headings.py:191
+msgid "Tender Award Criteria"
+msgstr ""
+
+#: core/column_headings.py:192
+msgid "Tender Award Criteria Details"
+msgstr ""
+
+#: core/column_headings.py:193
+msgid "Evaluation And Award Period Duration (days)"
+msgstr ""
+
+#: core/column_headings.py:194
+msgid "Evaluation And Award Period End Date"
+msgstr ""
+
+#: core/column_headings.py:195
+msgid "Evaluation And Award Period Maximum Extent"
+msgstr ""
+
+#: core/column_headings.py:196
+msgid "Evaluation And Award Period Start Date"
+msgstr ""
+
+#: core/column_headings.py:201
+msgid "Tender Description"
+msgstr ""
+
+#: core/column_headings.py:202
+msgid "Tender Eligibility Criteria"
+msgstr ""
+
+#: core/column_headings.py:203
+msgid "Enquiry Period Duration (days)"
+msgstr ""
+
+#: core/column_headings.py:204
+msgid "Enquiry Period End Date"
+msgstr ""
+
+#: core/column_headings.py:205
+msgid "Enquiry Period Maximum Extent"
+msgstr ""
+
+#: core/column_headings.py:206
+msgid "Enquiry Period Start Date"
+msgstr ""
+
+#: core/column_headings.py:207
+msgid "Tender Has Enquiries?"
+msgstr ""
+
+#: core/column_headings.py:208
+msgid "Tender Id"
+msgstr ""
+
+#: core/column_headings.py:243
+msgid "Tender Main Procurement Category"
+msgstr ""
+
+#: core/column_headings.py:244
+msgid "Minimum Value Amount"
+msgstr ""
+
+#: core/column_headings.py:245
+msgid "Minimum Value Currency"
+msgstr ""
+
+#: core/column_headings.py:246
+msgid "Tender Number Of Tenderers"
+msgstr ""
+
+#: core/column_headings.py:247
+msgid "Tender Procurement Method"
+msgstr ""
+
+#: core/column_headings.py:248
+msgid "Tender Procurement Method Details"
+msgstr ""
+
+#: core/column_headings.py:249
+msgid "Tender Procurement Method Rationale"
+msgstr ""
+
+#: core/column_headings.py:250
+msgid "Procuring Entity Organization Id"
+msgstr ""
+
+#: core/column_headings.py:251
+msgid "Procuring Entity Organization Name"
+msgstr ""
+
+#: core/column_headings.py:252
+msgid "Tender Status"
+msgstr ""
+
+#: core/column_headings.py:253 core/column_headings.py:254
+msgid "Tender Submission Method"
+msgstr ""
+
+#: core/column_headings.py:255
+msgid "Tender Submission Method Details"
+msgstr ""
+
+#: core/column_headings.py:260
+msgid "Tender Period Duration (days)"
+msgstr ""
+
+#: core/column_headings.py:261
+msgid "Tender Period End Date"
+msgstr ""
+
+#: core/column_headings.py:262
+msgid "Tender Period Maximum Extent"
+msgstr ""
+
+#: core/column_headings.py:263
+msgid "Tender Period Start Date"
+msgstr ""
+
+#: core/column_headings.py:264
+msgid "Tender Title"
+msgstr ""
+
+#: core/column_headings.py:267
+msgid "id"
+msgstr ""
+
+#: core/column_headings.py:268
+msgid "ocid"
+msgstr ""
+
+#: core/column_headings.py:269
+msgid "parentID"
+msgstr ""
+
+#: core/column_headings.py:270
+msgid "rowID"
+msgstr ""
+
+#: core/models.py:31 core/models.py:47 core/models.py:85
+msgid "Validation"
+msgstr ""
+
+#: core/models.py:32
+msgid "Validations"
+msgstr ""
+
+#: core/models.py:46 core/models.py:84
+msgid "Queued validation"
+msgstr ""
+
+#: core/models.py:65
+msgid "Upload"
+msgstr ""
+
+#: core/models.py:66
+msgid "Uploads"
+msgstr ""
+
+#: core/models.py:81
+msgid "Queued download"
+msgstr ""
+
+#: core/models.py:82
+msgid "Downloading analyzed data"
+msgstr ""
+
+#: core/models.py:83
+msgid "Downloading"
+msgstr ""
+
+#: core/models.py:86 core/models.py:187
+msgid "Failed"
+msgstr ""
+
+#: core/models.py:116
+msgid "Url"
+msgstr ""
+
+#: core/models.py:117
+msgid "Urls"
+msgstr ""
+
+#: core/models.py:132
+msgid "Custom"
+msgstr ""
+
+#: core/models.py:132
+msgid "OCDS Lite"
+msgstr ""
+
+#: core/models.py:134
+msgid "Apply OCDS headings only"
+msgstr ""
+
+#: core/models.py:135
+msgid "Apply English user friendly headings to all tables"
+msgstr ""
+
+#: core/models.py:136
+msgid "Apply English R friendly headings to all tables"
+msgstr ""
+
+#: core/models.py:137
+msgid "Apply Spanish user friendly headings to all tables"
+msgstr ""
+
+#: core/models.py:138
+msgid "Apply Spanish R friendly headings to all tables"
+msgstr ""
+
+#: core/models.py:148
+msgid "Data Selection"
+msgstr ""
+
+#: core/models.py:149
+msgid "Data Selections"
+msgstr ""
+
+#: core/models.py:179
+msgid "A comma-separated values (CSV) file"
+msgstr ""
+
+#: core/models.py:179
+msgid "XLSX (Excel) file format"
+msgstr ""
+
+#: core/models.py:186
+msgid "Completed"
+msgstr ""
+
+#: core/models.py:188
+msgid "Processing"
+msgstr ""
+
+#: core/models.py:189
+msgid "Scheduled"
+msgstr ""
+
+#: core/models.py:207
+msgid "File"
+msgstr ""
+
+#: core/models.py:208
+msgid "Files"
+msgstr ""
+
+#: core/tasks.py:81 core/tasks.py:267
+#, python-format
+msgid "Model %s for datasource not found"
+msgstr ""
+
+#: core/tasks.py:157 core/tasks.py:440
+#, python-format
+msgid "Datasource %s not found"
+msgstr ""
+
+#: core/tasks.py:170 core/tasks.py:212
+#, python-format
+msgid "Error while validating data `%s`"
+msgstr ""
+
+#: core/tasks.py:190 core/tasks.py:460 core/tasks.py:594 core/views.py:99
+#: core/views.py:485 core/views.py:609
+msgid "Currently, the space limit was reached. Please try again later."
+msgstr ""
+
+#: core/tasks.py:192 core/tasks.py:596
+msgid ""
+"Something went wrong during processing of your file, please contact support"
+msgstr ""
+
+#: core/tasks.py:309 core/tasks.py:370
+#, python-brace-format
+msgid "{r.status_code}: {r.reason}"
+msgstr ""
+
+#: core/views.py:56
+msgid "File is required"
+msgstr ""
+
+#: core/views.py:59
+msgid ""
+"Multi-upload feature is not available for file uploads yet. Stay tuned!"
+msgstr ""
+
+#: core/views.py:105
+msgid "Error while receiving file. Contact our support service"
+msgstr ""
+
+#: core/views.py:286
+msgid "Url is required"
+msgstr ""
+
+#: core/views.py:344
+msgid "Datasource without available tables"
+msgstr ""
+
+#: core/views.py:386
+#, python-format
+msgid "Please use for column_heading value one of %s"
+msgstr ""
+
+#: core/views.py:450
+#, python-brace-format
+msgid "Cannot merge '{table.name}' - child arrays are too large"
+msgstr ""
+
+#: core/views.py:475 core/views.py:599
+msgid "Datasource expired."
+msgstr ""
+
+#: core/views.py:632
+msgid "Flatten request for this type already exists."
+msgstr ""
+
+#: core/views.py:652
+#, python-format
+msgid "You can't reschedule flatten in (%s) status"
+msgstr ""
+
+#: core/views.py:657
+#, python-format
+msgid "You can set status to %s only"
+msgstr ""
