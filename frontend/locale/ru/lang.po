@@ -1,0 +1,882 @@
+# 
+# Translators:
+# Viktor Nestulia <vnestulia@open-contracting.org>, 2021
+# James McKinney, 2021
+# Volodymyr <vtarnay@open-contracting.org>, 2021
+# Zoriana Zaiats, 2021
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Last-Translator: Zoriana Zaiats, 2021\n"
+"Language-Team: Russian (https://www.transifex.com/open-contracting-partnership-1/teams/117704/ru/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: easygettext\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:356
+msgid ""
+" then please restore one of the other tables or re-select available tables."
+msgstr ""
+"после этого восстановить одну из других таблиц или повторно выберите таблицы"
+" доступные таблицы"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:318
+msgid ""
+" without Sub-array tables.  Additionally, the following Sub-array tables:"
+msgstr ""
+
+#: src/views/Download.vue:3
+msgid "{{ heading }}"
+msgstr "{{ heading }}"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:209
+msgid "%{ total } columns"
+msgid_plural "%{ total } columns"
+msgstr[0] "%{ total } колонка"
+msgstr[1] "%{ total } колонки"
+msgstr[2] "%{ total } колонки"
+msgstr[3] "%{ total } колонки"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:5
+msgid "About this table"
+msgstr "Об этой таблице"
+
+#: src/views/SelectData.vue:23
+msgid "Add"
+msgstr "Добавить"
+
+#: src/views/Download.vue:41
+msgid "Additional resources"
+msgstr "Дополнительные ресурсы"
+
+#: src/views/SelectData.vue:26
+msgid ""
+"An array is a sort of list that is nested inside a field. When converting "
+"from JSON to CSV it is usually helpful to split out arrays into separate "
+"tables to make the data easier to work with. Some tables in OCDS have more "
+"than one array."
+msgstr ""
+"Массив - это своего рода список, вложенный в поле. При преобразовании из "
+"JSON в CSV обычно полезно разбивать массивы на отдельные таблицы, чтобы "
+"упростить работу с данными. Некоторые таблицы в OCDS имеют более одного "
+"массива."
+
+#: src/views/Download.vue:42
+msgid "Analysing your data"
+msgstr "Анализируем ваши данные"
+
+#: src/components/UploadFile/UploadFileInput.vue:142
+msgid "Analysis has been completed"
+msgstr "Анализ завершен"
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:57
+msgid "and merge remaining tables"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:9
+msgid ""
+"Any columns in the dataset that are not OCDS fields will not have any "
+"friendly headings applied to them."
+msgstr ""
+"К любым колонкам из набора данных, которые не являются полями OCDS, не будут"
+" применены  удобные оглавлений"
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:23
+msgid "Apply change"
+msgstr "Применить изменения"
+
+#: src/components/App/AppConfirmDialog.vue:15
+#: src/components/App/AppConfirmDialog.vue:33
+msgid "Are you sure to go back?"
+msgstr "Вы уверены что хотите вернуться назад?"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:314
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:333
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+#: src/components/SelectData/SelectDataTableInfo.vue:28
+msgid "array"
+msgstr "массив"
+
+#: src/components/SelectData/SelectDataTableInfo.vue:28
+msgid "arrays"
+msgstr "массивы"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:34
+msgid "Arrays"
+msgstr "Массивы"
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:76
+msgid "as this will make it too large for use in Excel"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:27
+msgid "Available data"
+msgstr "Имеющиеся данные"
+
+#: src/views/SelectData.vue:14
+msgid "Available tables"
+msgstr "Имеющиеся таблицы"
+
+#: src/components/App/AppDropzone.vue:11
+msgid "Browse files"
+msgstr "Просмотреть поля"
+
+#: src/components/App/AppConfirmDialog.vue:18
+#: src/components/CustomizeTables/CustomizeDialog.vue:27
+#: src/components/UploadFile/UploadFileLoadingProgress.vue:19
+msgid "Cancel"
+msgstr "Отменить"
+
+#: src/views/SelectData.vue:5
+msgid ""
+"Choose the available tables that you want to flatten and add them to "
+"selected tables to continue. Tables that are unavailable were not found in "
+"the data."
+msgstr ""
+"Выберите доступные таблицы, которые вы хотите сгладить, и добавьте их в "
+"выбранные таблицы, чтобы продолжить. Таблицы, которые недоступны, не были "
+"найдены в данных."
+
+#: src/views/UploadFile/index.vue:5
+msgid "Command-Line tool"
+msgstr "Инструмент командной строки"
+
+#: src/views/UploadFile/index.vue:35
+msgid "Command-Line tool."
+msgstr "Инструмент командной строки"
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:30
+#: src/views/EditHeadings.vue:18 src/views/SelectData.vue:48
+msgid "Continue"
+msgstr "Продолжить"
+
+#: src/components/UploadFile/UploadFileOptions.vue:21
+msgid "Continue to select tables"
+msgstr "Продолжить к выбору таблиц"
+
+#: src/components/UploadFile/UploadFileOptions.vue:9
+msgid "Continue with OCDS Lite"
+msgstr "Продолжить с OCDS Lite"
+
+#: src/components/Layout/LayoutInfo.vue:3
+msgid "Convert your OCDS JSON data into Excel"
+msgstr "Конвертировать ваши данные OCDS JSON в Excel"
+
+#: src/components/UploadFile/UploadFileInput.vue:31
+#: src/views/UploadFile/UploadFileRegistry.vue:18
+msgid "Data for country:"
+msgstr "Данные для страны:"
+
+#: src/components/UploadFile/UploadFileInput.vue:37
+#: src/views/UploadFile/UploadFileRegistry.vue:22
+msgid "Data for range:"
+msgstr "Данные для диапазона:"
+
+#: src/components/UploadFile/UploadFileInput.vue:43
+#: src/views/UploadFile/UploadFileRegistry.vue:26
+msgid "Data from:"
+msgstr "Данные из:"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:117
+msgid ""
+"Data regarding tender process - publicly inviting prospective contractors to"
+" submit bids for evaluation and selecting a winner or winners."
+msgstr ""
+"Данные о тендерном процессе - публичное приглашение потенциальных "
+"подрядчиков подавать заявки на оценку и выбор победителя или победителей."
+
+#: src/views/UploadFile/index.vue:59 src/views/UploadFile/index.vue:25
+msgid "Data Review Tool"
+msgstr "Инструмент Обзора Данных"
+
+#: src/views/UploadFile/index.vue:8
+msgid ""
+"Data you selected needs to be converted into an Excel/CSV file. The Flatten "
+"tool converts JSON OCDS data to Excel (.xlsx) and helps users to understand "
+"what data is contained in the file."
+msgstr ""
+"Выбранные данные необходимо преобразовать в файл Excel / CSV. Инструмент "
+"Flatten преобразует данные JSON OCDS в Excel (.xlsx) и помогает "
+"пользователям понять, какие данные содержатся в файле."
+
+#: src/views/UploadFile/UploadFileRegistry.vue:5
+msgid ""
+"Data you selected needs to be converted into an Excel/CSV file. The Flatten "
+"tool converts JSON OCDS data to Excel Excel (.xlsx) and helps users to "
+"understand what data is contained in the file."
+msgstr ""
+"Выбранные данные необходимо преобразовать в файл Excel / CSV. Инструмент "
+"Flatten преобразует данные JSON OCDS в Excel (.xlsx) и помогает "
+"пользователям понять, какие данные содержатся в файле."
+
+#: src/components/App/AppStepper.vue:31 src/components/App/AppStepper.vue:54
+msgid "Download"
+msgstr "Скачать"
+
+#: src/views/Download.vue:27
+msgid "Download CSV"
+msgstr "Скачать CSV"
+
+#: src/components/UploadFile/UploadFileOptions.vue:3
+msgid "Download OCDS Lite Data"
+msgstr "Скачать данные OCDS Lite"
+
+#: src/views/Download.vue:11
+msgid "Download XLSX"
+msgstr "Скачать XLSX"
+
+#: src/views/Download.vue:24
+msgid "Download your CSV"
+msgstr "Скачать CSV"
+
+#: src/views/Download.vue:22
+msgid "Download your XLSX"
+msgstr "Скачать XLSX"
+
+#: src/components/App/AppDropzone.vue:5
+msgid "Drag and drop or click here"
+msgstr "Перетащите или кликните здесь"
+
+#: src/components/App/AppTable.vue:14 src/components/App/AppTable.vue:3
+msgid "Edit"
+msgstr "Править"
+
+#: src/components/App/AppStepper.vue:25 src/components/App/AppStepper.vue:48
+msgid "Edit headings"
+msgstr "Править заголовки"
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:37
+msgid "English R friendly headings to all tables"
+msgstr "Английские R заголовки для всех таблиц"
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:33
+msgid "English user friendly headings to all tables"
+msgstr "Удобные заголовки ко всем таблицам на английском языке"
+
+#: src/components/UploadFile/UploadFileOptions.vue:16
+msgid ""
+"Explore the dataset to see what fields are available. Download tables to fit"
+" your requirements."
+msgstr ""
+"Изучите набор данных, чтобы узнать, какие поля доступны. Скачайте таблицы в "
+"соответствии с вашими требованиями."
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:31
+#: src/views/SelectData.vue:54 src/views/UploadFile/UploadFileRegistry.vue:36
+msgid "FAQ"
+msgstr "ЧАВО"
+
+#: src/components/UploadFile/UploadFileInput.vue:162
+msgid "File analysis in progress..."
+msgstr "Идет процесс анализа файла..."
+
+#: src/views/Download.vue:30
+msgid "Generate CSV"
+msgstr "Сгенерировать CSV"
+
+#: src/views/Download.vue:14
+msgid "Generate XLSX"
+msgstr "Сгенерировать XLSX"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:50
+#: src/views/EditHeadings.vue:13
+msgid "Go back"
+msgstr "Вернуться"
+
+#: src/views/Download.vue:61
+msgid "here"
+msgstr "здесь"
+
+#: src/views/UploadFile/index.vue:29
+msgid "How do I convert CSV or Excel data to JSON?"
+msgstr "Как преобразовать данные CSV или Excel в JSON?"
+
+#: src/views/SelectData.vue:34
+msgid ""
+"If a table is unavailable it means that the organisation publishing the data"
+" has no information for those tables."
+msgstr ""
+"Если таблица недоступна, это означает, что организация, публикующая данные, "
+"не имеет информации для этих таблиц."
+
+#: src/views/UploadFile/index.vue:13
+msgid ""
+"If the file size you have uploaded is very large and has multiple tables, it"
+" is recommended that you only select and flatten data that you actually want"
+" to use."
+msgstr ""
+"Если размер загруженного файла очень велик и содержит несколько таблиц, "
+"рекомендуется выбирать и сглаживать только те данные, которые вы "
+"действительно хотите использовать."
+
+#: src/views/Download.vue:59
+msgid ""
+"If you are experienced with R, our manual for how to use R to analyse OCDS "
+"data can be found"
+msgstr ""
+"Если у вас есть опыт работы с R, вы можете найти наше руководство по "
+"использованию R для анализа данных OCDS "
+
+#: src/views/UploadFile/index.vue:55
+msgid "If you are uncertain whether your data complies with OCDS, use the"
+msgstr "Если вы не уверены, соответствуют ли ваши данные OCDS, используйте "
+
+#: src/views/UploadFile/index.vue:32 src/views/UploadFile/index.vue:4
+msgid "If you would like to convert CSV data to JSON, please use the older"
+msgstr ""
+"Если вы хотите преобразовать данные CSV в JSON, используйте старую версию "
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:74
+msgid "into Main table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:67
+msgid "It is not possible to merge Array table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:68
+msgid "It is not possible to merge Array tables: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:316
+msgid "It is not possible to remove only Array table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:88
+msgid "Keep all tables unmerged and continue"
+msgstr "Оставить все таблицы разделенными и продолжить"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:177
+msgid "Keep arrays in main table"
+msgstr "Хранить массивы в одной таблице"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:8
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:1
+msgid "Missing data"
+msgstr "Недостающие данные"
+
+#: src/main.js:44
+msgid "Network Error"
+msgstr "Ошибка соединения"
+
+#: src/components/SelectData/SelectDataTableInfo.vue:22
+msgid "no data"
+msgstr "нет данных"
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:7
+msgid "Not all arrays can be merged"
+msgstr "Не все массивы можно объединить"
+
+#: src/components/UploadFile/UploadFileInput.vue:23
+#: src/components/UploadFile/UploadFileInput.vue:21
+msgid "Note that large files may take a while to process. Please be patient."
+msgstr ""
+"Обратите внимание, что обработка больших файлов может занять некоторое "
+"время. Пожалуйста, проявите терпение."
+
+#: src/components/Layout/LayoutInfo.vue:2
+msgid "OCDS Flatten Tool"
+msgstr "OCDS Инструмент Сглаживания"
+
+#: src/views/Download.vue:50
+msgid "OCDS Glossary"
+msgstr "Глоссарий OCDS"
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:29
+msgid "OCDS headings only"
+msgstr "Только наименования OCDS"
+
+#: src/views/Download.vue:49
+msgid "or using the"
+msgstr " или использовать "
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:100
+msgid ""
+"Organization references elsewhere in the data refer back to the entries in "
+"this list."
+msgstr ""
+"Ссылки на организации в других местах данных относятся к записям в этом "
+"списке."
+
+#: src/views/UploadFile/index.vue:39
+msgid ""
+"Please note that the Command-Line Tool requires some knowledge of "
+"programming and is not suited to non-technical users."
+msgstr ""
+"Обратите внимание, что инструмент командной строки требует определенных "
+"знаний в области программирования и не подходит для технически "
+"неподготовленных пользователей."
+
+#: src/views/UploadFile/index.vue:13
+msgid ""
+"Please note that the Command-Line Tool requires some knowledge of "
+"programming and is not-suited to non-technical users."
+msgstr ""
+"Обратите внимание, что инструмент командной строки требует определенных "
+"знаний в области программирования и не подходит для нетехнических "
+"пользователей."
+
+#: src/views/UploadFile/index.vue:53
+msgid "possible to flatten."
+msgstr "сгладить их будет невозможно."
+
+#: src/components/App/AppStepper.vue:19 src/components/App/AppStepper.vue:42
+#: src/views/CustomizeTables.vue:10
+msgid "Preview tables"
+msgstr "Предварительно просмотреть таблицы"
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:12
+msgid ""
+"R is a coding language that is used for data visualization, statistical "
+"analysis and data science. Users that work with R prefer to have the column "
+"headings to be provided in a certain way so that the manual work to make the"
+" data ready for analysis is reduced."
+msgstr ""
+"R - это язык программирования, который используется для визуализации данных,"
+" статистического анализа и анализа данных. Пользователи, которые работают с "
+"R, предпочитают, чтобы заголовки столбцов были предоставлены определенным "
+"образом, чтобы уменьшить ручную работу по подготовке данных для анализа."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:357
+msgid "Re-select available tables"
+msgstr "Повторно выбрать имеющиеся таблицы"
+
+#: src/components/App/AppStepper.vue:4
+msgid "Re-upload file"
+msgstr "Повторно загрузить файл"
+
+#: src/views/Download.vue:46
+msgid "release schema"
+msgstr "схема релиза"
+
+#: src/components/App/AppTable.vue:35 src/views/SelectData.vue:28
+msgid "Remove"
+msgstr "Убрать"
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:51
+msgid "Remove Array table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:52
+msgid "Remove Array tables: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:55
+msgid "Remove table"
+msgstr "Убрать таблицу"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:334
+msgid ""
+"Removing this table will mean it will not be included in flattened Excel "
+"file"
+msgstr ""
+"Удаление этой таблицы означает, что она не будет включена в сведенный файл "
+"Excel."
+
+#: src/components/App/AppTable.vue:39
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:60
+msgid "Restore table"
+msgstr "Восстановить таблицу"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:65
+msgid "Save and Continue"
+msgstr "Сохранить и Продолжить"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:9
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:2
+msgid "See column headings with missing data"
+msgstr "Просмотреть колонки с недостающими данными"
+
+#: src/views/UploadFile/index.vue:3
+msgid "Select a JSON file to flatten"
+msgstr "Выберите файл JSON для сглаживания"
+
+#: src/views/EditHeadings.vue:3
+msgid "Select column headings and edit table names"
+msgstr "Выберите заголовки столбцов и измените имена таблиц"
+
+#: src/components/App/AppStepper.vue:13 src/components/App/AppStepper.vue:36
+msgid "Select data"
+msgstr "Выбирете данные"
+
+#: src/views/SelectData.vue:3 src/views/UploadFile/UploadFileRegistry.vue:3
+msgid "Select data to flatten to Excel/CSV"
+msgstr "Выберите данные для преобразования в Excel / CSV"
+
+#: src/components/UploadFile/UploadFileOptions.vue:15
+msgid "Select fields manually"
+msgstr "Выбрать поля вручную"
+
+#: src/views/Download.vue:20
+msgid "Select how to generate your tables"
+msgstr "Выберите способ создания ваших таблиц"
+
+#: src/components/UploadFile/UploadFileInput.vue:49
+msgid "Select your next action"
+msgstr "Выбрать ваше следующее действие"
+
+#: src/views/SelectData.vue:33
+msgid "Selected tables"
+msgstr "Выбрать таблицы"
+
+#: src/components/UploadFile/UploadFileOptions.vue:4
+msgid ""
+"Skip customization and download the most commonly used fields, as "
+"recommended by the data analysts at OCP."
+msgstr ""
+"Пропустите настройку и загрузите наиболее часто используемые поля в "
+"соответствии с рекомендациями аналитиков OCP."
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:45
+msgid "Spanish R friendly headings to all tables"
+msgstr "Испанские R наименования для всех таблиц"
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:41
+msgid "Spanish user friendly headings to all tables"
+msgstr "Удобные заголовки ко всем таблицам на испанском языке"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:177
+msgid "Split arrays into separate tables"
+msgstr "Разбить массивы на отдельные таблицы"
+
+#: src/components/UploadFile/UploadFileUrlInput.vue:4
+msgid "Submit"
+msgstr "Подать"
+
+#: src/components/UploadFile/UploadFileInput.vue:44
+msgid "Supply a URL for JSON"
+msgstr "Укажите URL-адрес для JSON"
+
+#: src/components/App/AppTable.vue:4
+msgid "Table"
+msgstr "Таблица"
+
+#: src/views/UploadFile/UploadFileRegistry.vue:10
+#: src/views/UploadFile/index.vue:17
+msgid ""
+"The file size is very large and has multiple tables. It is recommended that "
+"you only flatten data that you actually want to use."
+msgstr ""
+"Размер файла очень большой и содержит несколько таблиц. Рекомендуется "
+"сглаживать только те данные, которые вы действительно хотите использовать."
+
+#: src/views/UploadFile/index.vue:4
+msgid ""
+"The Flatten Tool converts JSON OCDS data to Excel (.xlsx) and helps you to "
+"understand what data is contained in the file."
+msgstr ""
+"Инструмент Flatten конвертирует данные JSON OCDS в Excel (.xlsx) и помогает "
+"понять, какие данные содержатся в файле."
+
+#: src/views/UploadFile/index.vue:18
+msgid ""
+"The JSON data you upload should be in OCDS 1.1 or 1.0, otherwise it may not "
+"be possible to flatten. If you are uncertain whether your data complies with"
+" OCDS, use the"
+msgstr ""
+"Загружаемые данные JSON должны быть в формате OCDS 1.1 или 1.0, в противном "
+"случае сгладить их будет невозможно. Если вы не уверены, соответствуют ли "
+"ваши данные OCDS, используйте"
+
+#: src/views/UploadFile/index.vue:50
+msgid ""
+"The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it "
+"may not be"
+msgstr ""
+"Загружаемые данные JSON должны быть в формате OCDS 1.1 или 1.0, в противном "
+"случае"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:144
+msgid ""
+"The term amendment often has a specific legal meaning for a publisher. "
+"Certain changes to a tender, award, or contract might only be allowed as "
+"part of an amendment."
+msgstr ""
+"Термин «поправка» часто имеет особое юридическое значение для издателя. "
+"Определенные изменения в тендере, присуждении контракта или контракте могут "
+"быть разрешены только как часть поправки."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:34
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:257
+msgid "There are five arrays in this table"
+msgstr "В этой таблице пять массивов"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:33
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:256
+msgid "There are four arrays in this table"
+msgstr "В этой таблице четыре массива"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:29
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:252
+msgid "There are no arrays in this table"
+msgstr "В этой таблице нет массивов"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:32
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:255
+msgid "There are three arrays in this table"
+msgstr "В этой таблице три массива"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:31
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:254
+msgid "There are two arrays in this table"
+msgstr "В этой таблице два массива"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:88
+msgid ""
+"There can be more than one award per contracting process e.g. because the "
+"contract is split among different providers, or because it is a standing "
+"offer."
+msgstr ""
+"Для каждого процесса заключения контракта может быть несколько присуждений, "
+"например потому что контракт разделен между разными поставщиками, или потому"
+" что это постоянное предложение."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:163
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:185
+msgid "There is %{ n } array in this table"
+msgid_plural "There are %{ n } arrays in this table"
+msgstr[0] "В этой таблице %{n} массив"
+msgstr[1] "В этой таблице %{n} массивов"
+msgstr[2] "В этой таблице %{n} массивов"
+msgstr[3] "В этой таблице %{n} массивов"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:225
+msgid "There is %{ n } column with additional data not part of OCDS"
+msgid_plural "There are %{ n } columns with additional data not part of OCDS"
+msgstr[0] "Есть %{n} столбец с дополнительными данными, не входящими в OCDS"
+msgstr[1] "Есть %{n} столбцов с дополнительными данными, не входящими в OCDS"
+msgstr[2] "Есть %{n} столбцов с дополнительными данными, не входящими в OCDS"
+msgstr[3] "Есть %{n} столбцов с дополнительными данными, не входящими в OCDS"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:207
+msgid "There is data for %{ n } of the"
+msgid_plural "There is data for %{ n } of the"
+msgstr[0] "Есть данные по %{n}"
+msgstr[1] "Есть данные по %{n}"
+msgstr[2] "Есть данные по %{n}"
+msgstr[3] "Есть данные по %{n}"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:30
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:253
+msgid "There is one array in this table"
+msgstr "В этой таблице есть один массив"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:234
+msgid "These columns are highlighted in violet"
+msgstr "Эти столбцы выделены фиолетовым"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:233
+msgid "This column is highlighted in violet"
+msgstr "Этот столбец выделен фиолетовым"
+
+#: src/components/UploadFile/UploadFileInput.vue:130
+msgid ""
+"This file is not compliant with the OCDS schema so cannot be flattened. "
+"Check your data using the Data Review Tool and resolve the issues before "
+"flattening"
+msgstr ""
+"Этот файл несовместим со схемой OCDS, поэтому не может быть сглажен. "
+"Проверьте свои данные с помощью Инструмента Обзора Данных и устраните "
+"проблемы перед сглаживанием"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:107
+msgid ""
+"This includes information related to the process of deciding what to "
+"contract, when, and how."
+msgstr ""
+"Сюда входит информация, относящаяся к процессу принятия решения о том что "
+"контрактировать, когда и как"
+
+#: src/components/UploadFile/UploadFileInput.vue:111
+msgid "This link is not valid. Please check and try again"
+msgstr "Эта ссылка недействительна. Пожалуйста проверьте и попробуйте снова"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:132
+msgid ""
+"This table contains a list of milestones associated with the different "
+"stages of the procurement process (planning, tender, award, contract, "
+"implementation)."
+msgstr ""
+"Эта таблица содержит список этапов, связанных с различными этапами процесса "
+"закупок (планирование, тендер, присуждение контракта, контракт, реализация)."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:87
+msgid ""
+"This table contains information from the award phase of the contracting "
+"process."
+msgstr "Эта таблица содержит информацию о стадии заключения контракта."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:124
+msgid ""
+"This table contains information from the contract creation phase of the "
+"procurement process and the signed contract between the buyer or procuring "
+"entity and supplier(s)."
+msgstr ""
+"Эта таблица содержит информацию, полученную на этапе создания контракта в "
+"процессе закупок и подписанного контракта между покупателем или закупающей "
+"организацией и поставщиком (ами)."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:106
+msgid ""
+"This table contains information from the planning phase of the contracting "
+"process."
+msgstr ""
+"В этой таблице содержится информация, полученная на этапе планирования "
+"процесса заключения контракта."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:113
+msgid ""
+"This table contains information on the activities undertaken in order to "
+"enter into a contract."
+msgstr ""
+"В этой таблице содержится информация о действиях, предпринятых для "
+"заключения контракта."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:139
+msgid ""
+"This table contains information on the changes to the different stages of "
+"the procurement process (tender, award, contract). For example, when the "
+"value or duration of a contract is changed. "
+msgstr ""
+"Эта таблица содержит информацию об изменениях на различных этапах процесса "
+"закупок (тендер, присуждение контракта, контракт). Например, при изменении "
+"стоимости или продолжительности контракта."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:152
+msgid ""
+"This table contains information on the documents available for the different"
+" stages of the procurement process (planning, tender, award, contract, "
+"implementation)."
+msgstr ""
+"Эта таблица содержит информацию о документах, доступных для различных этапов"
+" процесса закупок (планирование, тендер, присуждение контракта, контракт, "
+"реализация)."
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:95
+msgid ""
+"This table contains information on the parties (organizations, economic "
+"operators and other participants) who are involved in the contracting "
+"process and their roles, e.g. buyer, procuring entity, supplier, etc."
+msgstr ""
+"Эта таблица содержит информацию о сторонах (организациях, экономических "
+"операторах и других участниках), которые участвуют в процессе заключения "
+"контрактов, и их ролях, например покупатель, закупающая организация, "
+"поставщик и т. д."
+
+#: src/views/UploadFile/index.vue:31
+msgid "to check first"
+msgstr "сначала проверить"
+
+#: src/views/UploadFile/index.vue:62
+msgid "to check first."
+msgstr "проверить в первую очередь."
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:5
+msgid ""
+"To make the data easier to work with you can apply user friendly or R "
+"friendly headings in English or Spanish to OCDS fields. The original OCDS "
+"headings are kept and can be removed in Excel."
+msgstr ""
+"Чтобы упростить работу с данными, вы можете применить к полям OCDS понятные "
+"или дружественные R заголовки на английском или испанском языках. Исходные "
+"заголовки OCDS сохраняются и могут быть удалены в Excel."
+
+#: src/components/SelectData/SelectDataTableInfo.vue:26
+msgid "total row count"
+msgstr "общее количество строк:"
+
+#: src/views/SelectData.vue:42
+msgid "Unavailable tables"
+msgstr "Недоступные таблицы"
+
+#: src/components/App/AppStepper.vue:7
+msgctxt "Upload file"
+msgid "Upload file"
+msgstr "Загрузить файл"
+
+#: src/components/UploadFile/UploadFileInput.vue:235
+msgid "Upload in progress"
+msgstr "Загружается"
+
+#: src/components/UploadFile/UploadFileInput.vue:40
+msgid "Upload JSON file"
+msgstr "Загрузить JSON файл"
+
+#: src/views/Download.vue:55
+msgid "video tutorials"
+msgstr "видеоуроки"
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:11
+msgid "What are R friendly headings?"
+msgstr "Что такое R-дружественные заголовки?"
+
+#: src/views/SelectData.vue:25
+msgid "What is an array?"
+msgstr "Что такое массив?"
+
+#: src/views/UploadFile/UploadFileRegistry.vue:19
+msgid "What is OCDS Lite?"
+msgstr "Что такое OCDS Lite?"
+
+#: src/views/UploadFile/UploadFileRegistry.vue:26
+msgid "What is OCDS schema version 1.1?"
+msgstr "Что такое схема OCDS версия 1.1?"
+
+#: src/views/UploadFile/UploadFileRegistry.vue:33
+msgid "What is the data review tool?"
+msgstr "Что такое Инструмент Обзора Данных?"
+
+#: src/views/UploadFile/index.vue:47
+msgid "What should I do if there are issues with my file?"
+msgstr "Что мне делать, если с моим файлом возникли проблемы?"
+
+#: src/components/App/AppConfirmDialog.vue:16
+#: src/components/App/AppConfirmDialog.vue:34
+msgid "When going to the previous step, all current changes will be reversed"
+msgstr "При возврате назад все текущие изменения будут отменены"
+
+#: src/views/SelectData.vue:33
+msgid "Why are some tables unavailable?"
+msgstr " Почему некоторые таблицы недоступны?"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:320
+msgid "will be removed."
+msgstr ""
+
+#: src/components/App/AppConfirmDialog.vue:17
+#: src/components/App/AppConfirmDialog.vue:37
+msgid "Yes, go back"
+msgstr "Да, вернуться"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:335
+msgid "Yes, remove table and continue"
+msgstr "Да, убрать таблицу и продолжить"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:321
+msgid "Yes, remove tables and continue"
+msgstr ""
+
+#: src/views/Download.vue:45
+msgid ""
+"You can find a full list of definitions of the different OCDS fields in the"
+msgstr "Вы можете найти полный список определений различных полей OCDS в "
+
+#: src/views/Download.vue:54
+msgid ""
+"You can learn more about how to analyse your Excel data using the following"
+msgstr ""
+"Вы можете узнать больше о том, как анализировать данные Excel, используя "
+"следующие "
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:354
+msgid "You cannot remove all of the tables. If you want to remove "
+msgstr "Вы не можете удалить все таблицы. Если вы хотите удалить"
+
+#: src/components/UploadFile/UploadFileInput.vue:154
+msgid "Your file has been checked and is ready to use."
+msgstr "Ваш файл проверен и готов к использованию."

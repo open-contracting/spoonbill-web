@@ -1,0 +1,782 @@
+# 
+# Translators:
+# Zoriana Zaiats, 2021
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Last-Translator: Zoriana Zaiats, 2021\n"
+"Language-Team: English (United States) (https://www.transifex.com/open-contracting-partnership-1/teams/117704/en_US/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: easygettext\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:356
+msgid ""
+" then please restore one of the other tables or re-select available tables."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:318
+msgid ""
+" without Sub-array tables.  Additionally, the following Sub-array tables:"
+msgstr ""
+
+#: src/views/Download.vue:3
+msgid "{{ heading }}"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:209
+msgid "%{ total } columns"
+msgid_plural "%{ total } columns"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:5
+msgid "About this table"
+msgstr ""
+
+#: src/views/SelectData.vue:23
+msgid "Add"
+msgstr ""
+
+#: src/views/Download.vue:41
+msgid "Additional resources"
+msgstr ""
+
+#: src/views/SelectData.vue:26
+msgid ""
+"An array is a sort of list that is nested inside a field. When converting "
+"from JSON to CSV it is usually helpful to split out arrays into separate "
+"tables to make the data easier to work with. Some tables in OCDS have more "
+"than one array."
+msgstr ""
+
+#: src/views/Download.vue:42
+msgid "Analysing your data"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:142
+msgid "Analysis has been completed"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:57
+msgid "and merge remaining tables"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:9
+msgid ""
+"Any columns in the dataset that are not OCDS fields will not have any "
+"friendly headings applied to them."
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:23
+msgid "Apply change"
+msgstr ""
+
+#: src/components/App/AppConfirmDialog.vue:15
+#: src/components/App/AppConfirmDialog.vue:33
+msgid "Are you sure to go back?"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:314
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:333
+msgid "Are you sure?"
+msgstr ""
+
+#: src/components/SelectData/SelectDataTableInfo.vue:28
+msgid "array"
+msgstr ""
+
+#: src/components/SelectData/SelectDataTableInfo.vue:28
+msgid "arrays"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:34
+msgid "Arrays"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:76
+msgid "as this will make it too large for use in Excel"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:27
+msgid "Available data"
+msgstr ""
+
+#: src/views/SelectData.vue:14
+msgid "Available tables"
+msgstr ""
+
+#: src/components/App/AppDropzone.vue:11
+msgid "Browse files"
+msgstr ""
+
+#: src/components/App/AppConfirmDialog.vue:18
+#: src/components/CustomizeTables/CustomizeDialog.vue:27
+#: src/components/UploadFile/UploadFileLoadingProgress.vue:19
+msgid "Cancel"
+msgstr ""
+
+#: src/views/SelectData.vue:5
+msgid ""
+"Choose the available tables that you want to flatten and add them to "
+"selected tables to continue. Tables that are unavailable were not found in "
+"the data."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:5
+msgid "Command-Line tool"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:35
+msgid "Command-Line tool."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:30
+#: src/views/EditHeadings.vue:18 src/views/SelectData.vue:48
+msgid "Continue"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileOptions.vue:21
+msgid "Continue to select tables"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileOptions.vue:9
+msgid "Continue with OCDS Lite"
+msgstr ""
+
+#: src/components/Layout/LayoutInfo.vue:3
+msgid "Convert your OCDS JSON data into Excel"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:31
+#: src/views/UploadFile/UploadFileRegistry.vue:18
+msgid "Data for country:"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:37
+#: src/views/UploadFile/UploadFileRegistry.vue:22
+msgid "Data for range:"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:43
+#: src/views/UploadFile/UploadFileRegistry.vue:26
+msgid "Data from:"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:117
+msgid ""
+"Data regarding tender process - publicly inviting prospective contractors to"
+" submit bids for evaluation and selecting a winner or winners."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:59 src/views/UploadFile/index.vue:25
+msgid "Data Review Tool"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:8
+msgid ""
+"Data you selected needs to be converted into an Excel/CSV file. The Flatten "
+"tool converts JSON OCDS data to Excel (.xlsx) and helps users to understand "
+"what data is contained in the file."
+msgstr ""
+
+#: src/views/UploadFile/UploadFileRegistry.vue:5
+msgid ""
+"Data you selected needs to be converted into an Excel/CSV file. The Flatten "
+"tool converts JSON OCDS data to Excel Excel (.xlsx) and helps users to "
+"understand what data is contained in the file."
+msgstr ""
+
+#: src/components/App/AppStepper.vue:31 src/components/App/AppStepper.vue:54
+msgid "Download"
+msgstr ""
+
+#: src/views/Download.vue:27
+msgid "Download CSV"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileOptions.vue:3
+msgid "Download OCDS Lite Data"
+msgstr ""
+
+#: src/views/Download.vue:11
+msgid "Download XLSX"
+msgstr ""
+
+#: src/views/Download.vue:24
+msgid "Download your CSV"
+msgstr ""
+
+#: src/views/Download.vue:22
+msgid "Download your XLSX"
+msgstr ""
+
+#: src/components/App/AppDropzone.vue:5
+msgid "Drag and drop or click here"
+msgstr ""
+
+#: src/components/App/AppTable.vue:14 src/components/App/AppTable.vue:3
+msgid "Edit"
+msgstr ""
+
+#: src/components/App/AppStepper.vue:25 src/components/App/AppStepper.vue:48
+msgid "Edit headings"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:37
+msgid "English R friendly headings to all tables"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:33
+msgid "English user friendly headings to all tables"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileOptions.vue:16
+msgid ""
+"Explore the dataset to see what fields are available. Download tables to fit"
+" your requirements."
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:31
+#: src/views/SelectData.vue:54 src/views/UploadFile/UploadFileRegistry.vue:36
+msgid "FAQ"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:162
+msgid "File analysis in progress..."
+msgstr ""
+
+#: src/views/Download.vue:30
+msgid "Generate CSV"
+msgstr ""
+
+#: src/views/Download.vue:14
+msgid "Generate XLSX"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:50
+#: src/views/EditHeadings.vue:13
+msgid "Go back"
+msgstr ""
+
+#: src/views/Download.vue:61
+msgid "here"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:29
+msgid "How do I convert CSV or Excel data to JSON?"
+msgstr ""
+
+#: src/views/SelectData.vue:34
+msgid ""
+"If a table is unavailable it means that the organisation publishing the data"
+" has no information for those tables."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:13
+msgid ""
+"If the file size you have uploaded is very large and has multiple tables, it"
+" is recommended that you only select and flatten data that you actually want"
+" to use."
+msgstr ""
+
+#: src/views/Download.vue:59
+msgid ""
+"If you are experienced with R, our manual for how to use R to analyse OCDS "
+"data can be found"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:55
+msgid "If you are uncertain whether your data complies with OCDS, use the"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:32 src/views/UploadFile/index.vue:4
+msgid "If you would like to convert CSV data to JSON, please use the older"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:74
+msgid "into Main table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:67
+msgid "It is not possible to merge Array table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:68
+msgid "It is not possible to merge Array tables: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:316
+msgid "It is not possible to remove only Array table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:88
+msgid "Keep all tables unmerged and continue"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:177
+msgid "Keep arrays in main table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:8
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:1
+msgid "Missing data"
+msgstr ""
+
+#: src/main.js:44
+msgid "Network Error"
+msgstr ""
+
+#: src/components/SelectData/SelectDataTableInfo.vue:22
+msgid "no data"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:7
+msgid "Not all arrays can be merged"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:23
+#: src/components/UploadFile/UploadFileInput.vue:21
+msgid "Note that large files may take a while to process. Please be patient."
+msgstr ""
+
+#: src/components/Layout/LayoutInfo.vue:2
+msgid "OCDS Flatten Tool"
+msgstr ""
+
+#: src/views/Download.vue:50
+msgid "OCDS Glossary"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:29
+msgid "OCDS headings only"
+msgstr ""
+
+#: src/views/Download.vue:49
+msgid "or using the"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:100
+msgid ""
+"Organization references elsewhere in the data refer back to the entries in "
+"this list."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:39
+msgid ""
+"Please note that the Command-Line Tool requires some knowledge of "
+"programming and is not suited to non-technical users."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:13
+msgid ""
+"Please note that the Command-Line Tool requires some knowledge of "
+"programming and is not-suited to non-technical users."
+msgstr ""
+"Please note that the Command-Line Tool requires some knowledge of "
+"programming and is not suited to non-technical users."
+
+#: src/views/UploadFile/index.vue:53
+msgid "possible to flatten."
+msgstr ""
+
+#: src/components/App/AppStepper.vue:19 src/components/App/AppStepper.vue:42
+#: src/views/CustomizeTables.vue:10
+msgid "Preview tables"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:12
+msgid ""
+"R is a coding language that is used for data visualization, statistical "
+"analysis and data science. Users that work with R prefer to have the column "
+"headings to be provided in a certain way so that the manual work to make the"
+" data ready for analysis is reduced."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:357
+msgid "Re-select available tables"
+msgstr ""
+
+#: src/components/App/AppStepper.vue:4
+msgid "Re-upload file"
+msgstr ""
+
+#: src/views/Download.vue:46
+msgid "release schema"
+msgstr ""
+
+#: src/components/App/AppTable.vue:35 src/views/SelectData.vue:28
+msgid "Remove"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:51
+msgid "Remove Array table: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeDialog.vue:52
+msgid "Remove Array tables: "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:55
+msgid "Remove table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:334
+msgid ""
+"Removing this table will mean it will not be included in flattened Excel "
+"file"
+msgstr ""
+
+#: src/components/App/AppTable.vue:39
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:60
+msgid "Restore table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:65
+msgid "Save and Continue"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:9
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:2
+msgid "See column headings with missing data"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:3
+msgid "Select a JSON file to flatten"
+msgstr ""
+
+#: src/views/EditHeadings.vue:3
+msgid "Select column headings and edit table names"
+msgstr ""
+
+#: src/components/App/AppStepper.vue:13 src/components/App/AppStepper.vue:36
+msgid "Select data"
+msgstr ""
+
+#: src/views/SelectData.vue:3 src/views/UploadFile/UploadFileRegistry.vue:3
+msgid "Select data to flatten to Excel/CSV"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileOptions.vue:15
+msgid "Select fields manually"
+msgstr ""
+
+#: src/views/Download.vue:20
+msgid "Select how to generate your tables"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:49
+msgid "Select your next action"
+msgstr ""
+
+#: src/views/SelectData.vue:33
+msgid "Selected tables"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileOptions.vue:4
+msgid ""
+"Skip customization and download the most commonly used fields, as "
+"recommended by the data analysts at OCP."
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:45
+msgid "Spanish R friendly headings to all tables"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:41
+msgid "Spanish user friendly headings to all tables"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:177
+msgid "Split arrays into separate tables"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileUrlInput.vue:4
+msgid "Submit"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:44
+msgid "Supply a URL for JSON"
+msgstr ""
+
+#: src/components/App/AppTable.vue:4
+msgid "Table"
+msgstr ""
+
+#: src/views/UploadFile/UploadFileRegistry.vue:10
+#: src/views/UploadFile/index.vue:17
+msgid ""
+"The file size is very large and has multiple tables. It is recommended that "
+"you only flatten data that you actually want to use."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:4
+msgid ""
+"The Flatten Tool converts JSON OCDS data to Excel (.xlsx) and helps you to "
+"understand what data is contained in the file."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:18
+msgid ""
+"The JSON data you upload should be in OCDS 1.1 or 1.0, otherwise it may not "
+"be possible to flatten. If you are uncertain whether your data complies with"
+" OCDS, use the"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:50
+msgid ""
+"The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it "
+"may not be"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:144
+msgid ""
+"The term amendment often has a specific legal meaning for a publisher. "
+"Certain changes to a tender, award, or contract might only be allowed as "
+"part of an amendment."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:34
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:257
+msgid "There are five arrays in this table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:33
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:256
+msgid "There are four arrays in this table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:29
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:252
+msgid "There are no arrays in this table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:32
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:255
+msgid "There are three arrays in this table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:31
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:254
+msgid "There are two arrays in this table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:88
+msgid ""
+"There can be more than one award per contracting process e.g. because the "
+"contract is split among different providers, or because it is a standing "
+"offer."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:163
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:185
+msgid "There is %{ n } array in this table"
+msgid_plural "There are %{ n } arrays in this table"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:225
+msgid "There is %{ n } column with additional data not part of OCDS"
+msgid_plural "There are %{ n } columns with additional data not part of OCDS"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:207
+msgid "There is data for %{ n } of the"
+msgid_plural "There is data for %{ n } of the"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:30
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:253
+msgid "There is one array in this table"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:234
+msgid "These columns are highlighted in violet"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:233
+msgid "This column is highlighted in violet"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:130
+msgid ""
+"This file is not compliant with the OCDS schema so cannot be flattened. "
+"Check your data using the Data Review Tool and resolve the issues before "
+"flattening"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:107
+msgid ""
+"This includes information related to the process of deciding what to "
+"contract, when, and how."
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:111
+msgid "This link is not valid. Please check and try again"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:132
+msgid ""
+"This table contains a list of milestones associated with the different "
+"stages of the procurement process (planning, tender, award, contract, "
+"implementation)."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:87
+msgid ""
+"This table contains information from the award phase of the contracting "
+"process."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:124
+msgid ""
+"This table contains information from the contract creation phase of the "
+"procurement process and the signed contract between the buyer or procuring "
+"entity and supplier(s)."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:106
+msgid ""
+"This table contains information from the planning phase of the contracting "
+"process."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:113
+msgid ""
+"This table contains information on the activities undertaken in order to "
+"enter into a contract."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:139
+msgid ""
+"This table contains information on the changes to the different stages of "
+"the procurement process (tender, award, contract). For example, when the "
+"value or duration of a contract is changed. "
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:152
+msgid ""
+"This table contains information on the documents available for the different"
+" stages of the procurement process (planning, tender, award, contract, "
+"implementation)."
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:95
+msgid ""
+"This table contains information on the parties (organizations, economic "
+"operators and other participants) who are involved in the contracting "
+"process and their roles, e.g. buyer, procuring entity, supplier, etc."
+msgstr ""
+
+#: src/views/UploadFile/index.vue:31
+msgid "to check first"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:62
+msgid "to check first."
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:5
+msgid ""
+"To make the data easier to work with you can apply user friendly or R "
+"friendly headings in English or Spanish to OCDS fields. The original OCDS "
+"headings are kept and can be removed in Excel."
+msgstr ""
+
+#: src/components/SelectData/SelectDataTableInfo.vue:26
+msgid "total row count"
+msgstr ""
+
+#: src/views/SelectData.vue:42
+msgid "Unavailable tables"
+msgstr ""
+
+#: src/components/App/AppStepper.vue:7
+msgctxt "Upload file"
+msgid "Upload file"
+msgstr "Upload file"
+
+#: src/components/UploadFile/UploadFileInput.vue:235
+msgid "Upload in progress"
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:40
+msgid "Upload JSON file"
+msgstr ""
+
+#: src/views/Download.vue:55
+msgid "video tutorials"
+msgstr ""
+
+#: src/components/EditHeadings/EditHeadingOptions.vue:11
+msgid "What are R friendly headings?"
+msgstr ""
+
+#: src/views/SelectData.vue:25
+msgid "What is an array?"
+msgstr ""
+
+#: src/views/UploadFile/UploadFileRegistry.vue:19
+msgid "What is OCDS Lite?"
+msgstr ""
+
+#: src/views/UploadFile/UploadFileRegistry.vue:26
+msgid "What is OCDS schema version 1.1?"
+msgstr ""
+
+#: src/views/UploadFile/UploadFileRegistry.vue:33
+msgid "What is the data review tool?"
+msgstr ""
+
+#: src/views/UploadFile/index.vue:47
+msgid "What should I do if there are issues with my file?"
+msgstr ""
+
+#: src/components/App/AppConfirmDialog.vue:16
+#: src/components/App/AppConfirmDialog.vue:34
+msgid "When going to the previous step, all current changes will be reversed"
+msgstr ""
+
+#: src/views/SelectData.vue:33
+msgid "Why are some tables unavailable?"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:320
+msgid "will be removed."
+msgstr ""
+
+#: src/components/App/AppConfirmDialog.vue:17
+#: src/components/App/AppConfirmDialog.vue:37
+msgid "Yes, go back"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:335
+msgid "Yes, remove table and continue"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:321
+msgid "Yes, remove tables and continue"
+msgstr ""
+
+#: src/views/Download.vue:45
+msgid ""
+"You can find a full list of definitions of the different OCDS fields in the"
+msgstr ""
+
+#: src/views/Download.vue:54
+msgid ""
+"You can learn more about how to analyse your Excel data using the following"
+msgstr ""
+
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:354
+msgid "You cannot remove all of the tables. If you want to remove "
+msgstr ""
+
+#: src/components/UploadFile/UploadFileInput.vue:154
+msgid "Your file has been checked and is ready to use."
+msgstr ""
