@@ -55,20 +55,23 @@ jobs:
         run: |
           echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
           echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
-      - name: Run tests
+      - name: Start containers
         if: github.event.inputs.SKIP_TEST != 'true'
         env:
           POSTGRES_PASSWORD: postgres
-          # See https://github.com/open-contracting/spoonbill-test
-          SITE_URL: http://127.0.0.1
         run: |
           docker-compose -f docker-compose.test.yaml build
           docker-compose -f docker-compose.test.yaml pull
           docker-compose -f docker-compose.test.yaml up -d --wait
           docker-compose -f docker-compose.test.yaml logs app
           docker ps
-          cd test
-          python -m robot -n noncritical tests
+      - name: Run tests
+        if: github.event.inputs.SKIP_TEST != 'true'
+        env:
+          # See https://github.com/open-contracting/spoonbill-test
+          SITE_URL: http://127.0.0.1
+        working-directory: test
+        run: python -m robot -n noncritical tests
       - uses: actions/upload-artifact@v2
         if: always()
         with:
