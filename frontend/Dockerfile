@@ -1,12 +1,9 @@
+# https://cli.vuejs.org/guide/deployment.html#docker-nginx
 FROM node:16 as build-stage-vue
-
 WORKDIR /workdir
-
 COPY package*.json ./
 RUN npm install
-
 COPY . .
-
 ARG VUE_APP_API_URL
 ARG VUE_APP_WEBSOCKET_URL
 ARG VUE_APP_SENTRY_DSN
@@ -21,8 +18,8 @@ RUN VUE_APP_API_URL=${VUE_APP_API_URL} \
 
 FROM nginxinc/nginx-unprivileged:latest as production-stage
 USER root
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=build-stage-vue --chown=nginx:root /workdir/dist /usr/share/nginx/html/static
+COPY --chown=nginx:root --from=build-stage-vue /workdir/dist /usr/share/nginx/html
+COPY --chown=nginx:root default.conf /etc/nginx/conf.d/default.conf
 
 # Must match the settings.MEDIA_ROOT default value.
 RUN mkdir -p /data/media && chown -R nginx:root /data/media
