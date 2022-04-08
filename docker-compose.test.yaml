@@ -100,6 +100,7 @@ services:
     env_file:
       - .env
     environment:
+      - DJANGO_ENV=production
       - DB_HOST=postgres
       - REDIS_URL=redis://redis:6379/0
     depends_on:

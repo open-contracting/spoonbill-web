@@ -5,71 +5,12 @@ on:
     branches: [main]
     types:
       - completed
-  workflow_dispatch:
-    inputs:
-        SKIP_TEST:
-          description: 'Skip Docker image test'
-          required: true
-          default: 'false'
 jobs:
   docker:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-        with:
-          python-version: 3.8
-
-      # Prepare the test/ directory.
-      - uses: actions/checkout@v3
-        with:
-          repository: open-contracting/spoonbill-test
-          path: test
-      - name: Copy translation files for tests
-        run: |
-          cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
-          cp spoonbill_web/locale/es/LC_MESSAGES/django.po test/resources/backend_es.po
-          cp frontend/locale/es/lang.po test/resources/front_es.po
-
-      # Test the images.
-      - run: pip install -r test/requirements.txt
-      - name: Create .env file
-        run: |
-          echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
-          echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
-      - if: github.event.inputs.SKIP_TEST != 'true'
-        run: docker-compose -f docker-compose.test.yaml build
-      - if: github.event.inputs.SKIP_TEST != 'true'
-        run: docker-compose -f docker-compose.test.yaml pull
-      - if: github.event.inputs.SKIP_TEST != 'true'
-        env:
-          POSTGRES_PASSWORD: postgres
-        run: |
-          docker-compose -f docker-compose.test.yaml up -d
-          # Wait for postgres.
-          sleep 60
-          # Print debug information.
-          docker ps
-          docker-compose -f docker-compose.test.yaml logs app
-      # Google Chrome and ChromeDriver are already included.
-      # https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
-      # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
-      - if: github.event.inputs.SKIP_TEST != 'true'
-        env:
-          # See https://github.com/open-contracting/spoonbill-test
-          SITE_URL: http://127.0.0.1
-        working-directory: test
-        run: python -m robot -n noncritical tests
-      - uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          path: |
-            test/log.html
-            test/output.xml
-            test/report.html
-
-      # Upload the images.
       # https://github.com/docker/login-action#github-container-registry
       - uses: docker/login-action@v1
         with:
@@ -84,15 +25,15 @@ jobs:
           push: true
           context: .
           tags: |
-            ghcr.io/${{ github.repository }}/app:latest
+            ghcr.io/${{ github.repository }}-django:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - uses: docker/build-push-action@v2
         with:
           push: true
-          context: ./frontend
+          context: frontend
           tags: |
-            ghcr.io/${{ github.repository }}/front:latest
+            ghcr.io/${{ github.repository }}-vue:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
