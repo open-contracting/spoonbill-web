@@ -74,23 +74,8 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-        with:
-          python-version: 3.8
-
-      # Prepare the test/ directory.
-      - uses: actions/checkout@v3
-        with:
-          repository: open-contracting/spoonbill-test
-          path: test
-      - name: Copy translation files for tests
-        run: |
-          cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
-          cp spoonbill_web/locale/es/LC_MESSAGES/django.po test/resources/backend_es.po
-          cp frontend/locale/es/lang.po test/resources/front_es.po
-
       # Build the images and start the containers.
+      - uses: actions/checkout@v3
       - name: Create .env file
         run: |
           echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
@@ -98,25 +83,32 @@ jobs:
           echo "POSTGRES_PASSWORD=postgres" >> .env
       - run: docker-compose -f docker-compose.test.yaml pull
       - run: docker-compose -f docker-compose.test.yaml build
-      - name: Start Docker containers
-        run: |
-          docker-compose -f docker-compose.test.yaml up -d
-          sleep 60  # wait for postgres
+      - run: docker-compose -f docker-compose.test.yaml up -d
       - name: Print debug information
         run: |
           docker ps
           docker-compose -f docker-compose.test.yaml logs app
-          docker-compose -f docker-compose.test.yaml logs postgres
 
       # Test the images.
+      - uses: actions/checkout@v3
+        with:
+          repository: open-contracting/spoonbill-test
+          path: test
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
       - run: pip install -r test/requirements.txt
+      - name: Copy translation files for tests
+        run: |
+          cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
+          cp spoonbill_web/locale/es/LC_MESSAGES/django.po test/resources/backend_es.po
+          cp frontend/locale/es/lang.po test/resources/front_es.po
       # Google Chrome and ChromeDriver are already included.
       # https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
       # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
       - env:
           # See https://github.com/open-contracting/spoonbill-test
           SITE_URL: http://127.0.0.1
-          POSTGRES_HOST: 127.0.0.1
         working-directory: test
         run: python -m robot -n noncritical tests
       - uses: actions/upload-artifact@v2
