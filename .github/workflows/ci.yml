@@ -95,7 +95,7 @@ jobs:
         run: |
           echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
           echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
-          echo "POSTGRES_PASSWORD: postgres" >> .env
+          echo "POSTGRES_PASSWORD=postgres" >> .env
       - run: docker-compose -f docker-compose.test.yaml pull
       - run: docker-compose -f docker-compose.test.yaml build
       - name: Start Docker containers
