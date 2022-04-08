@@ -26,7 +26,6 @@ jobs:
         with:
           repository: open-contracting/spoonbill-test
           path: test
-      - run: pip install transifex-client
       - name: Copy translation files for tests
         run: |
           cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
