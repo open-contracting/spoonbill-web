@@ -90,17 +90,15 @@ jobs:
           cp spoonbill_web/locale/es/LC_MESSAGES/django.po test/resources/backend_es.po
           cp frontend/locale/es/lang.po test/resources/front_es.po
 
-      # Test the images.
-      - run: pip install -r test/requirements.txt
+      # Build the images and start the containers.
       - name: Create .env file
         run: |
           echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
           echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
+          echo "POSTGRES_PASSWORD: postgres" >> .env
       - run: docker-compose -f docker-compose.test.yaml pull
       - run: docker-compose -f docker-compose.test.yaml build
       - name: Start Docker containers
-        env:
-          POSTGRES_PASSWORD: postgres
         run: |
           docker-compose -f docker-compose.test.yaml up -d
           sleep 60  # wait for postgres
@@ -109,6 +107,9 @@ jobs:
           docker ps
           docker-compose -f docker-compose.test.yaml logs app
           docker-compose -f docker-compose.test.yaml logs postgres
+
+      # Test the images.
+      - run: pip install -r test/requirements.txt
       # Google Chrome and ChromeDriver are already included.
       # https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
       # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
