@@ -201,7 +201,6 @@ export default new Vuex.Store({
                 console.log(e);
                 /* istanbul ignore next */
                 if (e.response.status === 404) {
-                    console.log('errror');
                     commit('openSnackbar', {
                         text: 'This linked file is no longer available. Please supply a new URL',
                         color: 'error',

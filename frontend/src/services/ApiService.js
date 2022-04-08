@@ -35,7 +35,6 @@ export default {
                 return { name: tableName };
             }),
         });
-        console.log('response', response);
         // response.data.tables.forEach((table) => {});
         return response;
     },
