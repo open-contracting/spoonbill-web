@@ -39,22 +39,24 @@ jobs:
         run: |
           echo "CORS_ORIGIN_WHITELIST=http://127.0.0.1:8000,http://127.0.0.1" >> .env
           echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
-      - name: Start containers
-        if: github.event.inputs.SKIP_TEST != 'true'
+      - if: github.event.inputs.SKIP_TEST != 'true'
+        run: docker-compose -f docker-compose.test.yaml build
+      - if: github.event.inputs.SKIP_TEST != 'true'
+        run: docker-compose -f docker-compose.test.yaml pull
+      - if: github.event.inputs.SKIP_TEST != 'true'
         env:
           POSTGRES_PASSWORD: postgres
         run: |
-          docker-compose -f docker-compose.test.yaml build
-          docker-compose -f docker-compose.test.yaml pull
           docker-compose -f docker-compose.test.yaml up -d
-          sleep 10
-          docker-compose -f docker-compose.test.yaml logs app
+          # Wait for postgres.
+          sleep 30
+          # Print debug information.
           docker ps
+          docker-compose -f docker-compose.test.yaml logs app
       # Google Chrome and ChromeDriver are already included.
       # https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
       # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
-      - name: Run tests
-        if: github.event.inputs.SKIP_TEST != 'true'
+      - if: github.event.inputs.SKIP_TEST != 'true'
         env:
           # See https://github.com/open-contracting/spoonbill-test
           SITE_URL: http://127.0.0.1
