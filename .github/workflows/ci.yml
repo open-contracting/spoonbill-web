@@ -100,17 +100,19 @@ jobs:
         POSTGRES_PASSWORD: postgres
       run: |
         docker-compose -f docker-compose.test.yaml up -d
-        # Wait for postgres.
-        sleep 60
-        # Print debug information.
+        sleep 60  # wait for postgres
+    - name: Print debug information
+      run: |
         docker ps
         docker-compose -f docker-compose.test.yaml logs app
+        docker-compose -f docker-compose.test.yaml logs postgres
     # Google Chrome and ChromeDriver are already included.
     # https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
     # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
     - env:
         # See https://github.com/open-contracting/spoonbill-test
         SITE_URL: http://127.0.0.1
+        POSTGRES_HOST: 127.0.0.1
       working-directory: test
       run: python -m robot -n noncritical tests
     - uses: actions/upload-artifact@v2
