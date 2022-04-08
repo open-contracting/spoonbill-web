@@ -49,7 +49,7 @@ jobs:
         run: |
           docker-compose -f docker-compose.test.yaml up -d
           # Wait for postgres.
-          sleep 30
+          sleep 60
           # Print debug information.
           docker ps
           docker-compose -f docker-compose.test.yaml logs app
