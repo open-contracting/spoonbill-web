@@ -84,10 +84,9 @@ jobs:
       - run: docker-compose -f docker-compose.test.yaml pull
       - run: docker-compose -f docker-compose.test.yaml build
       - run: docker-compose -f docker-compose.test.yaml up -d
-      - name: Print debug information
-        run: |
-          docker ps
-          docker-compose -f docker-compose.test.yaml logs app
+      - run: docker ps
+      # If any containers are not up, debug with, for example:
+      # - run: docker-compose -f docker-compose.test.yaml logs app
 
       # Test the images.
       - uses: actions/checkout@v3
