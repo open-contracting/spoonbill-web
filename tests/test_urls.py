@@ -3,7 +3,6 @@ import os
 import pathlib
 import shutil
 from base64 import b64encode
-from unittest.mock import patch
 
 import pytest
 from django.conf import settings

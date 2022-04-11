@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 from django.core.exceptions import SuspiciousFileOperation
 from django.test import override_settings
