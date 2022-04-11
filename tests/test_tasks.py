@@ -177,8 +177,7 @@ class TestCleanupUploadTask(BaseUploadTestSuite):
         assert not url_obj.deleted
         assert not task
         mocked_logger.debug.called_once_with(
-            "Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT",
-            url_obj.id
+            "Skip datasource cleanup %s, file is located in DATAREGISTRY_MEDIA_ROOT", url_obj.id
         )
 
 

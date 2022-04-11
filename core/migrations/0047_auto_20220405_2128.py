@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0046_alter_url_country'),
+        ("core", "0046_alter_url_country"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='upload',
-            name='files',
-            field=models.ManyToManyField(blank=True, to='core.DataFile'),
+            model_name="upload",
+            name="files",
+            field=models.ManyToManyField(blank=True, to="core.DataFile"),
         ),
         migrations.AlterField(
-            model_name='url',
-            name='files',
-            field=models.ManyToManyField(blank=True, to='core.DataFile'),
+            model_name="url",
+            name="files",
+            field=models.ManyToManyField(blank=True, to="core.DataFile"),
         ),
     ]
