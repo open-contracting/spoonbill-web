@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.8
           cache: pip
@@ -93,7 +93,7 @@ jobs:
         with:
           repository: open-contracting/spoonbill-test
           path: test
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.8
       - run: pip install -r test/requirements.txt
