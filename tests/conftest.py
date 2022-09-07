@@ -16,7 +16,7 @@ from core.utils import retrieve_tables
 
 from .utils import Response, Task
 
-DATA_DIR = pathlib.Path(os.path.dirname(__file__)) / "data"
+DATA_DIR = pathlib.Path(__file__).parent / "data"
 
 ANALYZED_DATA_PATH = DATA_DIR / "analyzed.dump"
 SAMPLE_DATA_PATH = DATA_DIR / "sample-dataset.json"
@@ -24,7 +24,7 @@ SAMPLE_DATA_PATH = DATA_DIR / "sample-dataset.json"
 
 @pytest.fixture
 def schema():
-    path = DATA_DIR.parent.parent / "data/schema.json"
+    path = DATA_DIR.parents[1] / "data" / "schema.json"
     with open(path) as fd:
         data = json.loads(fd.read())
     return data
