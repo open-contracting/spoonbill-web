@@ -24,7 +24,7 @@ ENV DJANGO_ENV=production
 ENV WEB_CONCURRENCY=2
 
 RUN python manage.py compilemessages
-RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput -v2
 
 EXPOSE 8000
 CMD ["gunicorn", "spoonbill_web.wsgi", "--bind", "0.0.0.0:8000", "--worker-tmp-dir", "/dev/shm", "--threads", "2", "--name", "spoonbill-web"]
