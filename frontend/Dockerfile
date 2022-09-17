@@ -1,8 +1,11 @@
 # https://cli.vuejs.org/guide/deployment.html#docker-nginx
 FROM node:16 as build-stage
+
 WORKDIR /workdir
+
 COPY package*.json ./
 RUN npm install
+
 COPY . .
 ARG VUE_APP_API_URL
 ARG VUE_APP_WEBSOCKET_URL
