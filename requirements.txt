@@ -79,7 +79,7 @@ daphne==3.0.2
     # via
     #   -r requirements.in
     #   channels
-django==3.2.15
+django==3.2.16
     # via
     #   -r requirements.in
     #   channels
@@ -286,7 +286,7 @@ wcwidth==0.2.5
     # via prompt-toolkit
 xlsxwriter==1.4.3
     # via spoonbill
-zope-interface==5.4.0
+zope-interface==5.5.0
     # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:
