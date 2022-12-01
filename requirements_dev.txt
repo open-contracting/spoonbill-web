@@ -289,7 +289,7 @@ pip-tools==6.5.1
     # via -r requirements_dev.in
 platformdirs==2.4.0
     # via black
-pluggy==0.13.1
+pluggy==1.0.0
     # via pytest
 pre-commit==2.13.0
     # via -r requirements_dev.in
