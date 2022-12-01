@@ -13,7 +13,6 @@ from .utils import create_flatten
 
 
 @pytest.mark.django_db
-@pytest.mark.asyncio
 class TestValidationConsumer:
     def test_task_validate(self, event_loop, upload_obj):
         application = URLRouter([re_path(r"ws/api/(?P<upload_id>[0-9a-f-]+)/$", ValidationConsumer.as_asgi())])
