@@ -97,7 +97,7 @@ Extract messages:
 Push to Transifex:
 
 ```shell
-tx push -st
+tx push -s -t
 ```
 
 Pull from Transifex:
