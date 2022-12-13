@@ -20,5 +20,4 @@ requests
 sentry-sdk
 sphinx
 sqlalchemy
-transifex-client
 spoonbill

@@ -11,4 +11,3 @@ pytest-cov
 pytest-django
 pytest-env
 pytest-mock
-transifex-client
