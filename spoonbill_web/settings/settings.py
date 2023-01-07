@@ -37,11 +37,9 @@ if SENTRY_DSN:
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parents[1]
-root = lambda *x: os.path.join(BASE_DIR, *x)  # noqa
 
 # Logging
-LOGGING_CONFIG_PATH = root("settings", "logging.yaml")
-with open(LOGGING_CONFIG_PATH, "r") as f:
+with (BASE_DIR / "settings" / "logging.yaml").open() as f:
     LOGGING = load(f.read())
 
 logging.config.dictConfig(LOGGING)
@@ -161,7 +159,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-LOCALE_PATHS = [f"{BASE_DIR}/core/locale", f"{BASE_DIR}/spoonbill_web/locale"]
+LOCALE_PATHS = [BASE_DIR / "core" / "locale", BASE_DIR / "spoonbill_web" / "locale"]
 
 # Routes
 API_PREFIX = os.getenv("API_PREFIX", "api/")
@@ -171,7 +169,7 @@ APPEND_SLASH = False
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/" if not API_PREFIX else f"{API_PREFIX}static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # CORS settings
 CORS_ORIGIN_WHITELIST = os.getenv("CORS_ORIGIN_WHITELIST", "http://127.0.0.1:8080,http://localhost:8080").split(",")

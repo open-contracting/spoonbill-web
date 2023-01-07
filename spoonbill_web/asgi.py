@@ -18,7 +18,7 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "spoonbill_web.settings.settings")
 django.setup()
 
-import core.routing  # noqa
+import core.routing  # noqa: E402
 
 application = ProtocolTypeRouter(
     {

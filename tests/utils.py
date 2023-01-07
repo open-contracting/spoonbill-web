@@ -29,7 +29,7 @@ class Response:
         binary_body = self.text.encode("utf-8")
         chunk = 0
         while len(binary_body) > chunk:
-            yield binary_body[chunk : chunk + chunk_size]  # noqa
+            yield binary_body[chunk : chunk + chunk_size]
             chunk += chunk_size
 
     def json(self):
