@@ -70,7 +70,7 @@ click-repl==0.2.0
     # via celery
 constantly==15.1.0
     # via twisted
-cryptography==38.0.4
+cryptography==39.0.1
     # via
     #   autobahn
     #   pyopenssl
@@ -79,7 +79,7 @@ daphne==3.0.2
     # via
     #   -r requirements.in
     #   channels
-django==3.2.17
+django==3.2.18
     # via
     #   -r requirements.in
     #   channels
@@ -178,7 +178,7 @@ pygments==2.9.0
     # via
     #   furo
     #   sphinx
-pyopenssl==22.1.0
+pyopenssl==23.0.0
     # via twisted
 pyparsing==2.4.7
     # via packaging

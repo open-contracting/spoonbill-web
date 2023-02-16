@@ -121,7 +121,7 @@ coverage[toml]==5.5
     #   pytest-cov
 coveralls==3.1.0
     # via -r requirements_dev.in
-cryptography==38.0.4
+cryptography==39.0.1
     # via
     #   -r requirements.txt
     #   autobahn
@@ -133,7 +133,7 @@ daphne==3.0.2
     #   channels
 distlib==0.3.1
     # via virtualenv
-django==3.2.17
+django==3.2.18
     # via
     #   -r requirements.txt
     #   channels
@@ -313,7 +313,7 @@ pygments==2.9.0
     #   -r requirements.txt
     #   furo
     #   sphinx
-pyopenssl==22.1.0
+pyopenssl==23.0.0
     # via
     #   -r requirements.txt
     #   twisted
