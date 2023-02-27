@@ -56,7 +56,7 @@
                             <translate> If you are uncertain whether your data complies with OCDS, use the </translate>
 
                             <span>
-                                <a href="https://standard.open-contracting.org/review/" target="_blank">
+                                <a href="https://review.standard.open-contracting.org/" target="_blank">
                                     <translate> Data Review Tool </translate>
                                 </a>
                             </span>
@@ -96,7 +96,7 @@
                             class="text-link"
                             target="_blank"
                             rel="noopener"
-                            href="https://standard.open-contracting.org/review/"
+                            href="https://review.standard.open-contracting.org/"
                         >
                             Data Review Tool
                         </translate>
