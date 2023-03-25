@@ -192,11 +192,12 @@ FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", "/data/tmp/")
 
 # Channels
 ASGI_APPLICATION = "spoonbill_web.asgi.application"
+# https://pypi.org/project/channels-redis/
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.getenv("REDIS_URL", "redis://localhost:6379/0")],
+            "hosts": [CELERY_BROKER_URL],
         },
     },
 }
