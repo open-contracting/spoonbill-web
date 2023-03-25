@@ -172,9 +172,9 @@ STATIC_URL = "/static/" if not API_PREFIX else f"{API_PREFIX}static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # CORS settings
-CORS_ORIGIN_WHITELIST = os.getenv("CORS_ORIGIN_WHITELIST", "http://127.0.0.1:8080,http://localhost:8080").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://127.0.0.1:8080,http://localhost:8080").split(",")
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 
 # Celery config
