@@ -22,7 +22,6 @@ def safe_join(base, *paths):
         and normcase(final_path) != normcase(base_path)
         and dirname(normcase(base_path)) != normcase(base_path)
     ):
-
         if settings.DATAREGISTRY_MEDIA_ROOT:
             # Validate with DATAREGISTRY_MEDIA_ROOT
             data_registry_path = abspath(settings.DATAREGISTRY_MEDIA_ROOT)

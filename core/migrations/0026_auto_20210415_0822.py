@@ -9,7 +9,6 @@ import core.utils
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0025_alter_table_column_headings"),
     ]

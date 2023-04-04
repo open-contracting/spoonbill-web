@@ -65,7 +65,6 @@ def get_serializer_by_model(str_model, log_context=None):
 
 @celery_app.task
 def validate_data(object_id, model=None, lang_code="en"):
-
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "validate_data"}
         ds_model, serializer = get_serializer_by_model(model, logger_context)

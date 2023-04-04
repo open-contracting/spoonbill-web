@@ -7,7 +7,6 @@ import core.utils
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0030_alter_flatten_file"),
     ]
