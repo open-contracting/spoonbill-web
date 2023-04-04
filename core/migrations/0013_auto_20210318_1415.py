@@ -7,7 +7,6 @@ import core.utils
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0012_auto_20210318_1411"),
     ]

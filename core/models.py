@@ -68,7 +68,6 @@ class Upload(models.Model):
 
 
 class Url(models.Model):
-
     QUEUED_DOWNLOAD = "queued.download"
     DOWNLOADING = "downloading"
     ANALYZED_DATA_DOWNLOADING = "analyzed_data.downloading"
@@ -119,7 +118,6 @@ class Url(models.Model):
 
 
 class DataSelection(models.Model):
-
     OCDS = "ocds"
     EN_USER_FRIENDLY = "en_user_friendly"
     EN_R_FRIENDLY = "en_r_friendly"
@@ -171,7 +169,6 @@ class Table(models.Model):
 
 
 class Flatten(models.Model):
-
     CSV = "csv"
     XLSX = "xlsx"
     EXPORT_FORMATS = [(CSV, _("A comma-separated values (CSV) file")), (XLSX, _("XLSX (Excel) file format"))]

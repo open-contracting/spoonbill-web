@@ -10,7 +10,6 @@ from core.utils import dataregistry_path_formatter, dataregistry_path_resolver, 
 
 
 def dataregistry_path_validator(path):
-
     _message = "No file found on this address"
     if settings.DATAREGISTRY_MEDIA_ROOT is None:
         raise ValidationError(_message)

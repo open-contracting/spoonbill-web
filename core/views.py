@@ -447,7 +447,6 @@ class TableViewSet(viewsets.ModelViewSet):
                         and False
                         in [_table.mergeable for _table in list(table.array_tables.all()) if _table.include is True]
                     ):
-
                         return Response(
                             {
                                 "detail": _("Cannot merge '%(table_name)s' - child arrays are too large")
