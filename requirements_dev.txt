@@ -25,10 +25,11 @@ asgiref==3.3.4
     #   channels-redis
     #   daphne
     #   django
-async-timeout==3.0.1
+async-timeout==4.0.2
     # via
     #   -r requirements.txt
     #   aioredis
+    #   redis
 attrs==22.1.0
     # via
     #   -r requirements.txt
@@ -360,7 +361,7 @@ pyyaml==5.4.1
     # via
     #   -r requirements.txt
     #   pre-commit
-redis==3.5.3
+redis==4.5.4
     # via -r requirements.txt
 requests==2.25.1
     # via
@@ -379,7 +380,7 @@ scalpl==0.4.2
     # via
     #   -r requirements.txt
     #   spoonbill
-sentry-sdk==1.1.0
+sentry-sdk==1.19.0
     # via -r requirements.txt
 service-identity==21.1.0
     # via
@@ -466,7 +467,7 @@ url-normalize==1.4.3
     # via
     #   -r requirements.txt
     #   requests-cache
-urllib3==1.26.5
+urllib3==1.26.15
     # via
     #   -r requirements.txt
     #   requests
