@@ -437,7 +437,7 @@ spoonbill==1.0.10
     # via -r requirements.txt
 sqlalchemy==1.4.15
     # via -r requirements.txt
-sqlparse==0.4.2
+sqlparse==0.4.4
     # via
     #   -r requirements.txt
     #   django
