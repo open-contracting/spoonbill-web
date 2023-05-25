@@ -63,7 +63,7 @@ services:
   postgres:
     container_name: postgres
     hostname: postgres
-    image: postgres:13
+    image: postgres:12
     environment:
       - POSTGRES_USER=spoonbilluser
       - POSTGRES_PASSWORD=spoonbillpwd

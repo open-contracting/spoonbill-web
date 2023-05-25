@@ -51,7 +51,7 @@ jobs:
         run: coveralls --service=github --merge=frontend/coverage.json
     services:
       postgres:
-        image: postgres:13
+        image: postgres:12
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
