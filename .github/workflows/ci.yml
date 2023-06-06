@@ -26,6 +26,7 @@ jobs:
           gem install coveralls-lcov
       - name: Run Vue tests
         working-directory: frontend
+        shell: bash
         run: |
           npm run test:unit
           coveralls-lcov -v -n coverage/lcov.info > coverage.json
@@ -41,6 +42,7 @@ jobs:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
           MEDIA_ROOT: /tmp/
           FILE_UPLOAD_TEMP_DIR: /tmp/
+        shell: bash
         run: |
           ./manage.py migrate
           ./manage.py makemigrations --check --dry-run
