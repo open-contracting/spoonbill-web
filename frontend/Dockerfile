@@ -21,7 +21,7 @@ RUN VUE_APP_API_URL=${VUE_APP_API_URL} \
 
 FROM nginxinc/nginx-unprivileged:latest as production-stage
 USER root
-COPY --chown=nginx:root --from=build-stage /workdir/dist /usr/share/nginx/html
+COPY --from=build-stage --chown=nginx:root /workdir/dist /usr/share/nginx/html
 COPY --chown=nginx:root default.conf /etc/nginx/conf.d/default.conf
 
 # Must match the settings.MEDIA_ROOT default value.
