@@ -496,7 +496,7 @@ class TableViewSet(viewsets.ModelViewSet):
             analyzed_child_table = analyzed_tables.get(child_table_key, {})
             if analyzed_child_table.total_rows == 0:
                 logger.debug(
-                    "Skip child table %s for datasource %s" % (child_table_key, datasource),
+                    "Skip child table {} for datasource {}".format(child_table_key, datasource),
                     extra={
                         "MESSAGE_ID": "skip_child_table",
                         "TABLE_KEY": child_table_key,

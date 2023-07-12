@@ -31,5 +31,5 @@ upload_preview_router.register(r"preview", views.TablePreviewViewSet, basename="
 
 prefix = "/" if not settings.API_PREFIX else settings.API_PREFIX
 websocket_urlpatterns = [
-    re_path(r"{prefix}ws/(?P<upload_id>[0-9a-f-]+)/$".format(prefix=prefix), consumers.ValidationConsumer.as_asgi()),
+    re_path(rf"{prefix}ws/(?P<upload_id>[0-9a-f-]+)/$", consumers.ValidationConsumer.as_asgi()),
 ]
