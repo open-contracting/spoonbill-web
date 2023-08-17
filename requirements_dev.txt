@@ -177,7 +177,7 @@ flatten-dict==0.4.0
     #   spoonbill
 furo==2021.11.23
     # via -r requirements.txt
-greenlet==1.1.0
+greenlet==2.0.2
     # via
     #   -r requirements.txt
     #   sqlalchemy

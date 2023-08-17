@@ -112,7 +112,7 @@ flatten-dict==0.4.0
     # via spoonbill
 furo==2021.11.23
     # via -r requirements.in
-greenlet==1.1.0
+greenlet==2.0.2
     # via sqlalchemy
 hiredis==2.0.0
     # via aioredis
