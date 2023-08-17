@@ -17,6 +17,5 @@ pyyaml
 redis
 requests
 sentry-sdk
-sphinx
 sqlalchemy
 spoonbill
