@@ -9,7 +9,6 @@ django-cors-headers
 django-transfer
 djangorestframework
 drf-nested-routers
-furo
 ijson
 markdown
 psycopg2
