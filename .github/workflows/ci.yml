@@ -36,7 +36,8 @@ jobs:
       - run: pip install -r requirements_dev.txt
       - name: Run Django tests
         env:
-          PYTHONWARNINGS: error
+          # https://github.com/twisted/twisted/issues/11848
+          PYTHONWARNINGS: error,ignore::DeprecationWarning:twisted.web.http
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/0
           CELERY_BACKEND: db+postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
@@ -47,7 +48,7 @@ jobs:
           ./manage.py migrate
           ./manage.py makemigrations --check --dry-run
           ./manage.py check --fail-level WARNING
-          pytest -W error --cov core --cov spoonbill_web --no-migrations
+          pytest -W error -W ignore::DeprecationWarning:twisted.web.http --cov core --cov spoonbill_web --no-migrations
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github --merge=frontend/coverage.json
