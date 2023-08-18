@@ -100,14 +100,15 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r test/requirements.txt
+      # Google Chrome and ChromeDriver are included, but can be old.
+      # https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
+      # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
+      - run: webdrivermanager chrome
       - name: Copy translation files for tests
         run: |
           cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
           cp spoonbill_web/locale/es/LC_MESSAGES/django.po test/resources/backend_es.po
           cp frontend/locale/es/lang.po test/resources/front_es.po
-      # Google Chrome and ChromeDriver are already included.
-      # https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
-      # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md
       - env:
           # See https://github.com/open-contracting/spoonbill-test
           SITE_URL: http://127.0.0.1
