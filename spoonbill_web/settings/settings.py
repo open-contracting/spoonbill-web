@@ -140,7 +140,7 @@ APPEND_SLASH = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/" if not API_PREFIX else f"{API_PREFIX}static/"
+STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -152,7 +152,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOCALE_PATHS = glob(str(BASE_DIR / "**" / "locale"))
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "static"
 
 # https://docs.djangoproject.com/en/4.2/topics/logging/#django-security
 LOGGING = {
@@ -223,10 +223,19 @@ if "DJANGO_PROXY" in os.environ:
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-LANGUAGES = [(LANGUAGE_CODE, _("English")), ("es", _("Spanish"))]
+LANGUAGES = [
+    (LANGUAGE_CODE, _("English")),
+    ("es", _("Spanish")),
+]
 
-MEDIA_ROOT = os.path.abspath(os.getenv("MEDIA_ROOT", "/data/media/" if production else ROOT_DIR / "media/"))
-MEDIA_URL = "/media/"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media/" if production else ROOT_DIR / "media/")
+MEDIA_URL = "media/"
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440
 FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", "/data/tmp/" if production else ROOT_DIR / "tmp/")

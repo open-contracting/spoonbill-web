@@ -87,6 +87,7 @@ jobs:
       - run: docker-compose -f docker-compose.test.yaml pull
       - run: docker-compose -f docker-compose.test.yaml build
       - run: docker-compose -f docker-compose.test.yaml up -d
+      - run: docker-compose -f docker-compose.test.yaml run --rm app python manage.py migrate
       - run: docker ps
       # If any containers are not up, debug with, for example:
       # - run: docker-compose -f docker-compose.test.yaml logs app
