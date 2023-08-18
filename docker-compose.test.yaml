@@ -8,15 +8,12 @@ x-django: &django
   build:
     context: .
     dockerfile: Dockerfile_django
-  depends_on:
-    - postgres
-    - redis
-  environment:
-    - DJANGO_ENV=production
-    - DATABASE_URL=postgresql://postgres:postgres@postgres/postgres
-    - REDIS_URL=redis://redis:6379/0
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
   volumes:
     - temporary-data:/data/media
+  depends_on:
+    - redis
 
 services:
   traefik:

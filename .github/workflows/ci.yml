@@ -38,9 +38,9 @@ jobs:
         env:
           # https://github.com/twisted/twisted/issues/11848
           PYTHONWARNINGS: error,ignore::DeprecationWarning:twisted.web.http
-          REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/0
-          CELERY_BACKEND: db+postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+          CELERY_BACKEND: db+postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
+          REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/0
           MEDIA_ROOT: /tmp/
           FILE_UPLOAD_TEMP_DIR: /tmp/
         shell: bash
@@ -81,9 +81,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: Create .env file
         run: |
+          echo "DJANGO_ENV=production" >> .env
+          echo "DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:${{ job.services.postgres.ports[5432] }}/postgres" >> .env
+          echo "CELERY_BACKEND=db+postgresql://postgres:postgres@host.docker.internal:${{ job.services.postgres.ports[5432] }}/postgres" >> .env
+          echo "REDIS_URL=redis://redis:6379/0" >> .env
           echo "CORS_ALLOWED_ORIGINS=http://127.0.0.1:8000,http://127.0.0.1" >> .env
-          echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
-          echo "DATABASE_URL=postgresql://postgres:postgres@postgres/postgres" >> .env
       - run: docker-compose -f docker-compose.test.yaml pull
       - run: docker-compose -f docker-compose.test.yaml build
       - run: docker-compose -f docker-compose.test.yaml up -d
@@ -123,3 +125,24 @@ jobs:
             test/log.html
             test/output.xml
             test/report.html
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      redis:
+        image: redis:latest
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379/tcp
