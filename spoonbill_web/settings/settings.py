@@ -16,6 +16,7 @@ from glob import glob
 from pathlib import Path
 
 import sentry_sdk
+from corsheaders.defaults import default_headers
 from django.utils.translation import gettext_lazy as _
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -216,6 +217,10 @@ if "CORS_ALLOWED_ORIGINS" in os.environ:
     CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 elif not production:
     CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_HEADERS = [
+    *default_headers,
+    "Accept-Language",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
