@@ -1,6 +1,7 @@
 celery[django]
 channels[daphne]
 channels_redis
+dj-database-url
 django
 django-celery-beat
 django-celery-results

@@ -40,7 +40,7 @@ jobs:
           PYTHONWARNINGS: error,ignore::DeprecationWarning:twisted.web.http
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/0
           CELERY_BACKEND: db+postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
-          DB_PORT: ${{ job.services.postgres.ports[5432] }}
+          DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           MEDIA_ROOT: /tmp/
           FILE_UPLOAD_TEMP_DIR: /tmp/
         shell: bash
@@ -83,7 +83,7 @@ jobs:
         run: |
           echo "CORS_ALLOWED_ORIGINS=http://127.0.0.1:8000,http://127.0.0.1" >> .env
           echo "CELERY_BACKEND=db+postgresql://postgres:postgres@postgres/postgres" >> .env
-          echo "POSTGRES_PASSWORD=postgres" >> .env
+          echo "DATABASE_URL=postgresql://postgres:postgres@postgres/postgres" >> .env
       - run: docker-compose -f docker-compose.test.yaml pull
       - run: docker-compose -f docker-compose.test.yaml build
       - run: docker-compose -f docker-compose.test.yaml up -d

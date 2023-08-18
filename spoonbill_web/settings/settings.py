@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import logging.config
 import os
 from glob import glob
 from pathlib import Path
 
+import dj_database_url
 import sentry_sdk
 from corsheaders.defaults import default_headers
 from django.utils.translation import gettext_lazy as _
@@ -98,16 +98,7 @@ WSGI_APPLICATION = "spoonbill_web.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "postgres"),
-        "USER": os.getenv("POSTGRES_USER", "postgres"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres"),
-        "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": os.getenv("DB_PORT", "5432"),
-    }
-}
+DATABASES = {"default": dj_database_url.config(default="postgresql:///spoonbill_web?application_name=spoonbill_web")}
 
 
 # Password validation
@@ -212,8 +203,6 @@ LOGGING = {
         },
     },
 }
-
-logging.config.dictConfig(LOGGING)
 
 # https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 if production and not local_access:

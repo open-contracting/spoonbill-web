@@ -125,11 +125,14 @@ daphne==4.0.0
     #   channels
 distlib==0.3.1
     # via virtualenv
+dj-database-url==2.1.0
+    # via -r requirements.txt
 django==4.2.4
     # via
     #   -r requirements.txt
     #   celery
     #   channels
+    #   dj-database-url
     #   django-celery-beat
     #   django-celery-results
     #   django-cors-headers
@@ -368,6 +371,7 @@ txaio==23.1.1
 typing-extensions==4.7.1
     # via
     #   -r requirements.txt
+    #   dj-database-url
     #   sqlalchemy
     #   twisted
 tzdata==2023.3

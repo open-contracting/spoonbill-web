@@ -46,7 +46,7 @@ services:
       - .env
     environment:
       - DJANGO_ENV=production
-      - DB_HOST=postgres
+      - DATABASE_URL=postgresql://postgres:postgres@postgres/postgres
       - REDIS_URL=redis://redis:6379/0
     networks:
       - main
@@ -80,7 +80,7 @@ services:
       - .env
     environment:
       - DJANGO_ENV=production
-      - DB_HOST=postgres
+      - DATABASE_URL=postgresql://postgres:postgres@postgres/postgres
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - app
@@ -101,7 +101,7 @@ services:
       - .env
     environment:
       - DJANGO_ENV=production
-      - DB_HOST=postgres
+      - DATABASE_URL=postgresql://postgres:postgres@postgres/postgres
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - app
