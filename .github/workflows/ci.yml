@@ -112,7 +112,7 @@ jobs:
           # See https://github.com/open-contracting/spoonbill-test
           SITE_URL: http://127.0.0.1
         working-directory: test
-        run: python -m robot -n noncritical tests
+        run: python -m robot tests
       - uses: actions/upload-artifact@v3
         if: always()
         with:
