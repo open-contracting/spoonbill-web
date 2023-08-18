@@ -1,0 +1,32 @@
+# https://cli.vuejs.org/guide/deployment.html#docker-nginx
+FROM nikolaik/python-nodejs:python3.11-nodejs18 as build-stage
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+WORKDIR /workdir
+
+COPY frontend/package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npx gettext-compile --output src/translations/translations.json locale/*/lang.po || true
+
+ENV DJANGO_ENV=production
+
+WORKDIR /workdir/frontend
+RUN npx vue-cli-service build
+WORKDIR /workdir/backend
+RUN python manage.py collectstatic --noinput -v2
+
+FROM nginxinc/nginx-unprivileged:latest as production-stage
+USER root
+COPY --from=build-stage --chown=nginx:root /workdir/frontend/dist /usr/share/nginx/html
+COPY --from=build-stage --chown=nginx:root /workdir/backend/static /usr/share/nginx/html/static
+COPY --chown=nginx:root frontend/default.conf /etc/nginx/conf.d/default.conf
+
+# Must match the settings.MEDIA_ROOT default value.
+RUN mkdir -p /data/media && chown -R nginx:root /data/media
+
+USER nginx

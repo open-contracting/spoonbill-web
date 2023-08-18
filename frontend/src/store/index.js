@@ -211,19 +211,12 @@ export default new Vuex.Store({
         },
         //@ts-ignore
         setupConnection({ commit }, { id, type, onOpen }) {
-            let connection;
-            if (process.env.VUE_APP_WEBSOCKET_URL.includes('ws:/') || process.env.VUE_APP_WEBSOCKET_URL.includes('wss:/')) {
-                connection = new WebSocket(`${process.env.VUE_APP_WEBSOCKET_URL}/${id}/`);
-            } else {
-                let protocol = window.location.protocol;
-                let socketProtocol = 'ws';
-                if (protocol.includes('https')) {
-                    socketProtocol = 'wss';
-                }
-
-                let socketPath = `${socketProtocol}://${window.location.host}/api/ws/${id}/`;
-                connection = new WebSocket(socketPath);
+            let websocket_url = process.env.VUE_APP_WEBSOCKET_URL || '/api/ws';
+            if (!websocket_url.includes('ws:/') && !websocket_url.includes('wss:/')) {
+                let protocol = window.location.protocol.includes('https') ? 'wss' : 'ws';
+                websocket_url = `${protocol}://${window.location.host}${websocket_url}`;
             }
+            let connection = new WebSocket(`${websocket_url}/${id}/`);
 
             connection.onmessage = (event) => {
                 const data = JSON.parse(event.data);

@@ -7,22 +7,22 @@ npm install
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npx vue-cli-service serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+npx vue-cli-service build
 ```
 
 ### Run your unit tests
 ```
-npm run test:unit
+npx vue-cli-service test:unit
 ```
 
 ### Lints and fixes files
 ```
-npm run lint
+npx vue-cli-service lint
 ```
 
 ### Customize configuration
@@ -32,10 +32,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Extracts all strings from *.vue files
 ```
-npm run gettext-extract
+npx gettext-extract --removeHTMLWhitespaces --output web-app-ui.pot src/main.js $(find src -type f -name '*.vue')
 ```
 
 ### Compiles *.po files
 ```
-npm run gettext-compile <filenames>
+npx gettext-compile --output src/translations/translations.json <filenames>
 ```

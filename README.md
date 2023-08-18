@@ -40,8 +40,6 @@ cd frontend
 npx vue-cli-service serve
 ```
 
-You might need to change `VUE_APP_API_URL` and `VUE_APP_WEBSOCKET_URL` in `frontend/.env` from `localhost` to `127.0.0.1`.
-
 ### Celery
 
 Start celery worker:
@@ -115,7 +113,7 @@ cd frontend
 Extract messages:
 
 ```shell
-npm run gettext-extract
+npx gettext-extract --removeHTMLWhitespaces --output web-app-ui.pot src/main.js $(find src -type f -name '*.vue')
 ```
 
 Push and pull messages from Transifex as above.

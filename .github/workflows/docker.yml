@@ -23,7 +23,7 @@ jobs:
       - uses: docker/build-push-action@v4
         with:
           push: true
-          context: .
+          file: Dockerfile_django
           tags: |
             ghcr.io/${{ github.repository }}-django:latest
           cache-from: type=gha
@@ -31,11 +31,8 @@ jobs:
       - uses: docker/build-push-action@v4
         with:
           push: true
-          context: frontend
+          file: Dockerfile_static
           tags: |
-            ghcr.io/${{ github.repository }}-vue:latest
+            ghcr.io/${{ github.repository }}-static:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            VUE_APP_API_URL=/api/
-            VUE_APP_WEBSOCKET_URL=/api/ws

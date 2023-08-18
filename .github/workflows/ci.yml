@@ -28,7 +28,7 @@ jobs:
         working-directory: frontend
         shell: bash
         run: |
-          npm run test:unit
+          npx vue-cli-service test:unit
           coveralls-lcov -v -n coverage/lcov.info > coverage.json
       - run: pip install -r requirements.txt
       # Check requirements.txt contains production requirements.

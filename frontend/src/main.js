@@ -33,7 +33,7 @@ Vue.use(GetTextPlugin, {
 });
 
 axios.defaults.headers.common['Accept-Language'] = defaultLanguage;
-axios.defaults.baseURL = process.env.VUE_APP_API_URL;
+axios.defaults.baseURL = process.env.VUE_APP_API_URL || '/api/';
 axios.interceptors.response.use(
     function (response) {
         return response;
