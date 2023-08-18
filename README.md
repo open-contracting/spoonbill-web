@@ -23,7 +23,7 @@ cd spoonbill-web
 Replace PostgreSQL connection details, as needed.
 
 ```shell
-env PYTHONWARNINGS=error POSTGRES_DB=spoonbill_web POSTGRES_USER=username POSTGRES_PASSWORD= MEDIA_ROOT=tmp/ FILE_UPLOAD_TEMP_DIR=tmp/ pytest --cov core --cov spoonbill_web --no-migrations
+env PYTHONWARNINGS=error POSTGRES_DB=spoonbill_web POSTGRES_USER= POSTGRES_PASSWORD= MEDIA_ROOT=tmp/ FILE_UPLOAD_TEMP_DIR=tmp/ pytest --cov core --cov spoonbill_web --no-migrations
 ```
 
 ### Installation use direnv
@@ -41,24 +41,32 @@ source .venv/bin/activate
 pip install -r requirements_dev.txt
 ```
 
-### Run application
+### Run backend application
 
 ```shell
 docker-compose up -d postgres redis
 ./manage.py makemigrations
 ./manage.py migrate
-./manage.py runserver
+env POSTGRES_DB=spoonbill_web POSTGRES_USER= POSTGRES_PASSWORD= ./manage.py runserver
+```
+
+### Run frontend application
+
+```shell
+cd frontend
+npx vue-cli-service serve
 ```
 
 ### Celery
 
-* Up celery worker
+Start celery worker:
 
 ```shell
-celery -A spoonbill_web worker -l INFO --concurrency=2
+env POSTGRES_DB=spoonbill_web POSTGRES_USER= POSTGRES_PASSWORD= CELERY_BACKEND=db+postgresql://localhost/spoonbill_web celery -A spoonbill_web worker -l INFO --concurrency=2
 ```
 
-* Up celery beat
+Start celery beat:
+
 ```shell
 celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
@@ -82,7 +90,6 @@ pre-commit install
 Configuration placed in file `.pre-commit-config.yaml`
 
 [More about pre-commit](https://pre-commit.com/)
-
 
 ## Internationalization
 
