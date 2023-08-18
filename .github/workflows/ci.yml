@@ -65,7 +65,9 @@ jobs:
         ports:
           - 5432/tcp
       redis:
-        image: redis:latest
+        image: bitnami/redis:6.2
+        environment:
+          ALLOW_EMPTY_PASSWORD: "yes"
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
