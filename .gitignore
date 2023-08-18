@@ -4,5 +4,7 @@ node_modules
 *.mo
 dist
 /docs/_build
+/.env
 /media
+/test
 /tmp
