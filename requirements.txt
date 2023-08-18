@@ -162,14 +162,10 @@ python-dateutil==2.8.2
     # via
     #   celery
     #   python-crontab
-python-json-logger==2.0.7
-    # via -r requirements.in
 pytz==2023.3
     # via
     #   django-timezone-field
     #   djangorestframework
-pyyaml==6.0.1
-    # via -r requirements.in
 redis==5.0.0
     # via
     #   -r requirements.in
