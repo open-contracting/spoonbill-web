@@ -10,7 +10,7 @@ services:
         - 'traefik.enable=true'
         - 'traefik.http.services.www-maintenance-override.loadbalancer.server.port=80'
         #- 'traefik.http.routers.www-maintenance-override.entrypoints=http'
-        - 'traefik.http.routers.www-maintenance-override.rule=Host(`$DOMAIN`)'
+        - 'traefik.http.routers.www-maintenance-override.rule=Host(`$ALLOWED_HOSTS`)'
         - 'traefik.http.routers.www-maintenance-override.priority=2'
         - 'traefik.http.routers.www-maintenance-override.entrypoints=http,https'
         - 'traefik.http.routers.www-maintenance-override.tls=true'
