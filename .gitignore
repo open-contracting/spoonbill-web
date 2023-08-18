@@ -6,5 +6,6 @@ dist
 /docs/_build
 /.env
 /media
+/static
 /test
 /tmp

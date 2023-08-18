@@ -6,6 +6,7 @@ x-django: &django
   <<: *shared
   image: app
   build:
+    context: .
     dockerfile: Dockerfile_django
   depends_on:
     - postgres
@@ -62,6 +63,7 @@ services:
   static:
     image: static
     build:
+      context: .
       dockerfile: Dockerfile_static
     labels:
       - 'traefik.enable=true'

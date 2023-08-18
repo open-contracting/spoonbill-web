@@ -15,7 +15,7 @@ import django
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "spoonbill_web.settings.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "spoonbill_web.settings")
 django.setup()
 
 import core.routing  # noqa: E402

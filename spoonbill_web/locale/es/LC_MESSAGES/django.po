@@ -22,10 +22,10 @@ msgstr ""
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: spoonbill_web/settings/settings.py:154
+#: spoonbill_web.settings.py:154
 msgid "English"
 msgstr "Inglés"
 
-#: spoonbill_web/settings/settings.py:154
+#: spoonbill_web.settings.py:154
 msgid "Spanish"
 msgstr "Español"

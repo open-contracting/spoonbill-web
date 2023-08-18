@@ -290,7 +290,7 @@ CHANNEL_LAYERS = {
 # https://pypi.org/project/django-transfer/
 TRANSFER_SERVER = os.getenv("TRANSFER_SERVER", "")
 TRANSFER_MAPPINGS = {
-    MEDIA_ROOT[:-1]: MEDIA_URL[:-1],
+    str(MEDIA_ROOT).rstrip("/"): MEDIA_URL.rstrip("/"),
 }
 
 
