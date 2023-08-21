@@ -131,11 +131,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Routes
-
-API_PREFIX = os.getenv("API_PREFIX", "api/")  # must have trailing slash and no leading slash
-APPEND_SLASH = False
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -233,10 +228,13 @@ STORAGES = {
     },
 }
 
+# https://github.com/open-contracting/spoonbill-web/issues/122
+APPEND_SLASH = False
+
 MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media/" if production else BASE_DIR / "media/")
 MEDIA_URL = "media/"
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MiB
 FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", "/data/tmp/" if production else BASE_DIR / "tmp/")
 
 ASGI_APPLICATION = "spoonbill_web.asgi.application"

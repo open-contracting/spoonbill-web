@@ -3,7 +3,6 @@ import json
 import pytest
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
-from django.conf import settings
 from django.urls import re_path
 
 from core.consumers import ValidationConsumer
@@ -38,7 +37,7 @@ class TestValidationConsumer:
         assert not message["datasource"]["downloaded"]
 
     def test_task_flatten(self, event_loop, client, upload_obj_validated, mocked_request):
-        _, flatten_id = create_flatten(client, upload_obj_validated, prefix=f"/{settings.API_PREFIX}uploads/")
+        _, flatten_id = create_flatten(client, upload_obj_validated, prefix="/api/uploads/")
         application = URLRouter([re_path(r"ws/api/(?P<upload_id>[0-9a-f-]+)/$", ValidationConsumer.as_asgi())])
         communicator = WebsocketCommunicator(application, f"/ws/api/{upload_obj_validated.id}/")
         event_loop.run_until_complete(communicator.connect())

@@ -5,7 +5,6 @@ import shutil
 from base64 import b64encode
 
 import pytest
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import override_settings
 
@@ -22,15 +21,13 @@ DATASET_PATH = f"{DATA_DIR}/sample-dataset.json"
 
 @pytest.mark.django_db
 class TestUrl:
-    url_prefix = f"/{settings.API_PREFIX}urls/"
-
     def test_create_datasource_wo_url(self, client):
-        response = client.post(self.url_prefix, {"attr": "value"})
+        response = client.post("/api/urls/", {"attr": "value"})
         assert response.status_code == 400
         assert response.json() == {"detail": "Url is required"}
 
     def test_create_datasource_successful(self, client, download_datasource_task):
-        response = client.post(self.url_prefix, {"urls": ["https://example.org/dataset.json"]})
+        response = client.post("/api/urls/", {"urls": ["https://example.org/dataset.json"]})
         assert response.status_code == 201
         url = response.json()
         assert set(url.keys()) == {
@@ -68,7 +65,7 @@ class TestUrl:
         download_datasource_task.delay.assert_called_once_with(url_obj.id, model="Url", lang_code="en-us")
 
         response = client.post(
-            self.url_prefix,
+            "/api/urls/",
             {
                 "urls": "https://example.org/dataset.json",
                 "country": "Mordor",
@@ -83,35 +80,35 @@ class TestUrl:
         assert url["source"] == "Elrond"
 
     def test_get_non_existed_datasource(self, client):
-        response = client.get(f"{self.url_prefix}some-invalid-id/")
+        response = client.get("/api/urls/some-invalid-id/")
         assert response.status_code == 404
         assert response.json() == {"detail": "Not found."}
 
     def test_get_url_successful(self, client, url_obj):
-        response = client.get(f"{self.url_prefix}{url_obj.id}/")
+        response = client.get(f"/api/urls/{url_obj.id}/")
         assert response.status_code == 200
         assert UrlSerializer(url_obj).data == response.json()
 
     def test_create_selections_successful(self, client, url_obj):
         with open(ANALYZED_DATA_PATH, "rb") as af:
             url_obj.analyzed_file.save("new", af)
-        create_data_selection(client, url_obj, prefix=self.url_prefix)
+        create_data_selection(client, url_obj, prefix="/api/urls/")
 
     def test_get_selections_successful(self, client, url_obj):
         with open(ANALYZED_DATA_PATH, "rb") as af:
             url_obj.analyzed_file.save("new", af)
-        get_data_selections(client, url_obj, self.url_prefix)
+        get_data_selections(client, url_obj, "/api/urls/")
 
     def test_delete_table(self, client, url_obj_w_files):
-        selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
-        response = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/")
+        selection = create_data_selection(client, url_obj_w_files, "/api/urls/")
+        response = client.get(f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/")
         assert len(response.json()) == 2
 
         table_data = response.json()[0]
         assert table_data["include"]
 
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{table_data['id']}/",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{table_data['id']}/",
             content_type="application/json",
             data={"include": False},
         )
@@ -119,39 +116,39 @@ class TestUrl:
         assert not response.json()["include"]
 
         response = client.get(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{table_data['id']}/"
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{table_data['id']}/"
         )
         assert not response.json()["include"]
 
     def test_list_tables(self, client, url_obj):
         with open(ANALYZED_DATA_PATH, "rb") as af:
             url_obj.analyzed_file.save("new", af)
-        selection = create_data_selection(client, url_obj, self.url_prefix)
-        response = client.get(f"{self.url_prefix}{url_obj.id}/selections/{selection['id']}/tables/")
+        selection = create_data_selection(client, url_obj, "/api/urls/")
+        response = client.get(f"/api/urls/{url_obj.id}/selections/{selection['id']}/tables/")
         assert len(response.json()) == 2
 
     def test_table_preview(self, client, url_obj_w_files):
-        selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
-        tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
+        selection = create_data_selection(client, url_obj_w_files, "/api/urls/")
+        tables = client.get(f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
 
         response = client.get(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 1
         data = response.json()[0]
         assert set(data.keys()) == {"id", "name", "preview", "heading", "should_split", "parent", "include"}
 
     def test_table_r_friendly_preview(self, client, url_obj_w_files):
-        selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
-        tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
+        selection = create_data_selection(client, url_obj_w_files, "/api/urls/")
+        tables = client.get(f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/",
             data={"headings_type": "es_r_friendly"},
             content_type="application/json",
         )
 
         response = client.get(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 1
         data = response.json()[0]
@@ -167,25 +164,25 @@ class TestUrl:
         }
 
     def test_table_split_preview(self, client, url_obj_w_files):
-        selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
-        tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
+        selection = create_data_selection(client, url_obj_w_files, "/api/urls/")
+        tables = client.get(f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
 
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
         assert response.status_code == 200
 
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/",
             data={"headings_type": "es_r_friendly"},
             content_type="application/json",
         )
         assert response.status_code == 200
 
         response = client.get(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
 
         assert len(response.json()) == 4
@@ -202,11 +199,11 @@ class TestUrl:
         }
 
     def test_table_split_include_preview(self, client, url_obj_w_files):
-        selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
-        tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
+        selection = create_data_selection(client, url_obj_w_files, "/api/urls/")
+        tables = client.get(f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
 
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -214,21 +211,21 @@ class TestUrl:
         array_tables = response.json()["array_tables"]
 
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/",
             data={"headings_type": "es_r_friendly"},
             content_type="application/json",
         )
         assert response.status_code == 200
 
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{array_tables[0]['id']}/",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{array_tables[0]['id']}/",
             data={"include": False},
             content_type="application/json",
         )
         assert response.status_code == 200
 
         response = client.get(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}/preview/"
         )
         assert len(response.json()) == 4
         data = response.json()[0]
@@ -244,11 +241,11 @@ class TestUrl:
         }
 
     def test_table_split_failed(self, client, url_obj_w_files):
-        selection = create_data_selection(client, url_obj_w_files, self.url_prefix)
-        tables = client.get(f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
+        selection = create_data_selection(client, url_obj_w_files, "/api/urls/")
+        tables = client.get(f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/").json()
 
         response = client.patch(
-            f"{self.url_prefix}{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}",
+            f"/api/urls/{url_obj_w_files.id}/selections/{selection['id']}/tables/{tables[0]['id']}",
             data={"split": True},
             content_type="application/json",
         )
@@ -268,19 +265,19 @@ class TestUrl:
 
             # Relative path
             url = "file://file.json"
-            response = client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+            response = client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert os.path.isfile(file)
             assert str(path) == str(file)
             assert response.status_code == 201
 
             # No login
-            response = client.post(self.url_prefix, {"urls": url})
+            response = client.post("/api/urls/", {"urls": url})
             assert response.status_code == 403
 
             # Absolute path
             url = "file://" + str(file)
-            response = client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+            response = client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(file)
             assert response.status_code == 201
@@ -293,7 +290,7 @@ class TestUrl:
             assert str(path) == str(forbidden_file)
             assert os.path.isfile(forbidden_file)
             with pytest.raises(ValueError) as e:
-                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Path that leads outside of data registry folder
@@ -301,7 +298,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(tmp_path) + "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Path that leads to root
@@ -309,7 +306,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
 
             # Symlink not allowed
             dest = tmp_path / "data_registry/forbidden_file.json"
@@ -317,18 +314,18 @@ class TestUrl:
             assert os.path.islink(dest)
             url = "file://" + str(tmp_path) + "/data_registry" + "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is on
             with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True):
                 with pytest.raises(ValueError) as e:
-                    client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                    client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                     assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is off
             with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True, DATAREGISTRY_JAIL=False):
-                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                 assert response.status_code == 201
 
             # Multi upload dataregistry path creation successful
@@ -341,7 +338,7 @@ class TestUrl:
                 assert os.path.isfile(dest)
 
             response = client.post(
-                self.url_prefix,
+                "/api/urls/",
                 json.dumps({"urls": paths}),
                 content_type="application/json",
                 HTTP_AUTHORIZATION=f"Basic {encoded_credentials}",
@@ -354,7 +351,7 @@ class TestUrl:
             # Multi upload with invalid URL
             paths.append("https://www.google.com/")
             response = client.post(
-                self.url_prefix,
+                "/api/urls/",
                 json.dumps({"urls": paths}),
                 content_type="application/json",
                 HTTP_AUTHORIZATION=f"Basic {encoded_credentials}",
@@ -363,5 +360,5 @@ class TestUrl:
 
     def test_dataregistry_path_no_dataregistry_imported(self, client):
         with pytest.raises(ValueError) as e:
-            client.post(self.url_prefix, {"urls": "file:///file.json"})
+            client.post("/api/urls/", {"urls": "file:///file.json"})
         assert "Input URL is invalid" in str(e)

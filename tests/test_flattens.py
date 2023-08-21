@@ -1,5 +1,4 @@
 import pytest
-from django.conf import settings
 
 from core.models import Flatten
 from tests.utils import create_data_selection, create_flatten
@@ -7,13 +6,11 @@ from tests.utils import create_data_selection, create_flatten
 
 @pytest.mark.django_db
 class TestFlattenViews:
-    url_prefix = f"/{settings.API_PREFIX}uploads/"
-
     @pytest.fixture(autouse=True)
     def setUp(self, client, upload_obj_validated):
-        selection = create_data_selection(client, upload_obj_validated, self.url_prefix)
+        selection = create_data_selection(client, upload_obj_validated, "/api/uploads/")
         self.selection_id = selection["id"]
-        self.flattens_url = f"{self.url_prefix}{upload_obj_validated.id}/selections/{selection['id']}/flattens/"
+        self.flattens_url = f"/api/uploads/{upload_obj_validated.id}/selections/{selection['id']}/flattens/"
         self.datasource = upload_obj_validated
         self.client = client
 
@@ -70,7 +67,7 @@ class TestFlattenViews:
         assert response.json() == {"detail": {"export_format": ['"file_format" is not a valid choice.']}}
 
     def test_flatten_update_fail(self):
-        _, flatten_id = create_flatten(self.client, self.datasource, self.url_prefix)
+        _, flatten_id = create_flatten(self.client, self.datasource, "/api/uploads/")
         flatten_url = f"{self.flattens_url}{flatten_id}/"
         response = self.client.patch(flatten_url, content_type="application/json", data={"status": "hurry-up"})
         assert response.status_code == 400
@@ -98,7 +95,7 @@ class TestFlattenViews:
         assert response.status_code == 200
         assert response.json() == []
 
-        selection_id, flatten_id = create_flatten(self.client, self.datasource, self.url_prefix, self.selection_id)
+        selection_id, flatten_id = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
         assert selection_id == self.selection_id
         response = self.client.get(self.flattens_url)
         assert response.status_code == 200
@@ -108,7 +105,7 @@ class TestFlattenViews:
         assert data[0]["id"] == flatten_id
 
     def test_flatten_update_successful(self):
-        _, flatten_id = create_flatten(self.client, self.datasource, self.url_prefix, self.selection_id)
+        _, flatten_id = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
         flatten = Flatten.objects.get(id=flatten_id)
         flatten.status = Flatten.COMPLETED
         flatten.save(update_fields=["status"])
@@ -125,12 +122,12 @@ class TestFlattenViews:
         assert response.json()["status"] == Flatten.SCHEDULED
 
     def test_clear_flattens_after_update_dataselection(self):
-        selection_id, flatten_id = create_flatten(self.client, self.datasource, self.url_prefix, self.selection_id)
+        selection_id, flatten_id = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
         response = self.client.get(self.flattens_url)
         assert response.status_code == 200
         assert len(response.json()) == 1
 
-        url = f"{self.url_prefix}{self.datasource.id}/selections/{selection_id}/"
+        url = f"/api/uploads/{self.datasource.id}/selections/{selection_id}/"
         response = self.client.patch(url, content_type="application/json", data={"headings_type": "es_r_friendly"})
         assert response.status_code == 200
 
@@ -139,17 +136,17 @@ class TestFlattenViews:
         assert len(response.json()) == 0
 
     def test_clear_flattens_after_update_table(self):
-        selection_id, flatten_id = create_flatten(self.client, self.datasource, self.url_prefix, self.selection_id)
+        selection_id, flatten_id = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
         response = self.client.get(self.flattens_url)
         assert response.status_code == 200
         assert len(response.json()) == 1
 
-        url = f"{self.url_prefix}{self.datasource.id}/selections/{selection_id}/"
+        url = f"/api/uploads/{self.datasource.id}/selections/{selection_id}/"
         response = self.client.get(url)
         assert response.status_code == 200
         selection = response.json()
         table_id = selection["tables"][0]["id"]
-        url = f"{self.url_prefix}{self.datasource.id}/selections/{selection_id}/tables/{table_id}/"
+        url = f"/api/uploads/{self.datasource.id}/selections/{selection_id}/tables/{table_id}/"
 
         response = self.client.patch(url, content_type="application/json", data={"heading": "New heading"})
         assert response.status_code == 200

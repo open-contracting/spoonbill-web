@@ -295,10 +295,9 @@ class TestDownloadDataSource:
 @pytest.mark.django_db
 class TestFlattenDataTask:
     model = "Upload"
-    url_prefix = f"/{settings.API_PREFIX}uploads/"
 
     def test_flatten_non_registered_model(self, client, upload_obj_validated, mocker):
-        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        _, flatten_id = create_flatten(client, upload_obj_validated, "/api/uploads/")
         model = "NewModel"
         mocked_logger = mocker.patch("core.tasks.logger")
         flatten_data(flatten_id, model=model)
@@ -331,7 +330,7 @@ class TestFlattenDataTask:
         )
 
     def test_flatten_handle_type_error(self, client, upload_obj_validated, mocker):
-        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        _, flatten_id = create_flatten(client, upload_obj_validated, "/api/uploads/")
         mocked_get_options = mocker.patch("core.tasks.get_flatten_options")
         exc_message = "TypeError message"
         mocked_get_options.side_effect = TypeError(exc_message)
@@ -342,7 +341,7 @@ class TestFlattenDataTask:
         assert flatten.error == exc_message
 
     def test_flatten_xlsx_successful(self, client, upload_obj_validated):
-        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        _, flatten_id = create_flatten(client, upload_obj_validated, "/api/uploads/")
         flatten_data(flatten_id, model=self.model)
 
         flatten = Flatten.objects.get(id=flatten_id)
@@ -352,7 +351,7 @@ class TestFlattenDataTask:
 
     def test_flatten_csv_successful(self, client, upload_obj_validated):
         selection_id, flatten_id = create_flatten(
-            client, upload_obj_validated, prefix=self.url_prefix, export_format=Flatten.CSV
+            client, upload_obj_validated, prefix="/api/uploads/", export_format=Flatten.CSV
         )
         selection = DataSelection.objects.get(id=selection_id)
         table1 = selection.tables.all()[0]
@@ -372,7 +371,7 @@ class TestFlattenDataTask:
         assert flatten.file.path.endswith(".zip")
 
     def test_no_left_space(self, client, upload_obj_validated, mocker):
-        _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)
+        _, flatten_id = create_flatten(client, upload_obj_validated, "/api/uploads/")
         mocked_flattener = mocker.patch("core.tasks.FileFlattener.flatten_file")
         mocked_flattener.side_effect = OSError(errno.ENOSPC, "No left space.")
         flatten_data(flatten_id, model=self.model)
@@ -383,7 +382,7 @@ class TestFlattenDataTask:
 
     def test_flatten_csv_successful_lite(self, client, upload_obj_validated):
         selection_id, flatten_id = create_flatten(
-            client, upload_obj_validated, prefix=self.url_prefix, export_format=Flatten.CSV, kind="ocds_lite"
+            client, upload_obj_validated, prefix="/api/uploads/", export_format=Flatten.CSV, kind="ocds_lite"
         )
         selection = DataSelection.objects.get(id=selection_id)
         assert selection.kind == selection.OCDS_LITE

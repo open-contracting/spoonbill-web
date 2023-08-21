@@ -29,7 +29,6 @@ class TestUploadViews:
     def use_fixtures(
         self, upload_obj, upload_obj_validated, validation_task, cleanup_upload_task, dataset, settings, mocker, client
     ):
-        self.url_prefix = f"/{settings.API_PREFIX}uploads/"
         self.dataset = dataset
         self.task_cleanup = cleanup_upload_task
         self.task_validation = validation_task
@@ -40,12 +39,12 @@ class TestUploadViews:
         self.settings = settings
 
     def test_create_upload_wo_file(self):
-        response = self.client.post(self.url_prefix, {"attr": "value"})
+        response = self.client.post("/api/uploads/", {"attr": "value"})
         assert response.status_code == 400
         assert response.json() == {"detail": "File is required"}
 
     def test_create_upload_successful(self):
-        response = self.client.post(self.url_prefix, {"files": self.dataset})
+        response = self.client.post("/api/uploads/", {"files": self.dataset})
         assert response.status_code == 201
         upload = response.json()
         assert set(upload.keys()) == {
@@ -79,20 +78,20 @@ class TestUploadViews:
         shutil.rmtree(os.path.join(self.settings.MEDIA_ROOT, str(upload_obj.files.all()[0].id)))
 
     def test_get_non_existed_upload(self):
-        response = self.client.get(f"{self.url_prefix}some-invalid-id/")
+        response = self.client.get("/api/uploads/some-invalid-id/")
         assert response.status_code == 404
         assert response.json() == {"detail": "Not found."}
 
     def test_get_upload_successful(self):
-        response = self.client.get(f"{self.url_prefix}{self.datasource.id}/")
+        response = self.client.get(f"/api/uploads/{self.datasource.id}/")
         assert response.status_code == 200
         assert UploadSerializer(self.datasource).data == response.json()
 
     def test_create_selections_successful(self):
-        create_data_selection(self.client, self.datasource, self.url_prefix)
+        create_data_selection(self.client, self.datasource, "/api/uploads/")
 
     def test_create_selections_failed(self):
-        url = f"{self.url_prefix}{self.datasource.id}/selections/"
+        url = f"/api/uploads/{self.datasource.id}/selections/"
         data = {"tables": "name"}
         response = self.client.post(url, content_type="application/json", data=data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -106,26 +105,23 @@ class TestUploadViews:
         assert response.json() == {"detail": {"tables": {"non_field_errors": ["This list may not be empty."]}}}
 
     def test_get_selections_successful(self):
-        get_data_selections(self.client, self.datasource, self.url_prefix)
+        get_data_selections(self.client, self.datasource, "/api/uploads/")
 
     def test_exception_handle(self):
         self.task_cleanup.apply_async.side_effect = Exception("Something went wrong.")
-        response = self.client.post(self.url_prefix, {"files": self.dataset})
+        response = self.client.post("/api/uploads/", {"files": self.dataset})
         assert response.status_code == 500
         assert "detail" in response.json()
 
     def test_no_left_space(self):
         self.task_cleanup.apply_async.side_effect = OSError(errno.ENOSPC, "No left space.")
-        response = self.client.post(self.url_prefix, {"files": self.dataset})
+        response = self.client.post("/api/uploads/", {"files": self.dataset})
         assert response.status_code == 413
         assert response.json() == {"detail": "Currently, the space limit was reached. Please try again later."}
 
 
 @pytest.mark.django_db
 class TestUploadViewsUnit(TestCase):
-    def setUp(self):
-        self.url_prefix = f"/{settings.API_PREFIX}uploads/"
-
     @override_settings()
     @patch("core.views.validate_data")
     @patch("core.views.cleanup_upload")
@@ -134,7 +130,7 @@ class TestUploadViewsUnit(TestCase):
             settings.FILE_UPLOAD_MAX_MEMORY_SIZE = 100
             mocked_validation.delay.return_value = Task()
             with reader(path) as _file:
-                response = self.client.post(self.url_prefix, {"files": _file})
+                response = self.client.post("/api/uploads/", {"files": _file})
             assert response.status_code == 201
             upload = response.json()
             assert set(upload.keys()) == {
@@ -165,6 +161,6 @@ class TestUploadViewsUnit(TestCase):
 
     def test_upload_multiple_files(self):
         with open(DATASET_PATH) as _file:
-            response = self.client.post(self.url_prefix, {"files": [_file, _file]})
+            response = self.client.post("/api/uploads/", {"files": [_file, _file]})
         assert response.status_code == 413
         assert response.json() == {"detail": "Multi-upload feature is not available for file uploads yet. Stay tuned!"}
