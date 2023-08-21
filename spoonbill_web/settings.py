@@ -27,7 +27,6 @@ local_access = "LOCAL_ACCESS" in os.environ or "ALLOWED_HOSTS" not in os.environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-ROOT_DIR = BASE_DIR.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -234,11 +233,11 @@ STORAGES = {
     },
 }
 
-MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media/" if production else ROOT_DIR / "media/")
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media/" if production else BASE_DIR / "media/")
 MEDIA_URL = "media/"
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440
-FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", "/data/tmp/" if production else ROOT_DIR / "tmp/")
+FILE_UPLOAD_TEMP_DIR = os.getenv("FILE_UPLOAD_TEMP_DIR", "/data/tmp/" if production else BASE_DIR / "tmp/")
 
 ASGI_APPLICATION = "spoonbill_web.asgi.application"
 
@@ -275,7 +274,7 @@ REST_FRAMEWORK = {
 
 # https://docs.celeryq.dev/en/latest/django/first-steps-with-django.html
 CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "db+postgresql://postgres:postgres@localhost/postgres")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "db+postgresql:///spoonbill_web?application_name=spoonbill_celery")
 
 # https://pypi.org/project/channels-redis/
 CHANNEL_LAYERS = {
