@@ -38,8 +38,7 @@ class TestValidationConsumer:
         assert not message["datasource"]["downloaded"]
 
     def test_task_flatten(self, event_loop, client, upload_obj_validated, mocked_request):
-        prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
-        _, flatten_id = create_flatten(client, upload_obj_validated, prefix=prefix)
+        _, flatten_id = create_flatten(client, upload_obj_validated, prefix=f"/{settings.API_PREFIX}uploads/")
         application = URLRouter([re_path(r"ws/api/(?P<upload_id>[0-9a-f-]+)/$", ValidationConsumer.as_asgi())])
         communicator = WebsocketCommunicator(application, f"/ws/api/{upload_obj_validated.id}/")
         event_loop.run_until_complete(communicator.connect())

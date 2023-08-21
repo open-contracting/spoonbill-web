@@ -7,7 +7,7 @@ from tests.utils import create_data_selection, create_flatten
 
 @pytest.mark.django_db
 class TestFlattenViews:
-    prefix = url_prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
+    url_prefix = f"/{settings.API_PREFIX}uploads/"
 
     @pytest.fixture(autouse=True)
     def setUp(self, client, upload_obj_validated):
@@ -130,7 +130,7 @@ class TestFlattenViews:
         assert response.status_code == 200
         assert len(response.json()) == 1
 
-        url = f"{self.prefix}{self.datasource.id}/selections/{selection_id}/"
+        url = f"{self.url_prefix}{self.datasource.id}/selections/{selection_id}/"
         response = self.client.patch(url, content_type="application/json", data={"headings_type": "es_r_friendly"})
         assert response.status_code == 200
 
@@ -144,12 +144,12 @@ class TestFlattenViews:
         assert response.status_code == 200
         assert len(response.json()) == 1
 
-        url = f"{self.prefix}{self.datasource.id}/selections/{selection_id}/"
+        url = f"{self.url_prefix}{self.datasource.id}/selections/{selection_id}/"
         response = self.client.get(url)
         assert response.status_code == 200
         selection = response.json()
         table_id = selection["tables"][0]["id"]
-        url = f"{self.prefix}{self.datasource.id}/selections/{selection_id}/tables/{table_id}/"
+        url = f"{self.url_prefix}{self.datasource.id}/selections/{selection_id}/tables/{table_id}/"
 
         response = self.client.patch(url, content_type="application/json", data={"heading": "New heading"})
         assert response.status_code == 200

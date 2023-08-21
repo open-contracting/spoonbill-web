@@ -9,7 +9,7 @@ from tests.utils import create_data_selection
 
 @pytest.mark.django_db
 class TestTableViews:
-    url_prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
+    url_prefix = f"/{settings.API_PREFIX}uploads/"
 
     @pytest.fixture(autouse=True)
     def setUp(self, client, dataset, cleanup_upload_task, validation_task, upload_obj, upload_obj_validated, mocker):

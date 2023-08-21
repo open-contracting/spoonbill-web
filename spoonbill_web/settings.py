@@ -133,7 +133,7 @@ USE_TZ = True
 
 # Routes
 
-API_PREFIX = os.getenv("API_PREFIX", "api/")
+API_PREFIX = os.getenv("API_PREFIX", "api/")  # must have trailing slash and no leading slash
 APPEND_SLASH = False
 
 # Static files (CSS, JavaScript, Images)

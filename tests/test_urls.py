@@ -22,15 +22,15 @@ DATASET_PATH = f"{DATA_DIR}/sample-dataset.json"
 
 @pytest.mark.django_db
 class TestUrl:
-    url_prefix = "/urls/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}urls/"
+    url_prefix = f"/{settings.API_PREFIX}urls/"
 
     def test_create_datasource_wo_url(self, client):
-        response = client.post(f"{self.url_prefix}", {"attr": "value"})
+        response = client.post(self.url_prefix, {"attr": "value"})
         assert response.status_code == 400
         assert response.json() == {"detail": "Url is required"}
 
     def test_create_datasource_successful(self, client, download_datasource_task):
-        response = client.post(f"{self.url_prefix}", {"urls": ["https://example.org/dataset.json"]})
+        response = client.post(self.url_prefix, {"urls": ["https://example.org/dataset.json"]})
         assert response.status_code == 201
         url = response.json()
         assert set(url.keys()) == {
@@ -68,7 +68,7 @@ class TestUrl:
         download_datasource_task.delay.assert_called_once_with(url_obj.id, model="Url", lang_code="en-us")
 
         response = client.post(
-            f"{self.url_prefix}",
+            self.url_prefix,
             {
                 "urls": "https://example.org/dataset.json",
                 "country": "Mordor",
@@ -268,23 +268,19 @@ class TestUrl:
 
             # Relative path
             url = "file://file.json"
-            response = client.post(
-                f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}"
-            )
+            response = client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert os.path.isfile(file)
             assert str(path) == str(file)
             assert response.status_code == 201
 
             # No login
-            response = client.post(f"{self.url_prefix}", {"urls": url})
+            response = client.post(self.url_prefix, {"urls": url})
             assert response.status_code == 403
 
             # Absolute path
             url = "file://" + str(file)
-            response = client.post(
-                f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}"
-            )
+            response = client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(file)
             assert response.status_code == 201
@@ -297,7 +293,7 @@ class TestUrl:
             assert str(path) == str(forbidden_file)
             assert os.path.isfile(forbidden_file)
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Path that leads outside of data registry folder
@@ -305,7 +301,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == str(tmp_path) + "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Path that leads to root
@@ -313,7 +309,7 @@ class TestUrl:
             path = dataregistry_path_resolver(dataregistry_path_formatter(url))
             assert str(path) == "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
 
             # Symlink not allowed
             dest = tmp_path / "data_registry/forbidden_file.json"
@@ -321,18 +317,18 @@ class TestUrl:
             assert os.path.islink(dest)
             url = "file://" + str(tmp_path) + "/data_registry" + "/forbidden_file.json"
             with pytest.raises(ValueError) as e:
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
             assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is on
             with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True):
                 with pytest.raises(ValueError) as e:
-                    client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                    client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                     assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is off
             with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True, DATAREGISTRY_JAIL=False):
-                client.post(f"{self.url_prefix}", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                client.post(self.url_prefix, {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
                 assert response.status_code == 201
 
             # Multi upload dataregistry path creation successful
@@ -345,7 +341,7 @@ class TestUrl:
                 assert os.path.isfile(dest)
 
             response = client.post(
-                f"{self.url_prefix}",
+                self.url_prefix,
                 json.dumps({"urls": paths}),
                 content_type="application/json",
                 HTTP_AUTHORIZATION=f"Basic {encoded_credentials}",
@@ -358,7 +354,7 @@ class TestUrl:
             # Multi upload with invalid URL
             paths.append("https://www.google.com/")
             response = client.post(
-                f"{self.url_prefix}",
+                self.url_prefix,
                 json.dumps({"urls": paths}),
                 content_type="application/json",
                 HTTP_AUTHORIZATION=f"Basic {encoded_credentials}",
@@ -367,5 +363,5 @@ class TestUrl:
 
     def test_dataregistry_path_no_dataregistry_imported(self, client):
         with pytest.raises(ValueError) as e:
-            client.post(f"{self.url_prefix}", {"urls": "file:///file.json"})
+            client.post(self.url_prefix, {"urls": "file:///file.json"})
         assert "Input URL is invalid" in str(e)

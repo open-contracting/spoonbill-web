@@ -29,7 +29,6 @@ url_preview_router.register(r"preview", views.TablePreviewViewSet, basename="url
 upload_preview_router = routers.NestedSimpleRouter(upload_table_router, r"tables", lookup="table")
 upload_preview_router.register(r"preview", views.TablePreviewViewSet, basename="uploads-selections-preview")
 
-prefix = "/" if not settings.API_PREFIX else settings.API_PREFIX
 websocket_urlpatterns = [
-    re_path(rf"{prefix}ws/(?P<upload_id>[0-9a-f-]+)/$", consumers.ValidationConsumer.as_asgi()),
+    re_path(rf"{settings.API_PREFIX}ws/(?P<upload_id>[0-9a-f-]+)/$", consumers.ValidationConsumer.as_asgi()),
 ]

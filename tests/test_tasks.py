@@ -295,7 +295,7 @@ class TestDownloadDataSource:
 @pytest.mark.django_db
 class TestFlattenDataTask:
     model = "Upload"
-    url_prefix = url_prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
+    url_prefix = f"/{settings.API_PREFIX}uploads/"
 
     def test_flatten_non_registered_model(self, client, upload_obj_validated, mocker):
         _, flatten_id = create_flatten(client, upload_obj_validated, self.url_prefix)

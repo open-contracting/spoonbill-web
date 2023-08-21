@@ -29,7 +29,7 @@ class TestUploadViews:
     def use_fixtures(
         self, upload_obj, upload_obj_validated, validation_task, cleanup_upload_task, dataset, settings, mocker, client
     ):
-        self.url_prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
+        self.url_prefix = f"/{settings.API_PREFIX}uploads/"
         self.dataset = dataset
         self.task_cleanup = cleanup_upload_task
         self.task_validation = validation_task
@@ -124,7 +124,7 @@ class TestUploadViews:
 @pytest.mark.django_db
 class TestUploadViewsUnit(TestCase):
     def setUp(self):
-        self.url_prefix = "/uploads/" if not settings.API_PREFIX else f"/{settings.API_PREFIX}uploads/"
+        self.url_prefix = f"/{settings.API_PREFIX}uploads/"
 
     @override_settings()
     @patch("core.views.validate_data")
