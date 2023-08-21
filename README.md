@@ -1,46 +1,44 @@
 # spoonbill-web
+
 A web frontend to convert OCDS data from JSON to Excel/CSV
 
-## Development
+## Install requirememnts
 
 ```shell
-git clone git@github.com:open-contracting/spoonbill-web.git
-cd spoonbill-web
-```
-
-### Installation
-
-```shell
-python3 -m venv .venv
-source .venv/bin/activate
 pip install -r requirements_dev.txt
+pre-commit install
 ```
 
-### Tests
-
-Replace PostgreSQL connection details, as needed.
-
 ```shell
-env PYTHONWARNINGS=error MEDIA_ROOT=tmp/ FILE_UPLOAD_TEMP_DIR=tmp/ pytest --cov core --cov spoonbill_web --no-migrations
+cd frontend
+npm install
 ```
 
-### Run backend application
+## Run tests
 
 ```shell
-docker-compose up -d redis
-./manage.py makemigrations
+env PYTHONWARNINGS=error pytest --cov core --cov spoonbill_web --no-migrations
+```
+
+```shell
+cd frontend
+npx vue-cli-service lint
+npx vue-cli-service test:unit
+```
+
+## Run servers
+
+```shell
 ./manage.py migrate
 ./manage.py runserver
 ```
-
-### Run frontend application
 
 ```shell
 cd frontend
 npx vue-cli-service serve
 ```
 
-### Celery
+## Run workers
 
 Start celery worker:
 
@@ -53,26 +51,6 @@ Start celery beat:
 ```shell
 celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
-
-## Pre-Commit
-
-### Installation
-
-```shell
-pip install pre-commit
-```
-
-### Install the git hook scripts
-
-```shell
-pre-commit install
-```
-
-### Edit a pre-commit configuration
-
-Configuration placed in file `.pre-commit-config.yaml`
-
-[More about pre-commit](https://pre-commit.com/)
 
 ## Internationalization
 
@@ -117,3 +95,9 @@ npx gettext-extract --removeHTMLWhitespaces --output web-app-ui.pot src/main.js 
 ```
 
 Push and pull messages from Transifex as above.
+
+Compile messages:
+
+```shell
+npx gettext-compile --output src/translations/translations.json <filenames>
+```
