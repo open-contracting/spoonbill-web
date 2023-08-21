@@ -13,6 +13,7 @@ x-django: &django
   volumes:
     - temporary-data:/data/media
   depends_on:
+    - postgres
     - redis
 
 services:
