@@ -293,12 +293,16 @@ TRANSFER_MAPPINGS = {
 
 # Project configuration
 
-JOB_FILES_TIMEOUT = int(os.getenv("JOB_FILES_TIMEOUT", 1))  # days
+# Expiration time, in days.
+JOB_FILES_TIMEOUT = int(os.getenv("JOB_FILES_TIMEOUT", 1))
 
+# Follow Data Registry symlinks.
 DATAREGISTRY_ALLOW_SYMLINKS = "DATAREGISTRY_ALLOW_SYMLINKS" in os.environ
 
+# Treat a Data Registry path as not found, if not in the DATAREGISTRY_MEDIA_ROOT directory.
 DATAREGISTRY_JAIL = os.getenv("DATAREGISTRY_JAIL", "True") != "False"
 
+# The path relative to which Data Registry paths are submitted.
 DATAREGISTRY_MEDIA_ROOT = os.getenv("DATAREGISTRY_MEDIA_ROOT", "/data/exporter")
 if DATAREGISTRY_MEDIA_ROOT:
     DATAREGISTRY_MEDIA_ROOT = Path(DATAREGISTRY_MEDIA_ROOT)
