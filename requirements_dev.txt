@@ -350,7 +350,7 @@ six==1.16.0
     #   python-dateutil
     #   url-normalize
     #   virtualenv
-spoonbill==1.0.11
+spoonbill==1.0.12
     # via -r requirements.txt
 sqlalchemy==2.0.20
     # via -r requirements.txt
