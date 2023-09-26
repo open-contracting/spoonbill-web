@@ -113,7 +113,7 @@ cron-descriptor==1.4.0
     # via
     #   -r requirements.txt
     #   django-celery-beat
-cryptography==41.0.3
+cryptography==41.0.4
     # via
     #   -r requirements.txt
     #   autobahn
