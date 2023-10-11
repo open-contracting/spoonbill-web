@@ -1,8 +1,6 @@
-asgiref
 celery[django]
 channels[daphne]
 channels_redis
-daphne
 dj-database-url
 django
 django-celery-beat
@@ -12,10 +10,10 @@ django-transfer
 djangorestframework
 drf-nested-routers
 ijson
-jsonref
-ocdsextensionregistry
+markdown
 psycopg2
 redis
 requests
 sentry-sdk
+sqlalchemy
 spoonbill
