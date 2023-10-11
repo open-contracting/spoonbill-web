@@ -350,8 +350,6 @@ six==1.16.0
     #   virtualenv
 spoonbill==1.0.12
     # via -r requirements.txt
-sqlalchemy==2.0.20
-    # via -r requirements.txt
 sqlparse==0.4.4
     # via
     #   -r requirements.txt
@@ -370,7 +368,6 @@ typing-extensions==4.7.1
     # via
     #   -r requirements.txt
     #   dj-database-url
-    #   sqlalchemy
     #   twisted
 tzdata==2023.3
     # via
