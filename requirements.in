@@ -13,7 +13,6 @@ drf-nested-routers
 ijson
 jsonref
 ocdsextensionregistry
-markdown
 psycopg2
 redis
 requests
