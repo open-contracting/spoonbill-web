@@ -1,3 +1,4 @@
+asgiref
 celery[django]
 channels[daphne]
 channels_redis
@@ -10,6 +11,8 @@ django-transfer
 djangorestframework
 drf-nested-routers
 ijson
+jsonref
+ocdsextensionregistry
 markdown
 psycopg2
 redis
