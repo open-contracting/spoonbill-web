@@ -167,6 +167,10 @@ flatten-dict==0.4.2
     # via
     #   -r requirements.txt
     #   spoonbill
+greenlet==3.0.0
+    # via
+    #   -r requirements.txt
+    #   sqlalchemy
 hyperlink==21.0.0
     # via
     #   -r requirements.txt
@@ -381,7 +385,7 @@ url-normalize==1.4.3
     # via
     #   -r requirements.txt
     #   requests-cache
-urllib3==2.0.6
+urllib3==2.0.7
     # via
     #   -r requirements.txt
     #   requests
