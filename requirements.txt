@@ -108,6 +108,8 @@ drf-nested-routers==0.93.4
     # via -r requirements.in
 flatten-dict==0.4.2
     # via spoonbill
+greenlet==3.0.0
+    # via sqlalchemy
 hyperlink==21.0.0
     # via
     #   autobahn
@@ -219,7 +221,7 @@ tzdata==2023.3
     #   django-celery-beat
 url-normalize==1.4.3
     # via requests-cache
-urllib3==2.0.6
+urllib3==2.0.7
     # via
     #   requests
     #   requests-cache
