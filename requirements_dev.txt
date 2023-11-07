@@ -364,7 +364,7 @@ sqlparse==0.4.4
     #   django
 toml==0.10.2
     # via pre-commit
-twisted[tls]==22.10.0
+twisted[tls]==23.10.0
     # via
     #   -r requirements.txt
     #   daphne
