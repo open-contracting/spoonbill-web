@@ -8,8 +8,6 @@ amqp==5.1.1
     # via
     #   -r requirements.txt
     #   kombu
-appdirs==1.4.4
-    # via virtualenv
 asgiref==3.7.2
     # via
     #   -r requirements.txt
@@ -123,7 +121,7 @@ daphne==4.0.0
     # via
     #   -r requirements.txt
     #   channels
-distlib==0.3.1
+distlib==0.3.8
     # via virtualenv
 dj-database-url==2.1.0
     # via -r requirements.txt
@@ -159,7 +157,7 @@ docopt==0.6.2
     # via coveralls
 drf-nested-routers==0.93.4
     # via -r requirements.txt
-filelock==3.0.12
+filelock==3.13.1
     # via virtualenv
 flake8==3.9.2
     # via -r requirements_dev.in
@@ -246,9 +244,10 @@ platformdirs==3.10.0
     #   -r requirements.txt
     #   black
     #   requests-cache
+    #   virtualenv
 pluggy==1.0.0
     # via pytest
-pre-commit==2.20.0
+pre-commit==3.6.0
     # via -r requirements_dev.in
 prompt-toolkit==3.0.39
     # via
@@ -349,7 +348,6 @@ six==1.16.0
     #   flatten-dict
     #   python-dateutil
     #   url-normalize
-    #   virtualenv
 spoonbill==1.0.12
     # via -r requirements.txt
 sqlalchemy==2.0.21
@@ -358,8 +356,6 @@ sqlparse==0.4.4
     # via
     #   -r requirements.txt
     #   django
-toml==0.10.2
-    # via pre-commit
 twisted[tls]==23.10.0
     # via
     #   -r requirements.txt
@@ -395,7 +391,7 @@ vine==5.0.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.4.7
+virtualenv==20.25.0
     # via pre-commit
 wcwidth==0.2.6
     # via
