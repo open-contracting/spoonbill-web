@@ -47,6 +47,7 @@ cattrs==23.1.2
 celery[django]==5.3.1
     # via
     #   -r requirements.txt
+    #   celery
     #   django-celery-beat
     #   django-celery-results
 certifi==2023.7.22
@@ -63,6 +64,7 @@ cfgv==3.3.0
 channels[daphne]==4.0.0
     # via
     #   -r requirements.txt
+    #   channels
     #   channels-redis
 channels-redis==4.1.0
     # via -r requirements.txt
@@ -125,7 +127,7 @@ distlib==0.3.8
     # via virtualenv
 dj-database-url==2.1.0
     # via -r requirements.txt
-django==4.2.7
+django==4.2.10
     # via
     #   -r requirements.txt
     #   celery
@@ -166,7 +168,9 @@ flatten-dict==0.4.2
     #   -r requirements.txt
     #   spoonbill
 greenlet==3.0.0
-    # via -r requirements.txt
+    # via
+    #   -r requirements.txt
+    #   sqlalchemy
 hyperlink==21.0.0
     # via
     #   -r requirements.txt
@@ -360,6 +364,7 @@ twisted[tls]==23.10.0
     # via
     #   -r requirements.txt
     #   daphne
+    #   twisted
 txaio==23.1.1
     # via
     #   -r requirements.txt
