@@ -67,7 +67,7 @@ constantly==15.1.0
     # via twisted
 cron-descriptor==1.4.0
     # via django-celery-beat
-cryptography==41.0.6
+cryptography==42.0.4
     # via
     #   autobahn
     #   pyopenssl
@@ -162,7 +162,7 @@ pyasn1-modules==0.3.0
     # via service-identity
 pycparser==2.21
     # via cffi
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via twisted
 python-crontab==3.0.0
     # via django-celery-beat
@@ -191,7 +191,7 @@ scalpl==0.4.2
     # via spoonbill
 sentry-sdk==1.29.2
     # via -r requirements.in
-service-identity==23.1.0
+service-identity==24.1.0
     # via twisted
 six==1.16.0
     # via
@@ -207,9 +207,7 @@ sqlalchemy==2.0.21
 sqlparse==0.4.4
     # via django
 twisted[tls]==23.10.0
-    # via
-    #   daphne
-    #   twisted
+    # via daphne
 txaio==23.1.1
     # via autobahn
 typing-extensions==4.7.1

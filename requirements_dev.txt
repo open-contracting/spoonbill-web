@@ -47,7 +47,6 @@ cattrs==23.1.2
 celery[django]==5.3.1
     # via
     #   -r requirements.txt
-    #   celery
     #   django-celery-beat
     #   django-celery-results
 certifi==2023.7.22
@@ -64,7 +63,6 @@ cfgv==3.3.0
 channels[daphne]==4.0.0
     # via
     #   -r requirements.txt
-    #   channels
     #   channels-redis
 channels-redis==4.1.0
     # via -r requirements.txt
@@ -113,7 +111,7 @@ cron-descriptor==1.4.0
     # via
     #   -r requirements.txt
     #   django-celery-beat
-cryptography==41.0.6
+cryptography==42.0.4
     # via
     #   -r requirements.txt
     #   autobahn
@@ -276,7 +274,7 @@ pycparser==2.21
     #   cffi
 pyflakes==2.3.1
     # via flake8
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via
     #   -r requirements.txt
     #   twisted
@@ -340,7 +338,7 @@ scalpl==0.4.2
     #   spoonbill
 sentry-sdk==1.29.2
     # via -r requirements.txt
-service-identity==23.1.0
+service-identity==24.1.0
     # via
     #   -r requirements.txt
     #   twisted
@@ -364,7 +362,6 @@ twisted[tls]==23.10.0
     # via
     #   -r requirements.txt
     #   daphne
-    #   twisted
 txaio==23.1.1
     # via
     #   -r requirements.txt
