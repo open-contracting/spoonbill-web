@@ -36,7 +36,7 @@ billiard==4.1.0
     # via
     #   -r requirements.txt
     #   celery
-black==22.12.0
+black==24.3.0
     # via -r requirements_dev.in
 build==0.10.0
     # via pip-tools
@@ -233,8 +233,9 @@ ocdsmerge==0.6.6
     # via
     #   -r requirements.txt
     #   ocdskit
-packaging==20.9
+packaging==24.0
     # via
+    #   black
     #   build
     #   pytest
 pathspec==0.9.0
@@ -278,8 +279,6 @@ pyopenssl==24.0.0
     # via
     #   -r requirements.txt
     #   twisted
-pyparsing==3.1.0
-    # via packaging
 pyproject-hooks==1.0.0
     # via build
 pytest==7.2.0
