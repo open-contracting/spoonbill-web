@@ -176,7 +176,7 @@ hyperlink==21.0.0
     #   twisted
 identify==2.2.6
     # via pre-commit
-idna==3.4
+idna==3.7
     # via
     #   -r requirements.txt
     #   hyperlink
