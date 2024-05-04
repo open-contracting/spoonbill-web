@@ -36,8 +36,7 @@ jobs:
       - run: pip install -r requirements_dev.txt
       - name: Run Django tests
         env:
-          # Twisted > 23.10.0 https://github.com/twisted/twisted/issues/11848
-          PYTHONWARNINGS: error,ignore::DeprecationWarning:twisted.web.http
+          PYTHONWARNINGS: error
           DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           CELERY_BACKEND: db+postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/0
