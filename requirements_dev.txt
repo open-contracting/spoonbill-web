@@ -319,7 +319,7 @@ redis==5.0.0
     # via
     #   -r requirements.txt
     #   channels-redis
-requests==2.31.0
+requests==2.32.0
     # via
     #   -r requirements.txt
     #   coveralls
