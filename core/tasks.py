@@ -158,7 +158,7 @@ def validate_data(object_id, model=None, lang_code="en"):
                     "MESSAGE_ID": "validation_exception",
                     "MODEL": model,
                     "ID": object_id,
-                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_EXCEPTION": type(e).__name__,
                     "STR_ERROR": str(e),
                 },
             )
@@ -178,7 +178,7 @@ def validate_data(object_id, model=None, lang_code="en"):
                     "MESSAGE_ID": "validation_exception",
                     "MODEL": model,
                     "ID": object_id,
-                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_EXCEPTION": type(e).__name__,
                     "STR_ERROR": str(e),
                 },
             )
@@ -202,7 +202,7 @@ def validate_data(object_id, model=None, lang_code="en"):
                     "MESSAGE_ID": "validation_exception",
                     "MODEL": model,
                     "ID": object_id,
-                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_EXCEPTION": type(e).__name__,
                     "STR_ERROR": str(e),
                 },
             )
@@ -457,7 +457,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     "DATASOURCE_ID": object_id,
                     "MODEL": model,
                     "ERROR": str(e),
-                    "STR_EXCEPTION": e.__class__.__name__,
+                    "STR_EXCEPTION": type(e).__name__,
                 },
             )
             datasource.error = (

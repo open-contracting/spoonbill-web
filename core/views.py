@@ -501,7 +501,7 @@ class TableViewSet(viewsets.ModelViewSet):
                         "MESSAGE_ID": "skip_child_table",
                         "TABLE_KEY": child_table_key,
                         "DATASOURCE_ID": str(datasource.id),
-                        "MODEL": datasource.__class__.__name__,
+                        "MODEL": type(datasource).__name__,
                     },
                 )
                 continue

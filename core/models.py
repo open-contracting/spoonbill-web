@@ -30,7 +30,7 @@ class Validation(models.Model):
         verbose_name_plural = _("Validations")
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}"
+        return f"{type(self).__name__} {self.id}"
 
 
 class Upload(models.Model):
@@ -64,7 +64,7 @@ class Upload(models.Model):
         verbose_name_plural = _("Uploads")
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}"
+        return f"{type(self).__name__} {self.id}"
 
 
 class Url(models.Model):
@@ -114,7 +114,7 @@ class Url(models.Model):
         verbose_name_plural = _("Urls")
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}"
+        return f"{type(self).__name__} {self.id}"
 
 
 class DataSelection(models.Model):
@@ -149,7 +149,7 @@ class DataSelection(models.Model):
         return [f.export_format for f in self.flattens.all()]
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}"
+        return f"{type(self).__name__} {self.id}"
 
 
 class Table(models.Model):
@@ -165,7 +165,7 @@ class Table(models.Model):
     should_split = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}"
+        return f"{type(self).__name__} {self.id}"
 
 
 class Flatten(models.Model):
@@ -190,7 +190,7 @@ class Flatten(models.Model):
     error = models.CharField(max_length=300)
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}"
+        return f"{type(self).__name__} {self.id}"
 
 
 class DataFile(models.Model):
@@ -203,4 +203,4 @@ class DataFile(models.Model):
         verbose_name_plural = _("Files")
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.file}"
+        return f"{type(self).__name__} {self.file}"
