@@ -187,7 +187,7 @@ requests-cache==1.1.0
     # via ocdsextensionregistry
 scalpl==0.4.2
     # via spoonbill
-sentry-sdk==1.29.2
+sentry-sdk==2.8.0
     # via -r requirements.in
 service-identity==24.1.0
     # via twisted
