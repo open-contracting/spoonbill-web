@@ -334,7 +334,7 @@ scalpl==0.4.2
     # via
     #   -r requirements.txt
     #   spoonbill
-sentry-sdk==1.29.2
+sentry-sdk==2.8.0
     # via -r requirements.txt
 service-identity==24.1.0
     # via
