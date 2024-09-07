@@ -1,5 +1,5 @@
 asgiref
-celery[django]
+celery[sqlalchemy,django]
 channels[daphne]
 channels_redis
 daphne
