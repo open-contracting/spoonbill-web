@@ -21,15 +21,11 @@ jobs:
           ruby-version: 2.6
           bundler-cache: true
       - working-directory: frontend
-        run: |
-          npm install
-          gem install coveralls-lcov
+        run: npm install
       - name: Run Vue tests
         working-directory: frontend
         shell: bash
-        run: |
-          npx vue-cli-service test:unit
-          coveralls-lcov -v -n coverage/lcov.info > coverage.json
+        run: npx vue-cli-service test:unit
       - run: pip install -r requirements.txt
       # Check requirements.txt contains production requirements.
       - run: ./manage.py --help
@@ -47,10 +43,8 @@ jobs:
           ./manage.py migrate
           ./manage.py makemigrations --check --dry-run
           ./manage.py check --fail-level WARNING
-          pytest -W error -W ignore::DeprecationWarning:twisted.web.http --cov core --cov spoonbill_web --no-migrations
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github --merge=frontend/coverage.json
+          coverage run --source=core,spoonbill_web -m pytest -W error --no-migrations
+      - uses: coverallsapp/github-action@v2
     services:
       postgres:
         image: postgres:12

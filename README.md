@@ -17,7 +17,7 @@ npm install
 ## Run tests
 
 ```shell
-env PYTHONWARNINGS=error pytest --cov core --cov spoonbill_web --no-migrations
+coverage run --source=core,spoonbill_web -m pytest -W error --no-migrations
 ```
 
 ```shell

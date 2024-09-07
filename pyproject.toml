@@ -1,13 +1,20 @@
+[project]
+name = "spoonbill-web"
+version = "0.0.0"
+
 [tool.black]
 line-length = 119
 
 [tool.isort]
-profile = 'black'
+profile = "black"
 line_length = 119
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = 'spoonbill_web.settings'
+DJANGO_SETTINGS_MODULE = "spoonbill_web.settings"
 
 [tool.coverage.run]
 # CI sets the --no-migrations flag.
-omit = ['*/migrations/*']
+omit = ["*/migrations/*"]
+
+[tool.uv.pip]
+python-platform = "linux"  # greenlet

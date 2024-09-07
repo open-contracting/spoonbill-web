@@ -120,6 +120,8 @@ ijson==3.2.3
     #   -r requirements.in
     #   ocdskit
     #   spoonbill
+importlib-resources==6.4.4
+    # via spoonbill
 incremental==24.7.2
     # via twisted
 json-merge-patch==0.2
