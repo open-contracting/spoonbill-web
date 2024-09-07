@@ -144,6 +144,10 @@ flatten-dict==0.4.2
     # via
     #   -r requirements.txt
     #   spoonbill
+greenlet==3.0.3
+    # via
+    #   -r requirements.txt
+    #   sqlalchemy
 hyperlink==21.0.0
     # via
     #   -r requirements.txt
