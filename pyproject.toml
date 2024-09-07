@@ -15,3 +15,6 @@ DJANGO_SETTINGS_MODULE = "spoonbill_web.settings"
 [tool.coverage.run]
 # CI sets the --no-migrations flag.
 omit = ["*/migrations/*"]
+
+[tool.uv.pip]
+python-platform = "linux"  # greenlet
