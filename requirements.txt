@@ -104,8 +104,6 @@ drf-nested-routers==0.93.4
     # via -r requirements.in
 flatten-dict==0.4.2
     # via spoonbill
-greenlet==3.0.0
-    # via sqlalchemy
 hyperlink==21.0.0
     # via
     #   autobahn
@@ -203,8 +201,6 @@ six==1.16.0
     #   url-normalize
 spoonbill==1.0.13
     # via -r requirements.in
-sqlalchemy==2.0.21
-    # via -r requirements.in
 sqlparse==0.5.0
     # via django
 twisted==24.7.0rc1
@@ -214,7 +210,6 @@ txaio==23.1.1
 typing-extensions==4.7.1
     # via
     #   dj-database-url
-    #   sqlalchemy
     #   twisted
 tzdata==2023.3
     # via

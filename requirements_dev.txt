@@ -144,10 +144,6 @@ flatten-dict==0.4.2
     # via
     #   -r requirements.txt
     #   spoonbill
-greenlet==3.0.0
-    # via
-    #   -r requirements.txt
-    #   sqlalchemy
 hyperlink==21.0.0
     # via
     #   -r requirements.txt
@@ -315,8 +311,6 @@ six==1.16.0
     #   url-normalize
 spoonbill==1.0.13
     # via -r requirements.txt
-sqlalchemy==2.0.21
-    # via -r requirements.txt
 sqlparse==0.5.0
     # via
     #   -r requirements.txt
@@ -333,7 +327,6 @@ typing-extensions==4.7.1
     # via
     #   -r requirements.txt
     #   dj-database-url
-    #   sqlalchemy
     #   twisted
 tzdata==2023.3
     # via
