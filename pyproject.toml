@@ -9,12 +9,11 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "C4", "F", "I", "W"]
 
+[tool.coverage.run]
+omit = ["*/migrations/*"]
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "spoonbill_web.settings"
-
-[tool.coverage.run]
-# CI sets the --no-migrations flag.
-omit = ["*/migrations/*"]
 
 [tool.uv.pip]
 python-platform = "linux"  # greenlet
