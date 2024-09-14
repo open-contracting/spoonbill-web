@@ -39,8 +39,8 @@ def dataregistry_path_validator(path):
         ):
             return
         raise ValidationError(_message)
-    except (TypeError, AttributeError):
-        raise ValidationError(_message)
+    except (TypeError, AttributeError) as e:
+        raise ValidationError(_message) from e
 
 
 def validate_url_or_path(url):
@@ -52,9 +52,8 @@ def validate_url_or_path(url):
         raise NotImplementedError("This type of URL is not supported yet")
     try:
         validator(url)
-        return
-    except (ValidationError, AttributeError):
-        raise ValueError("Input URL is invalid")
+    except (ValidationError, AttributeError) as e:
+        raise ValueError("Input URL is invalid") from e
 
 
 def url_multi_upload_validator(array):

@@ -93,17 +93,16 @@ class UploadViewSet(viewsets.GenericViewSet):
         except (OSError, Exception) as error:
             extra = {"MESSAGE_ID": "receiving_file_failed", "ERROR_MSG": str(error)}
             if hasattr(error, "errno") and error.errno == errno.ENOSPC:
-                logger.info("Error while receiving file %s" % str(error), extra=extra)
+                logger.info("Error while receiving file %s", error, extra=extra)
                 return Response(
                     {"detail": _("Currently, the space limit was reached. Please try again later.")},
                     status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                 )
-            else:
-                logger.exception("Error while receiving file %s" % str(error), extra=extra)
-                return Response(
-                    {"detail": _("Error while receiving file. Contact our support service")},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
+            logger.exception("Error while receiving file.", extra=extra)
+            return Response(
+                {"detail": _("Error while receiving file. Contact our support service")},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class URLViewSet(viewsets.GenericViewSet):
@@ -303,8 +302,7 @@ class URLViewSet(viewsets.GenericViewSet):
                 lang_code = get_language()
                 download_data_source.delay(url_obj.id, model="Url", lang_code=lang_code)
                 return Response(self.get_serializer_class()(url_obj).data, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as error:
             return Response({"detail": error}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -337,37 +335,29 @@ class DataSelectionViewSet(viewsets.GenericViewSet):
                     selection.tables.add(_table)
                 datasource.selections.add(selection)
                 return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
-            if not datasource.available_tables:
-                return Response(
-                    {"detail": _("Datasource without available tables")}, status=status.HTTP_400_BAD_REQUEST
-                )
-            lang_code = get_language()
-            lang_prefix = lang_code.split("-")[0]
-            headings_type = f"{lang_prefix}_user_friendly"
-            selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
-            spec = DataPreprocessor.restore(datasource.analyzed_file.path)
-            for available_table in datasource.available_tables:
-                if available_table["name"] in OCDS_LITE_CONFIG["tables"]:
-                    _name = available_table["name"]
-                    _split = OCDS_LITE_CONFIG["tables"][_name].get("split", False)
-                    _table = Table.objects.create(name=_name, split=_split)
-                    child_tables_data = spec.tables[_name].child_tables
-                    if _split and child_tables_data:
-                        for child_table in child_tables_data:
-                            _include = (
-                                False
-                                if child_table not in OCDS_LITE_CONFIG["tables"][_name].get("child_tables", {})
-                                else True
-                            )
-                            _child_table = Table.objects.create(name=child_table, include=_include)
-                            _table.array_tables.add(_child_table)
-                    selection.tables.add(_table)
-            datasource.selections.add(selection)
-            return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
+            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        datasource = Url.objects.get(id=url_id) if url_id else Upload.objects.get(id=upload_id)
+        if not datasource.available_tables:
+            return Response({"detail": _("Datasource without available tables")}, status=status.HTTP_400_BAD_REQUEST)
+        lang_code = get_language()
+        lang_prefix = lang_code.split("-")[0]
+        headings_type = f"{lang_prefix}_user_friendly"
+        selection = DataSelection.objects.create(kind=kind, headings_type=headings_type)
+        spec = DataPreprocessor.restore(datasource.analyzed_file.path)
+        for available_table in datasource.available_tables:
+            if available_table["name"] in OCDS_LITE_CONFIG["tables"]:
+                _name = available_table["name"]
+                _split = OCDS_LITE_CONFIG["tables"][_name].get("split", False)
+                _table = Table.objects.create(name=_name, split=_split)
+                child_tables_data = spec.tables[_name].child_tables
+                if _split and child_tables_data:
+                    for child_table in child_tables_data:
+                        _include = child_table in OCDS_LITE_CONFIG["tables"][_name].get("child_tables", {})
+                        _child_table = Table.objects.create(name=child_table, include=_include)
+                        _table.array_tables.add(_child_table)
+                selection.tables.add(_table)
+        datasource.selections.add(selection)
+        return Response(self.get_serializer_class()(selection).data, status=status.HTTP_201_CREATED)
 
     def list(self, request, *args, url_id=None, upload_id=None):
         if url_id:
@@ -475,7 +465,7 @@ class TableViewSet(viewsets.ModelViewSet):
                 "ERROR_MSG": str(e),
                 "EXPIRED_AT": datasource.expired_at.isoformat(),
             }
-            logger.info("Error while update table %s" % str(e), extra=extra)
+            logger.info("Error while update table %s", e, extra=extra)
             return Response({"detail": _("Datasource expired.")}, status=status.HTTP_404_NOT_FOUND)
         except OSError as e:
             extra = {
@@ -484,7 +474,7 @@ class TableViewSet(viewsets.ModelViewSet):
                 "TABLE_ID": kwargs["id"],
                 "ERROR_MSG": str(e),
             }
-            logger.info("Error while update table %s" % str(e), extra=extra)
+            logger.info("Error while update table %s", e, extra=extra)
             return Response(
                 {"detail": _("Currently, the space limit was reached. Please try again later.")},
                 status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
@@ -496,7 +486,9 @@ class TableViewSet(viewsets.ModelViewSet):
             analyzed_child_table = analyzed_tables.get(child_table_key, {})
             if analyzed_child_table.total_rows == 0:
                 logger.debug(
-                    "Skip child table {} for datasource {}".format(child_table_key, datasource),
+                    "Skip child table %s for datasource %s",
+                    child_table_key,
+                    datasource,
                     extra={
                         "MESSAGE_ID": "skip_child_table",
                         "TABLE_KEY": child_table_key,
@@ -510,7 +502,7 @@ class TableViewSet(viewsets.ModelViewSet):
             child_path = analyzed_tables[child_table_key].path[0]
             array_size = parent_arrays[child_path]
             if mergeable is None or mergeable is True:
-                mergeable = False if array_size >= TABLE_THRESHOLD else True
+                mergeable = array_size < TABLE_THRESHOLD
             child_table = Table.objects.create(
                 name=child_table_key, parent=analyzed_tables[child_table_key].parent.name, mergeable=mergeable
             )
@@ -556,8 +548,6 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                         preview["column_headings"] = table.column_headings
                 data.append(preview)
                 for child_table in table.array_tables.all():
-                    # if not child_table.include:
-                    #     continue
                     preview_path = f"{datasource_dir}/{child_table.name}_combined.csv"
                     with open(preview_path) as csvfile:
                         preview = {
@@ -599,7 +589,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                 "ERROR_MSG": str(e),
                 "EXPIRED_AT": datasource.expired_at.isoformat(),
             }
-            logger.info("Error while get table preview %s" % str(e), extra=extra)
+            logger.info("Error while get table preview %s", e, extra=extra)
             return Response({"detail": _("Datasource expired.")}, status=status.HTTP_404_NOT_FOUND)
         except OSError as e:
             extra = {
@@ -608,7 +598,7 @@ class TablePreviewViewSet(viewsets.GenericViewSet):
                 "TABLE_ID": table_id,
                 "ERROR_MSG": str(e),
             }
-            logger.info("Error while create preview %s" % str(e), extra=extra)
+            logger.info("Error while create preview %s", e, extra=extra)
             return Response(
                 {"detail": _("Currently, the space limit was reached. Please try again later.")},
                 status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
@@ -629,7 +619,6 @@ class FlattenViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer_class()(data=request.data or request.POST)
         if serializer.is_valid():
             selection = DataSelection.objects.get(id=kwargs["selection_id"])
-            selection.flatten_types
             flatten_type = serializer.data.get("export_format", Flatten.XLSX)
             if flatten_type in selection.flatten_types:
                 return Response(
@@ -643,8 +632,7 @@ class FlattenViewSet(viewsets.GenericViewSet):
             lang_code = get_language()
             flatten_data.delay(flatten.id, model=model, lang_code=lang_code)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, *args, **kwargs):
         serializer = self.get_serializer_class()(data=request.data)
@@ -656,7 +644,7 @@ class FlattenViewSet(viewsets.GenericViewSet):
                     {"detail": _("You can't reschedule flatten in (%s) status") % flatten.status},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            elif new_status != Flatten.SCHEDULED:
+            if new_status != Flatten.SCHEDULED:
                 return Response(
                     {"detail": _("You can set status to %s only") % Flatten.SCHEDULED},
                     status=status.HTTP_400_BAD_REQUEST,
@@ -668,8 +656,7 @@ class FlattenViewSet(viewsets.GenericViewSet):
             flatten_data.delay(flatten.id, model=model, lang_code=lang_code)
             self.get_serializer_class()(flatten)
             return Response(serializer.data)
-        else:
-            return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, *args, **kwargs):
         queryset = Flatten.objects.filter(dataselection=kwargs.get("selection_id", ""))

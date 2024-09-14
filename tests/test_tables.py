@@ -121,7 +121,7 @@ class TestTableViews:
         ).json()
 
         response = self.client.patch(
-            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/" f"{tables[0]['id']}/",
+            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -158,7 +158,7 @@ class TestTableViews:
         ).json()
 
         response = self.client.patch(
-            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/" f"{tables[0]['id']}/",
+            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -206,7 +206,7 @@ class TestTableViews:
         mocked_split.side_effect = OSError(errno.ENOSPC, "No left space.")
 
         response = self.client.patch(
-            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/" f"{tables[0]['id']}/",
+            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -220,7 +220,7 @@ class TestTableViews:
         ).json()
 
         response = self.client.patch(
-            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/" f"{tables[0]['id']}/",
+            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )
@@ -261,7 +261,7 @@ class TestTableViews:
         mocked_open.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
 
         response = self.client.patch(
-            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/" f"{tables[0]['id']}/",
+            f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/{tables[0]['id']}/",
             data={"split": True},
             content_type="application/json",
         )

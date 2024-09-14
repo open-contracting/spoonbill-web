@@ -45,10 +45,7 @@ data_selection = {"tables": [{"name": "tenders"}, {"name": "parties"}]}
 
 def create_data_selection(client, parent, prefix=None, kind=None):
     url = f"{prefix}{parent.id}/selections/"
-    if kind and kind == "ocds_lite":
-        data = {"kind": kind}
-    else:
-        data = data_selection
+    data = {"kind": kind} if kind and kind == "ocds_lite" else data_selection
     response = client.post(url, content_type="application/json", data=data)
     assert response.status_code == 201
     json_data = response.json()

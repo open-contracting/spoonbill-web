@@ -20,9 +20,9 @@ class Validation(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    task_id = models.CharField(max_length=36, blank=True, null=True)
+    task_id = models.CharField(max_length=36, blank=True, default="")
     is_valid = models.BooleanField(blank=True, null=True)
-    errors = models.TextField(blank=True, null=True)
+    errors = models.TextField(blank=True, default="")
 
     class Meta:
         db_table = "validations"
@@ -55,8 +55,8 @@ class Upload(models.Model):
     selections = models.ManyToManyField("DataSelection", blank=True)
     available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
     unavailable_tables = ArrayField(models.CharField(max_length=50), default=list)
-    root_key = models.CharField(max_length=20, blank=True, null=True)
-    order = models.CharField(max_length=2048, blank=True, null=True)
+    root_key = models.CharField(max_length=20, blank=True, default="")
+    order = models.CharField(max_length=2048, blank=True, default="")
 
     class Meta:
         db_table = "uploads"
@@ -88,7 +88,7 @@ class Url(models.Model):
         default=list,
         validators=[url_multi_upload_validator],
     )
-    analyzed_data_url = models.CharField(max_length=2048, validators=[validate_url_or_path], blank=True, null=True)
+    analyzed_data_url = models.CharField(max_length=2048, validators=[validate_url_or_path], blank=True, default="")
     analyzed_file = models.FileField(upload_to=instance_directory_path, blank=True, null=True, storage=fs)
     files = models.ManyToManyField("DataFile", blank=True)
     validation = models.ForeignKey("Validation", blank=True, null=True, on_delete=models.CASCADE)
@@ -97,15 +97,15 @@ class Url(models.Model):
     expired_at = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False)
     downloaded = models.BooleanField(default=False)
-    error = models.TextField(blank=True, null=True)
+    error = models.TextField(blank=True, default="")
     selections = models.ManyToManyField("DataSelection", blank=True)
     available_tables = ArrayField(models.JSONField(default=dict), blank=True, null=True)
     unavailable_tables = ArrayField(models.CharField(max_length=50), default=list)
-    root_key = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=255, blank=True, null=True)
-    period = models.CharField(max_length=255, blank=True, null=True)
-    source = models.CharField(max_length=255, blank=True, null=True)
-    order = models.CharField(max_length=2048, blank=True, null=True)
+    root_key = models.CharField(max_length=20, blank=True, default="")
+    country = models.CharField(max_length=255, blank=True, default="")
+    period = models.CharField(max_length=255, blank=True, default="")
+    source = models.CharField(max_length=255, blank=True, default="")
+    order = models.CharField(max_length=2048, blank=True, default="")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
@@ -144,12 +144,12 @@ class DataSelection(models.Model):
         verbose_name = _("Data Selection")
         verbose_name_plural = _("Data Selections")
 
+    def __str__(self):
+        return f"{type(self).__name__} {self.id}"
+
     @property
     def flatten_types(self):
         return [f.export_format for f in self.flattens.all()]
-
-    def __str__(self):
-        return f"{type(self).__name__} {self.id}"
 
 
 class Table(models.Model):
@@ -157,10 +157,10 @@ class Table(models.Model):
     name = models.CharField(max_length=120)
     split = models.BooleanField(default=False)
     include = models.BooleanField(default=True)
-    heading = models.CharField(max_length=31, blank=True, null=True)
+    heading = models.CharField(max_length=31, blank=True, default="")
     array_tables = models.ManyToManyField("self", blank=True)
     column_headings = models.JSONField(default=dict, encoder=DjangoJSONEncoder, blank=True, null=True)
-    parent = models.CharField(max_length=120, blank=True, null=True)
+    parent = models.CharField(max_length=120, blank=True, default="")
     mergeable = models.BooleanField(default=False)
     should_split = models.BooleanField(default=False)
 

@@ -128,7 +128,7 @@ def get_column_headings(datasource, spec, table):
                     column_headings[k] = nonschema_title_formatter(k)
                 else:
                     column_headings[k] = nonschema_title_formatter(v)
-        for col in column_headings.keys():
+        for col in column_headings:
             for char in col:
                 if char.isnumeric() and char != "0":
                     title_col = col.replace(char, "0")
@@ -196,8 +196,8 @@ def get_options_for_table(selections, exclude_tables_list, selection, tables, pa
         if not table.include:
             exclude_tables_list.append(table.name)
             continue
-        else:
-            selections[table.name] = {"split": table.split}
+
+        selections[table.name] = {"split": table.split}
         if table.column_headings:
             selections[table.name]["headers"] = table.column_headings
         if table.heading:
@@ -238,14 +238,11 @@ def get_protocol(url):
 
 
 def dataregistry_path_formatter(path):
-    path = path.replace("file://", "")
-    path = settings.DATAREGISTRY_MEDIA_ROOT / pathlib.Path(path)
-    return path
+    return settings.DATAREGISTRY_MEDIA_ROOT / pathlib.Path(path.replace("file://", ""))
 
 
 def dataregistry_path_resolver(path):
-    path = pathlib.Path(path).resolve()
-    return path
+    return pathlib.Path(path).resolve()
 
 
 def multiple_file_assigner(files, paths):

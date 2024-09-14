@@ -59,8 +59,7 @@ def get_serializer_by_model(str_model, log_context=None):
             extra.update(log_context)
         logger.info("Model %s not registered in getters", str_model, extra=extra)
         return None, None
-    else:
-        return getters[str_model]["model"], getters[str_model]["serializer"]()
+    return getters[str_model]["model"], getters[str_model]["serializer"]()
 
 
 @celery_app.task
@@ -294,7 +293,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 
                 datasource.files.add(*files)
             else:
-                r = requests.get(datasource.urls[0], stream=True)
+                r = requests.get(datasource.urls[0], stream=True)  # noqa: S113
                 if r.status_code != 200:
                     logger.error(
                         "Error while downloading data file for %s",
@@ -334,7 +333,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                         downloaded += chunk_size
                         if size != 0:
                             progress = (downloaded / size) * 100
-                            progress = progress if progress < 100 else 100
+                            progress = min(100, progress)
                         else:
                             progress = size
                         if (time.time() - timestamp) <= 1:
@@ -356,7 +355,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     datasource.analyzed_file.name = path
                     datasource.save()
                 else:
-                    r = requests.get(datasource.analyzed_data_url, stream=True)
+                    r = requests.get(datasource.analyzed_data_url, stream=True)  # noqa: S113
                     if r.status_code != 200:
                         logger.error(
                             "Error while downloading data file for %s",
@@ -390,7 +389,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                             fd.write(chunk)
                             downloaded += chunk_size
                             progress = (downloaded / size) * 100
-                            progress = progress if progress < 100 else 100
+                            progress = min(100, progress)
                             if (time.time() - timestamp) <= 1:
                                 continue
                             async_to_sync(channel_layer.group_send)(
@@ -505,7 +504,6 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
             total_rows = spec.total_items
             opt = get_flatten_options(selection)
             # In case of exclusion of child tables, 'split' of root table should be set to 'False' for proper export
-            # TODO: There should be better way to handle this (probably on library side)
             if "exclude" in opt:
                 for _table in opt["exclude"]:
                     _parent = spec.tables[_table].parent
@@ -609,13 +607,12 @@ def flatten_data(flatten_id, model=None, lang_code="en_US"):
             extra = deepcopy(logger_context)
             extra["MESSAGE_ID"] = "flatten_failed"
             extra["ERROR_MESSAGE"] = error_message
-            logger.error(
+            logger.exception(
                 "Flatten %s for %s datasource %s failed",
                 flatten_id,
                 model,
                 datasource.id,
                 extra=extra,
-                exc_info=True,
             )
             flatten.status = "failed"
             flatten.error = error_message

@@ -53,16 +53,16 @@ class TestValidateDataTask(BaseUploadTestSuite):
             "/parties/additionalIdentifiers/0/uri",
         }
 
-    # def test_json_w_records(self, upload_obj):
-    #     with open(upload_obj.file.path, "w") as f:
-    #         f.write('{"records": ["record"]}')
+    def test_json_w_records(self, upload_obj):
+        with open(upload_obj.files.all()[0].file.path, "w") as f:
+            f.write('{"records": [{"ocid": "123"}]}')
 
-    #     upload_obj = Upload.objects.get(id=upload_obj.id)
-    #     assert not upload_obj.validation.is_valid
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert not upload_obj.validation.is_valid
 
-    #     validate_data(upload_obj.id, model="Upload")
-    #     upload_obj = Upload.objects.get(id=upload_obj.id)
-    #     assert upload_obj.validation.is_valid, upload_obj.validation.errors
+        validate_data(upload_obj.id, model="Upload")
+        upload_obj = Upload.objects.get(id=upload_obj.id)
+        assert upload_obj.validation.is_valid, upload_obj.validation.errors
 
     def test_unregistered_model(self, url_obj):
         url_obj = Url.objects.get(id=url_obj.id)
@@ -108,7 +108,7 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert mocked_logger.exception.call_count == 1
         datasource = Upload.objects.get(id=upload_obj.id)
         assert not datasource.validation.is_valid
-        assert datasource.validation.errors == f"Error while validating data `{str(mocked_open.side_effect)}`"
+        assert datasource.validation.errors == f"Error while validating data `{mocked_open.side_effect}`"
 
     def test_no_left_space(self, upload_obj, mocker):
         upload_obj = Upload.objects.get(id=upload_obj.id)
@@ -346,7 +346,7 @@ class TestFlattenDataTask:
 
         flatten = Flatten.objects.get(id=flatten_id)
         assert flatten.status == Flatten.COMPLETED
-        assert flatten.file.path.startswith(settings.MEDIA_ROOT), f"{flatten.file.path} !~ {settings.MEDIA_ROOT}"
+        assert flatten.file.path.startswith(str(settings.MEDIA_ROOT)), f"{flatten.file.path} !~ {settings.MEDIA_ROOT}"
         assert flatten.file.path.endswith(Flatten.XLSX)
 
     def test_flatten_csv_successful(self, client, upload_obj_validated):
@@ -367,7 +367,7 @@ class TestFlattenDataTask:
 
         flatten = Flatten.objects.get(id=flatten_id)
         assert flatten.status == Flatten.COMPLETED
-        assert flatten.file.path.startswith(settings.MEDIA_ROOT), f"{flatten.file.path} !~ {settings.MEDIA_ROOT}"
+        assert flatten.file.path.startswith(str(settings.MEDIA_ROOT)), f"{flatten.file.path} !~ {settings.MEDIA_ROOT}"
         assert flatten.file.path.endswith(".zip")
 
     def test_no_left_space(self, client, upload_obj_validated, mocker):
@@ -394,5 +394,5 @@ class TestFlattenDataTask:
 
         flatten = Flatten.objects.get(id=flatten_id)
         assert flatten.status == Flatten.COMPLETED
-        assert flatten.file.path.startswith(settings.MEDIA_ROOT), f"{flatten.file.path} !~ {settings.MEDIA_ROOT}"
+        assert flatten.file.path.startswith(str(settings.MEDIA_ROOT)), f"{flatten.file.path} !~ {settings.MEDIA_ROOT}"
         assert flatten.file.path.endswith(".zip")

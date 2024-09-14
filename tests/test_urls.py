@@ -318,10 +318,9 @@ class TestUrl:
             assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is on
-            with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True):
-                with pytest.raises(ValueError) as e:
-                    client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
-                    assert "Input URL is invalid" in str(e)
+            with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True), pytest.raises(ValueError) as e:
+                client.post("/api/urls/", {"urls": url}, HTTP_AUTHORIZATION=f"Basic {encoded_credentials}")
+                assert "Input URL is invalid" in str(e)
 
             # Symlink allowed, jail is off
             with override_settings(DATAREGISTRY_ALLOW_SYMLINKS=True, DATAREGISTRY_JAIL=False):

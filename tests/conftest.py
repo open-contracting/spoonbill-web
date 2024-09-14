@@ -26,31 +26,24 @@ SAMPLE_DATA_PATH = DATA_DIR / "sample-dataset.json"
 def schema():
     path = DATA_DIR.parents[1] / "data" / "schema.json"
     with open(path) as fd:
-        data = json.loads(fd.read())
-    return data
+        return json.loads(fd.read())
 
 
 @pytest.fixture
 def dataset():
-    file_ = open(SAMPLE_DATA_PATH)
-    yield file_
-
-    file_.close()
+    with open(SAMPLE_DATA_PATH) as f:
+        yield f
 
 
 @pytest.fixture
 def analyzed():
-    file_ = open(ANALYZED_DATA_PATH, "rb")
-    yield file_
-
-    file_.close()
+    with open(ANALYZED_DATA_PATH, "rb") as f:
+        yield f
 
 
 @pytest.fixture
 def available_tables():
     spec = DataPreprocessor.restore(ANALYZED_DATA_PATH)
-    # with open(ANALYZED_DATA_PATH) as fd:
-    #     data = json.loads(fd.read())
     _available_tables, unavailable_tables = retrieve_tables(spec)
     return _available_tables, unavailable_tables
 
@@ -64,14 +57,12 @@ def validation_task(mocker):
 
 @pytest.fixture
 def cleanup_upload_task(mocker):
-    mock = mocker.patch("core.views.cleanup_upload")
-    return mock
+    return mocker.patch("core.views.cleanup_upload")
 
 
 @pytest.fixture
 def download_datasource_task(mocker):
-    mock = mocker.patch("core.views.download_data_source")
-    return mock
+    return mocker.patch("core.views.download_data_source")
 
 
 @pytest.fixture
@@ -94,9 +85,7 @@ def upload_obj(validation_obj, dataset):
 
 @pytest.fixture
 def upload_obj_validated(upload_obj, analyzed, available_tables):
-    # file_ = File(analyzed)
     file_ = ContentFile(analyzed.read())
-    # file_.name = uuid.uuid4().hex
     _available_tables, unavailable_tables = available_tables
     upload_obj.analyzed_file.save("new", file_)
     upload_obj.available_tables = _available_tables

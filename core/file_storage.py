@@ -33,8 +33,7 @@ def safe_join(base, *paths):
                 and dirname(normcase(data_registry_path)) != normcase(data_registry_path)
             ):
                 raise SuspiciousFileOperation("The joined path is located outside of the allowed locations")
-            else:
-                return final_path
+            return final_path
 
         raise SuspiciousFileOperation(
             f"The joined path ({final_path}) is located outside of the base path component ({base_path})"
