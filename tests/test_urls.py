@@ -56,9 +56,9 @@ class TestUrl:
         assert set(url["validation"].keys()) == {"id", "task_id", "is_valid", "errors"}
         assert not url["deleted"]
         assert url["status"] == "queued.download"
-        assert url["country"] is None
-        assert url["period"] is None
-        assert url["source"] is None
+        assert url["country"] == ""
+        assert url["period"] == ""
+        assert url["source"] == ""
 
         url_obj = Url.objects.get(id=url["id"])
 
