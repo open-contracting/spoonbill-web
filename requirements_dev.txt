@@ -187,12 +187,12 @@ msgpack==1.0.5
     # via
     #   -r requirements.txt
     #   channels-redis
-ocdsextensionregistry==0.3.8
+ocdsextensionregistry==0.4.0
     # via
     #   -r requirements.txt
     #   ocdskit
     #   spoonbill
-ocdskit==1.1.8
+ocdskit==1.2.0
     # via
     #   -r requirements.txt
     #   spoonbill
@@ -298,7 +298,7 @@ six==1.16.0
     #   flatten-dict
     #   python-dateutil
     #   url-normalize
-spoonbill==1.0.13
+spoonbill==1.1.0
     # via -r requirements.txt
 sqlalchemy==2.0.34
     # via -r requirements.txt

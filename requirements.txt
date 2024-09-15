@@ -137,12 +137,12 @@ kombu==5.3.1
     # via celery
 msgpack==1.0.5
     # via channels-redis
-ocdsextensionregistry==0.3.8
+ocdsextensionregistry==0.4.0
     # via
     #   -r requirements.in
     #   ocdskit
     #   spoonbill
-ocdskit==1.1.8
+ocdskit==1.2.0
     # via spoonbill
 ocdsmerge==0.6.6
     # via ocdskit
@@ -201,7 +201,7 @@ six==1.16.0
     #   flatten-dict
     #   python-dateutil
     #   url-normalize
-spoonbill==1.0.13
+spoonbill==1.1.0
     # via -r requirements.in
 sqlalchemy==2.0.34
     # via celery
