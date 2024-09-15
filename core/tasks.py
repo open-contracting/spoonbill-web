@@ -293,7 +293,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
 
                 datasource.files.add(*files)
             else:
-                r = requests.get(datasource.urls[0], stream=True)  # noqa: S113
+                r = requests.get(datasource.urls[0], stream=True, timeout=10)
                 if r.status_code != 200:
                     logger.error(
                         "Error while downloading data file for %s",
@@ -355,7 +355,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     datasource.analyzed_file.name = path
                     datasource.save()
                 else:
-                    r = requests.get(datasource.analyzed_data_url, stream=True)  # noqa: S113
+                    r = requests.get(datasource.analyzed_data_url, stream=True, timeout=10)
                     if r.status_code != 200:
                         logger.error(
                             "Error while downloading data file for %s",
