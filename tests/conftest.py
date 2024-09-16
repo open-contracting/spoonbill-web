@@ -124,12 +124,16 @@ def url_obj_w_files(url_obj, dataset, analyzed):
 
 @pytest.fixture
 def mocked_request(mocker, url_obj):
-    request = mocker.patch("core.tasks.requests")
+    mock = mocker.patch("core.tasks.requests")
     path = os.path.dirname(__file__) + "/data/sample-dataset.json"
     with open(path) as f:
         data = f.read()
     response = Response(body=data)
-    request.get.return_value = response
-    yield request
+    mock.get.return_value = response
+    codes = mocker.MagicMock()
+    type(codes).ok = mocker.PropertyMock(return_value=200)
+    type(mock).codes = mocker.PropertyMock(return_value=codes)
+    mocker.seal(mock)
+    yield mock
 
     shutil.rmtree(os.path.join(settings.MEDIA_ROOT, str(url_obj.id)), ignore_errors=True)
