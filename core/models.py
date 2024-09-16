@@ -15,9 +15,7 @@ fs = MediaAndDataregistryFS()
 
 # Create your models here.
 class Validation(models.Model):
-    """
-    Validation object will store information about validation file job state
-    """
+    """Validation object will store information about validation file job state."""
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     task_id = models.CharField(max_length=36, blank=True, default="")
@@ -34,9 +32,7 @@ class Validation(models.Model):
 
 
 class Upload(models.Model):
-    """
-    Upload object will store all information about received file and related processes.
-    """
+    """Upload object will store all information about received file and related processes."""
 
     QUEUED_VALIDATION = "queued.validation"
     VALIDATION = "validation"

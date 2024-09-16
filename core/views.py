@@ -107,167 +107,169 @@ class UploadViewSet(viewsets.GenericViewSet):
 
 class URLViewSet(viewsets.GenericViewSet):
     """
-    ##URL based datasource
+    Accept URLs for the dataset file and analyzed dataset file.
 
-    This endpoint allows providing URLs for the dataset file and analyzed dataset file which is placed in some cloud
-    services or data registries (data lakes) that provide HTTP access for their data.
+    These files can be in some cloud services or data registries (data lakes) that provide HTTP access.
 
     For providing a dataset placed somewhere on the Internet it is enough to provide a URL attribute in the body of
-    the POST request.
+    the POST request. Also, you may add optional info to respective fields, such as 'country', 'period' and 'source'.
 
-    Also, you may add optional info to respective fields, such as 'country', 'period' and 'source'
+    Example (data from some cloud)::
 
-    **Example (data from some cloud):**
-    ```python
-    >>> import requests
-    >>> response = request.post('/urls/',
-                                {'urls': [ 'https://<filehosting.host>/<json-file>' ]},
-                                headers={'Accept-Language': 'en_US|es'})
-    >>> response.json()
-    {
-        "id": "96224033-73ef-430a-bc46-67cd205f249f",
-        "validation": {
-            "id": "642149d1-2488-493c-927c-f29f875ac3a6",
-            "task_id": None,
-            "is_valid": None,
-            "errors": None
-        },
-        "urls": [ "https://<filehosting.host>/<json-file>" ],
-        "analyzed_data_url": "",
-        "analyzed_data_file": None,
-        "data_file": None,
-        "status": "queued.download",
-        "created_at": "2021-03-19T10:42:48.265943Z",
-        "expired_at": None,
-        "deleted": False,
-        "downloaded": False,
-        "error": None
-    }
+        >>> import requests
+        >>> response = request.post(
+                '/urls/', {'urls': ['https://<filehosting.host>/<json-file>']}, headers={'Accept-Language': 'en_US|es'}
+            )
+        >>> response.json()
+        {
+            "id": "96224033-73ef-430a-bc46-67cd205f249f",
+            "validation": {
+                "id": "642149d1-2488-493c-927c-f29f875ac3a6",
+                "task_id": None,
+                "is_valid": None,
+                "errors": None
+            },
+            "urls": [ "https://<filehosting.host>/<json-file>" ],
+            "analyzed_data_url": "",
+            "analyzed_data_file": None,
+            "data_file": None,
+            "status": "queued.download",
+            "created_at": "2021-03-19T10:42:48.265943Z",
+            "expired_at": None,
+            "deleted": False,
+            "downloaded": False,
+            "error": None
+        }
 
-    ```
+    Example (data from OCDS data registry)::
 
-    **Example (data from OCDS data registry):**
-    ```python
-    >>> response = request.post('/urls/',
-                                {'urls': ['https://<data-registry.host>/<dataset-query>'],
-                                 'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>',
-                                 'country': 'United Kingdom',
-                                 'period': 'Last 6 months',
-                                 'source': 'OCP Kingfisher Database'
-                                 },
-                                headers={'Accept-Language': 'en_US|es'})
-    >>> response.json()
-    {
-        "id": "cb82da20-1aa2-4574-a8f7-3fbe92c7b412",
-        "validation": {
-            "id": "f961e1c2-69f0-408e-989a-cd7d50c497c2",
-            "task_id": None,
-            "is_valid": None,
-            "errors": None
-        },
-        "urls": [ "https://<data-registry.host>/<dataset-query>" ],
-        "analyzed_data_url": "https://<data-registry.host>/<analyzed-data-query>",
-        "analyzed_data_file": None,
-        "data_file": None,
-        "status": "queued.download",
-        "created_at": "2021-03-19T10:51:39.482275Z",
-        "expired_at": None,
-        "deleted": False,
-        "downloaded": False,
-        "error": None,
-        "available_tables": None,
-        "unavailable_tables": [],
-        "root_key": None,
-        "country": "United Kingdom",
-        "period": "Last 6 months",
-        "source": "OCP Kingfisher Database"
-    }
-    ```
+        >>> response = request.post(
+                '/urls/',
+                {
+                    'urls': ['https://<data-registry.host>/<dataset-query>'],
+                    'analyzed_data_url': 'https://<data-registry.host>/<analyzed-data-query>',
+                    'country': 'United Kingdom',
+                    'period': 'Last 6 months',
+                    'source': 'OCP Kingfisher Database'
+                },
+                headers={'Accept-Language': 'en_US|es'}
+            )
+        >>> response.json()
+        {
+            "id": "cb82da20-1aa2-4574-a8f7-3fbe92c7b412",
+            "validation": {
+                "id": "f961e1c2-69f0-408e-989a-cd7d50c497c2",
+                "task_id": None,
+                "is_valid": None,
+                "errors": None
+            },
+            "urls": [ "https://<data-registry.host>/<dataset-query>" ],
+            "analyzed_data_url": "https://<data-registry.host>/<analyzed-data-query>",
+            "analyzed_data_file": None,
+            "data_file": None,
+            "status": "queued.download",
+            "created_at": "2021-03-19T10:51:39.482275Z",
+            "expired_at": None,
+            "deleted": False,
+            "downloaded": False,
+            "error": None,
+            "available_tables": None,
+            "unavailable_tables": [],
+            "root_key": None,
+            "country": "United Kingdom",
+            "period": "Last 6 months",
+            "source": "OCP Kingfisher Database"
+        }
 
     After receiving this response you need to redirect user to the following URL:
-    `https://<spoonbill-web.host>/#/upload-file?lang=<lang-code>&url=<received-id>`
-    e.g. `https://<spoonbill-web.host>/#/upload-file?lang=en_US|es&url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412`
 
-    ## Dataregistry path URLs
+    ``https://<spoonbill-web.host>/#/upload-file?lang=<lang-code>&url=<received-id>``
 
-    You may pass the URL field path to a file, that is located in dataregistry folder.
-    Links for these files should look like this:
-    `file:///absolute/path/to/a/file/within/dataregistry/folder/document.json` \n
-    (absolute path, note 3 slashes after `file:`), or \n
-    `file://document.json` \n
-     (relative path, if file is located within the dataregistry folder).
+    For example:
 
-    **Example of json request body:**
+    ``https://<spoonbill-web.host>/#/upload-file?lang=en_US|es&url=cb82da20-1aa2-4574-a8f7-3fbe92c7b412``
 
-    ```python
-    {"urls":
-        [
-            "file://file.json"
-        ]
-    }
-    ```
+    You may also pass the URL field path to a file, that is located in dataregistry directory.
+
+    Links for these files should either be absolute paths (note 3 slashes after ``file:``):
+
+    ``file:///absolute/path/to/a/file/within/dataregistry/folder/document.json``
+
+    or relative paths, if files are located within the dataregistry directory:
+
+    ``file://document.json``
+
+    Example of json request body:
+
+    .. code-block:: json
+
+        {"urls": ["file://file.json"]}
 
     Multiple path URLs may be passed at once as well:
-    ```python
-    {"urls":
-        [
-            "file://file.json",
-            "file:///mnt/big-hdd/dataregistry/prozorro/2020.json",
-            "file://file2.json",
-            "file://file3.json",
-            "file://file4.json"
-        ]
-    }
-    ```
-    ## **Authorization**
+
+    .. code-block:: json
+
+        {
+            "urls": [
+                "file://file.json",
+                "file:///mnt/big-hdd/dataregistry/prozorro/2020.json",
+                "file://file2.json",
+                "file://file3.json",
+                "file://file4.json"
+            ]
+        }
+
     Only authorized users are allowed to use file URIs (ones that starts with `file://`).
     User's request may be authorized through HTTP Basic Authorization.
+
     In order to send authorized request - HTTP header should include 'Authorization' field;
-    and base64-encoded credentials: \n
-    `"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="` \n
+    and base64-encoded credentials:
+
+    ``"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="``
+
     Please note, that user's credentials are regular username and password,
     but those should be encoded before sending a request.
-    Example of encoding credentials you may see below
-    ### **Example of authorized request with encoded credentials (python script)**
-    ```python
-    import requests
+    Example of encoding credentials you may see below.
 
-    username = 'johhsmith'
-    password = 'youshallnotpass'
+    Authorized request with encoded credentials:
 
-    response = requests.post('/urls/',
-                             {'urls': ["file://document.json"]},
-                             auth=(username, password))
-    print(response.json())
-    ```
+    .. code-block:: python
+
+       import requests
+
+       username = 'johhsmith'
+       password = 'youshallnotpass'
+
+       response = requests.post('/urls/', {'urls': ["file://document.json"]}, auth=(username, password))
+       response.json()
+
     Through terminal commands you may create, delete or edit users in database.
 
-    ### **Creating new users**
-    ```cli
-    $ python manage.py shell
-    >>>from django.contrib.auth.models import User
-    >>>user = User.objects.create_user(username='john', password='johnpassword')
-    >>>user.save()
-    >>>exit()
-    ```
+    Create user:
 
-    ### **Delete user**
-    ```cli
-    $ python manage.py shell
-    >>>from django.contrib.auth.models import User
-    >>>user = User.objects.get(username='john')
-    >>>user.delete()
-    >>>exit()
-    ```
+    .. code-block:: python
 
-    ### **Change user's password**
-    ```cli
-    $ python manage.py changepassword john
-    Changing password for user 'john'
-    Password: <password>
-    Password (again): <password>
-    Password changed successfully for user 'john'
-    ```
+       from django.contrib.auth.models import User
+       user = User.objects.create_user(username='john', password='johnpassword')
+       user.save()
+
+    Delete user:
+
+    .. code-block:: python
+
+       from django.contrib.auth.models import User
+       user = User.objects.get(username='john')
+       user.delete()
+
+    Change user's password:
+
+    .. code-block:: console
+
+       $ python manage.py changepassword john
+       Changing password for user 'john'
+       Password: <password>
+       Password (again): <password>
+       Password changed successfully for user 'john'
     """
 
     permissions_classes = permissions.AllowAny

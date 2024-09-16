@@ -3,6 +3,14 @@ import uuid
 
 from core.constants import OCDS_LITE_CONFIG
 
+REASONS = {
+    "400": "Bad Request.",
+    "401": "401 Unauthorized.",
+    "403": "Forbidden.",
+    "404": "Not found.",
+    "405": "Method Not Allowed.",
+}
+
 
 class Task:
     @property
@@ -11,14 +19,6 @@ class Task:
 
 
 class Response:
-    reasons = {
-        "400": "Bad Request.",
-        "401": "401 Unauthorized.",
-        "403": "Forbidden.",
-        "404": "Not found.",
-        "405": "Method Not Allowed.",
-    }
-
     def __init__(self, status_code=200, body=None):
         self.status_code = status_code
         self.headers = {"Content-Length": "204801"}
@@ -37,7 +37,7 @@ class Response:
 
     @property
     def reason(self):
-        return self.reasons.get(str(self.status_code))
+        return REASONS.get(str(self.status_code))
 
 
 data_selection = {"tables": [{"name": "tenders"}, {"name": "parties"}]}

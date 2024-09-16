@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 
 def get_serializer_by_model(str_model, log_context=None):
     """
-    Utility for return model and serializer by string model value
+    Return model and serializer by string model value.
 
     :param str_model: String value (name) of model class
     :return: tuple with model and serializer
@@ -217,9 +217,7 @@ def validate_data(object_id, model=None, lang_code="en"):
 
 @celery_app.task
 def cleanup_upload(object_id, model=None, lang_code="en"):
-    """
-    Task cleanup all data related to upload id
-    """
+    """Task cleanup all data related to upload id."""
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "cleanup_upload"}
         ds_model, _ = get_serializer_by_model(model, logger_context)
@@ -294,7 +292,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 datasource.files.add(*files)
             else:
                 r = requests.get(datasource.urls[0], stream=True, timeout=10)
-                if r.status_code != 200:
+                if r.status_code != requests.codes.ok:
                     logger.error(
                         "Error while downloading data file for %s",
                         object_id,
@@ -356,7 +354,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
                     datasource.save()
                 else:
                     r = requests.get(datasource.analyzed_data_url, stream=True, timeout=10)
-                    if r.status_code != 200:
+                    if r.status_code != requests.codes.ok:
                         logger.error(
                             "Error while downloading data file for %s",
                             object_id,

@@ -9,10 +9,7 @@ from core.utils import dataregistry_path_resolver
 
 
 def safe_join(base, *paths):
-    """
-    Based on django/utils/_os/safe_join
-    Modified to include dataregistry functionality
-    """
+    """Based on django/utils/_os/safe_join and odified to include dataregistry functionality."""
     final_path = abspath(join(base, *paths))
     base_path = abspath(base)
 
@@ -42,9 +39,7 @@ def safe_join(base, *paths):
 
 
 class MediaAndDataregistryFS(FileSystemStorage):
-    """
-    Custom file storage, 'path' method is using modified 'safe_join' with included dataregistry functionality
-    """
+    """Custom file storage, 'path' method is using modified 'safe_join' with included dataregistry functionality."""
 
     def path(self, name):
         return safe_join(self.location, name)

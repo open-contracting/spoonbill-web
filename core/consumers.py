@@ -11,7 +11,7 @@ class ValidationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, _code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def task_validate(self, event):
