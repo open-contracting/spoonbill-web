@@ -95,7 +95,7 @@ cron-descriptor==1.4.0
     # via
     #   -r requirements.txt
     #   django-celery-beat
-cryptography==42.0.8
+cryptography==43.0.1
     # via
     #   -r requirements.txt
     #   autobahn
@@ -227,7 +227,7 @@ pycparser==2.21
     # via
     #   -r requirements.txt
     #   cffi
-pyopenssl==24.0.0
+pyopenssl==24.2.1
     # via
     #   -r requirements.txt
     #   twisted

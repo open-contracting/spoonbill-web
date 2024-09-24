@@ -63,7 +63,7 @@ constantly==15.1.0
     # via twisted
 cron-descriptor==1.4.0
     # via django-celery-beat
-cryptography==42.0.8
+cryptography==43.0.1
     # via
     #   autobahn
     #   pyopenssl
@@ -160,7 +160,7 @@ pyasn1-modules==0.3.0
     # via service-identity
 pycparser==2.21
     # via cffi
-pyopenssl==24.0.0
+pyopenssl==24.2.1
     # via twisted
 python-crontab==3.0.0
     # via django-celery-beat
