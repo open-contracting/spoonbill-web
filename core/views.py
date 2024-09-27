@@ -417,7 +417,7 @@ class TableViewSet(viewsets.ModelViewSet):
                 if key in request.data:
                     setattr(table, key, request.data[key])
                     # Remove "grandchildren" (child tables of child tables) if such are present
-                    if key in ("split", "include") and request.data[key] is False:
+                    if key in {"split", "include"} and request.data[key] is False:
                         if table.array_tables and not table.parent:
                             for array_table in list(table.array_tables.all()):
                                 setattr(array_table, key, False)
@@ -641,7 +641,7 @@ class FlattenViewSet(viewsets.GenericViewSet):
         if serializer.is_valid():
             flatten = Flatten.objects.get(id=kwargs["id"])
             new_status = request.data.get("status", "")
-            if flatten.status not in (Flatten.FAILED, Flatten.COMPLETED):
+            if flatten.status not in {Flatten.FAILED, Flatten.COMPLETED}:
                 return Response(
                     {"detail": _("You can't reschedule flatten in (%s) status") % flatten.status},
                     status=status.HTTP_400_BAD_REQUEST,
