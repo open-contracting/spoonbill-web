@@ -47,7 +47,7 @@ jobs:
       - uses: coverallsapp/github-action@v2
     services:
       postgres:
-        image: postgres:12
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -118,7 +118,7 @@ jobs:
             test/report.html
     services:
       postgres:
-        image: postgres:12
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-

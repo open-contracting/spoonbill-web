@@ -33,7 +33,7 @@ services:
       - '--entrypoints.http=true'
       - '--entrypoints.http.address=:80'
   postgres:
-    image: postgres:12
+    image: postgres:16
     volumes:
       - postgresql-data:/var/lib/postgresql/data
   redis:
