@@ -91,7 +91,7 @@ def validate_data(object_id, model=None, lang_code="en"):
             filenames = [pathlib.Path(path).name for path in paths]
 
             total = sum(
-                [pathlib.Path(path).stat().st_size if get_reader(path) == open else gz_size(path) for path in paths]
+                pathlib.Path(path).stat().st_size if get_reader(path) == open else gz_size(path) for path in paths
             )
             analyzer = FileAnalyzer(workdir, root_tables=ROOT_TABLES, combined_tables=COMBINED_TABLES)
 
