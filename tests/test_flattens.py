@@ -15,8 +15,7 @@ class TestFlattenViews:
         self.client = client
 
     def test_flatten_create_successful(self):
-        file_formats = ("xlsx", "csv")
-        for file_format in file_formats:
+        for file_format in ("xlsx", "csv"):
             response = self.client.post(
                 self.flattens_url,
                 content_type="application/json",
