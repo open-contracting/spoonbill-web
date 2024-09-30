@@ -148,6 +148,12 @@ LOCALE_PATHS = glob(str(BASE_DIR / "**" / "locale"))
 
 STATIC_ROOT = BASE_DIR / "static"
 
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
 # https://docs.djangoproject.com/en/4.2/topics/logging/#django-security
 LOGGING = {
     "version": 1,
@@ -221,12 +227,6 @@ LANGUAGES = [
     (LANGUAGE_CODE, _("English")),
     ("es", _("Spanish")),
 ]
-
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
 
 # https://github.com/open-contracting/spoonbill-web/issues/122
 APPEND_SLASH = False
