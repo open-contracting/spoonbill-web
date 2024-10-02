@@ -248,7 +248,7 @@ if "SENTRY_DSN" in os.environ:
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
         integrations=[DjangoIntegration(), CeleryIntegration()],
-        traces_sample_rate=0,  # The Sentry plan does not include Performance.
+        traces_sample_rate=1.0,
     )
 
 # https://github.com/adamchainz/django-cors-headers
