@@ -35,7 +35,7 @@ from core.utils import (
     retrieve_tables,
     zip_files,
 )
-from spoonbill_web.celery import app as celery_app
+from spoonbill_web.celery import app
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 SCHEMA_PATH = f"{DATA_DIR}/schema.json"
@@ -62,7 +62,7 @@ def get_serializer_by_model(str_model, log_context=None):
     return getters[str_model]["model"], getters[str_model]["serializer"]()
 
 
-@celery_app.task
+@app.task
 def validate_data(object_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "validate_data"}
@@ -215,7 +215,7 @@ def validate_data(object_id, model=None, lang_code="en"):
             )
 
 
-@celery_app.task
+@app.task
 def cleanup_upload(object_id, model=None, lang_code="en"):
     """Task cleanup all data related to upload id."""
     with internationalization(lang_code=lang_code):
@@ -250,7 +250,7 @@ def cleanup_upload(object_id, model=None, lang_code="en"):
         logger.debug("Remove all data from %s", datasource_paths)
 
 
-@celery_app.task
+@app.task
 def download_data_source(object_id, model=None, lang_code="en"):
     with internationalization(lang_code=lang_code):
         logger_context = {"DATASOURCE_ID": object_id, "TASK": "download_data_source"}
@@ -473,7 +473,7 @@ def download_data_source(object_id, model=None, lang_code="en"):
             )
 
 
-@celery_app.task
+@app.task
 def flatten_data(flatten_id, model=None, lang_code="en_US"):
     with internationalization(lang_code=lang_code):
         logger_context = {"FLATTEN_ID": flatten_id, "TASK": "flatten_data", "MODEL": model}
