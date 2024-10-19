@@ -1,6 +1,5 @@
 import json
 import os
-import pathlib
 import shutil
 import uuid
 
@@ -11,15 +10,9 @@ from django.core.files.base import ContentFile
 from django.utils import timezone
 from spoonbill.stats import DataPreprocessor
 
-from core.models import DataFile, Upload, Url, Validation
-from core.utils import retrieve_tables
-
-from .utils import Response, Task
-
-DATA_DIR = pathlib.Path(__file__).parent / "data"
-
-ANALYZED_DATA_PATH = DATA_DIR / "analyzed.dump"
-SAMPLE_DATA_PATH = DATA_DIR / "sample-dataset.json"
+from spoonbill_web.models import DataFile, Upload, Url, Validation
+from spoonbill_web.utils import retrieve_tables
+from tests import ANALYZED_DATA_PATH, DATA_DIR, Response, Task
 
 
 @pytest.fixture
@@ -31,7 +24,7 @@ def schema():
 
 @pytest.fixture
 def dataset():
-    with open(SAMPLE_DATA_PATH) as f:
+    with open(DATA_DIR / "sample-dataset.json") as f:
         yield f
 
 
@@ -50,19 +43,19 @@ def available_tables():
 
 @pytest.fixture
 def validation_task(mocker):
-    mock = mocker.patch("core.views.validate_data")
+    mock = mocker.patch("spoonbill_web.views.validate_data")
     mock.delay.return_value = Task()
     return mock
 
 
 @pytest.fixture
 def cleanup_upload_task(mocker):
-    return mocker.patch("core.views.cleanup_upload")
+    return mocker.patch("spoonbill_web.views.cleanup_upload")
 
 
 @pytest.fixture
 def download_datasource_task(mocker):
-    return mocker.patch("core.views.download_data_source")
+    return mocker.patch("spoonbill_web.views.download_data_source")
 
 
 @pytest.fixture
@@ -124,7 +117,7 @@ def url_obj_w_files(url_obj, dataset, analyzed):
 
 @pytest.fixture
 def mocked_request(mocker, url_obj):
-    mock = mocker.patch("core.tasks.requests")
+    mock = mocker.patch("spoonbill_web.tasks.requests")
     path = os.path.dirname(__file__) + "/data/sample-dataset.json"
     with open(path) as f:
         data = f.read()

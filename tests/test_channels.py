@@ -5,10 +5,9 @@ from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
 from django.urls import re_path
 
-from core.consumers import ValidationConsumer
-from core.tasks import download_data_source, flatten_data, validate_data
-
-from .utils import create_flatten
+from spoonbill_web.consumers import ValidationConsumer
+from spoonbill_web.tasks import download_data_source, flatten_data, validate_data
+from tests import create_flatten
 
 
 @pytest.mark.django_db

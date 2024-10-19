@@ -4,7 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.test import override_settings
 
-from core.validators import dataregistry_path_validator, validate_url_or_path
+from spoonbill_web.validators import dataregistry_path_validator, validate_url_or_path
 
 
 def test_validate_url_successful():

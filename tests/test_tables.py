@@ -3,7 +3,7 @@ import errno
 import pytest
 from rest_framework import status
 
-from tests.utils import create_data_selection
+from tests import create_data_selection
 
 
 @pytest.mark.django_db
@@ -202,7 +202,7 @@ class TestTableViews:
         tables = self.client.get(
             f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
-        mocked_split = self.mocker.patch("core.views.store_preview_csv")
+        mocked_split = self.mocker.patch("spoonbill_web.views.store_preview_csv")
         mocked_split.side_effect = OSError(errno.ENOSPC, "No left space.")
 
         response = self.client.patch(
@@ -242,7 +242,7 @@ class TestTableViews:
         )
         assert response.status_code == status.HTTP_200_OK
 
-        mocked_split = self.mocker.patch("core.views.store_preview_csv")
+        mocked_split = self.mocker.patch("spoonbill_web.views.store_preview_csv")
         mocked_split.side_effect = OSError(errno.ENOSPC, "No left space.")
 
         response = self.client.get(
@@ -257,7 +257,7 @@ class TestTableViews:
         tables = self.client.get(
             f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
-        mocked_open = self.mocker.patch("core.views.DataPreprocessor.restore")
+        mocked_open = self.mocker.patch("spoonbill_web.views.DataPreprocessor.restore")
         mocked_open.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
 
         response = self.client.patch(
@@ -274,7 +274,7 @@ class TestTableViews:
             f"/api/uploads/{self.validated_datasource.id}/selections/{selection['id']}/tables/"
         ).json()
 
-        mocked_open = self.mocker.patch("core.views.open")
+        mocked_open = self.mocker.patch("spoonbill_web.views.open")
         mocked_open.return_value.__enter__.side_effect = FileNotFoundError(errno.ENOENT, "File not found.")
 
         response = self.client.get(

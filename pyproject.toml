@@ -26,21 +26,19 @@ ignore-variadic-names = true
 "{*/signals,*/views,*/migrations/*}.py" = ["ARG001"]
 "{*/admin,*/routers,*/views,*/commands/*}.py" = ["ARG002"]
 "{*/admin,*/forms,*/models,*/routers,*/migrations/*,tests/*}.py" = ["RUF012"]
+"*/{serializers,views}.py" = ["RUF012"]
 "*/migrations/*" = ["E501"]
 "tests/*" = [
     "D", "FBT003", "INP001", "PLR2004", "PT", "S", "TRY003",
     "ARG001",  # mock
     "ARG002",  # mock
 ]
-"*/views.py" = [
-    "RUF012",  # djangorestframework
-]
 
 [tool.coverage.run]
 omit = ["*/migrations/*"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "spoonbill_web.settings"
+DJANGO_SETTINGS_MODULE = 'core.settings'
 
 [tool.uv.pip]
 python-platform = "linux"  # greenlet

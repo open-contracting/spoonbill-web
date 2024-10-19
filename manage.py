@@ -7,7 +7,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "spoonbill_web.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
     from django.core.management import execute_from_command_line
 
