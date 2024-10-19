@@ -2,7 +2,7 @@ import pytest
 from django.core.exceptions import SuspiciousFileOperation
 from django.test import override_settings
 
-from core.file_storage import safe_join
+from spoonbill_web.file_storage import safe_join
 
 
 @override_settings(DATAREGISTRY_MEDIA_ROOT="")

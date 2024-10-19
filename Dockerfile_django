@@ -25,4 +25,4 @@ ENV DJANGO_ENV=production
 RUN python manage.py compilemessages
 
 EXPOSE 8000
-CMD ["daphne", "--bind", "0.0.0.0", "--port", "8000", "--proxy-headers", "spoonbill_web.asgi:application"]
+CMD ["daphne", "--bind", "0.0.0.0", "--port", "8000", "--proxy-headers", "core.asgi:application"]

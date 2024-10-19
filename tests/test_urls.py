@@ -8,12 +8,10 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import override_settings
 
-from core.models import Url
-from core.serializers import UrlSerializer
-from core.utils import dataregistry_path_formatter, dataregistry_path_resolver
-
-from .conftest import ANALYZED_DATA_PATH
-from .utils import create_data_selection, get_data_selections
+from spoonbill_web.models import Url
+from spoonbill_web.serializers import UrlSerializer
+from spoonbill_web.utils import dataregistry_path_formatter, dataregistry_path_resolver
+from tests import ANALYZED_DATA_PATH, create_data_selection, get_data_selections
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 DATASET_PATH = f"{DATA_DIR}/sample-dataset.json"

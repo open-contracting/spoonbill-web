@@ -1,7 +1,7 @@
 import pytest
 
-from core.models import Flatten
-from tests.utils import create_data_selection, create_flatten
+from spoonbill_web.models import Flatten
+from tests import create_data_selection, create_flatten
 
 
 @pytest.mark.django_db

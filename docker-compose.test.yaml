@@ -54,10 +54,10 @@ services:
       - 'traefik.http.routers.app.rule=PathPrefix(`/api/`)'
   celery_worker:
     <<: *django
-    command: celery -A spoonbill_web worker -l INFO --concurrency=4
+    command: celery -A core worker -l INFO --concurrency=4
   celery_beat:
     <<: *django
-    command: celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
   static:
     image: static
     build:

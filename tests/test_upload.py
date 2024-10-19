@@ -10,11 +10,9 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from rest_framework import status
 
-from core.models import Upload
-from core.serializers import UploadSerializer
-from tests.utils import create_data_selection, get_data_selections
-
-from .utils import Task
+from spoonbill_web.models import Upload
+from spoonbill_web.serializers import UploadSerializer
+from tests import Task, create_data_selection, get_data_selections
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 DATASET_PATH = f"{DATA_DIR}/sample-dataset.json"
@@ -123,8 +121,8 @@ class TestUploadViews:
 @pytest.mark.django_db
 class TestUploadViewsUnit(TestCase):
     @override_settings()
-    @patch("core.views.validate_data")
-    @patch("core.views.cleanup_upload")
+    @patch("spoonbill_web.views.validate_data")
+    @patch("spoonbill_web.views.cleanup_upload")
     def test_create_selections_successful(self, mocked_cleanup, mocked_validation):
         for path, reader in PATHS.items():
             settings.FILE_UPLOAD_MAX_MEMORY_SIZE = 100

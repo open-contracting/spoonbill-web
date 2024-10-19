@@ -1,5 +1,21 @@
-from django.conf import settings
-from django.conf.urls.static import static
 from django.urls import include, path
 
-urlpatterns = [path("api/", include("core.urls")), *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)]
+from spoonbill_web.routing import (
+    router,
+    upload_preview_router,
+    upload_selection_router,
+    upload_table_router,
+    url_preview_router,
+    url_selection_router,
+    url_table_router,
+)
+
+urlpatterns = [
+    path("", include(router.urls)),
+    path("", include(upload_selection_router.urls)),
+    path("", include(upload_table_router.urls)),
+    path("", include(url_selection_router.urls)),
+    path("", include(url_table_router.urls)),
+    path("", include(upload_preview_router.urls)),
+    path("", include(url_preview_router.urls)),
+]

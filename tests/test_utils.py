@@ -4,8 +4,8 @@ import pathlib
 import pytest
 from django.conf import settings
 
-from core.models import DataFile
-from core.utils import get_schema, gz_size, multiple_file_assigner
+from spoonbill_web.models import DataFile
+from spoonbill_web.utils import get_schema, gz_size, multiple_file_assigner
 
 DATA_DIR = os.path.dirname(__file__) + "/data"
 DATASET_PATH_GZ = f"{DATA_DIR}/sample-dataset.json.gz"

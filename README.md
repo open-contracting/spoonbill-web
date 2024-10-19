@@ -43,13 +43,13 @@ npx vue-cli-service serve
 Start celery worker:
 
 ```shell
-celery -A spoonbill_web worker -l INFO --concurrency=2
+celery -A core worker -l INFO --concurrency=2
 ```
 
 Start celery beat:
 
 ```shell
-celery -A spoonbill_web beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
 
 ## Internationalization

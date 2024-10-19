@@ -6,10 +6,9 @@ import pytest
 from django.conf import settings
 from django.utils import timezone
 
-from core.models import DataSelection, Flatten, Upload, Url
-from core.tasks import cleanup_upload, download_data_source, flatten_data, validate_data
-
-from .utils import Response, create_flatten
+from spoonbill_web.models import DataSelection, Flatten, Upload, Url
+from spoonbill_web.tasks import cleanup_upload, download_data_source, flatten_data, validate_data
+from tests import Response, create_flatten
 
 
 class BaseUploadTestSuite:
@@ -84,7 +83,7 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert not upload_obj.validation.is_valid
 
     def test_not_found(self, mocker):
-        mocked_logger = mocker.patch("core.tasks.logger")
+        mocked_logger = mocker.patch("spoonbill_web.tasks.logger")
         obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
         model = "Upload"
         validate_data(obj_id, model=model)
@@ -101,8 +100,8 @@ class TestValidateDataTask(BaseUploadTestSuite):
         )
 
     def test_handle_exception(self, upload_obj, mocker):
-        mocked_logger = mocker.patch("core.tasks.logger")
-        mocked_open = mocker.patch("core.tasks.FileAnalyzer")
+        mocked_logger = mocker.patch("spoonbill_web.tasks.logger")
+        mocked_open = mocker.patch("spoonbill_web.tasks.FileAnalyzer")
         mocked_open.side_effect = Exception("Open fails")
         validate_data(upload_obj.id, model=self.model)
         assert mocked_logger.exception.call_count == 1
@@ -115,7 +114,7 @@ class TestValidateDataTask(BaseUploadTestSuite):
         assert upload_obj.validation.is_valid is None
         assert not upload_obj.available_tables
 
-        mocked_dump = mocker.patch("core.tasks.FileAnalyzer")
+        mocked_dump = mocker.patch("spoonbill_web.tasks.FileAnalyzer")
         mocked_dump().pkg_type = "releases"
         mocked_dump().spec.dump.side_effect = OSError(errno.ENOSPC, "No left space.")
         validate_data(upload_obj.id, model="Upload")
@@ -148,12 +147,12 @@ class TestCleanupUploadTask(BaseUploadTestSuite):
         assert not upload_obj.deleted
 
     def test_unregistered_model(self, upload_obj, mocker):
-        shutil = mocker.patch("core.tasks.shutil")
+        shutil = mocker.patch("spoonbill_web.tasks.shutil")
         cleanup_upload(upload_obj.id, model="SomeNew")
         assert shutil.rmtree.call_count == 0
 
     def test_cleanup_not_found(self, mocker):
-        mocked_logger = mocker.patch("core.tasks.logger")
+        mocked_logger = mocker.patch("spoonbill_web.tasks.logger")
         obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
         cleanup_upload(obj_id, model=self.model)
         mocked_logger.info.assert_called_once_with(
@@ -169,7 +168,7 @@ class TestCleanupUploadTask(BaseUploadTestSuite):
         )
 
     def test_dataregistry_failed(self, url_obj, mocker):
-        mocked_logger = mocker.patch("core.tasks.logger")
+        mocked_logger = mocker.patch("spoonbill_web.tasks.logger")
         url_obj.urls = ["file:///file.json"]
         url_obj.save(update_fields=["urls"])
         assert not url_obj.deleted
@@ -262,7 +261,7 @@ class TestDownloadDataSource:
         assert data == json.loads(dataset.read())
 
     def test_not_found(self, mocker):
-        mocked_logger = mocker.patch("core.tasks.logger")
+        mocked_logger = mocker.patch("spoonbill_web.tasks.logger")
         obj_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
         download_data_source(obj_id, model=self.model)
         mocked_logger.info.assert_called_once_with(
@@ -299,7 +298,7 @@ class TestFlattenDataTask:
     def test_flatten_non_registered_model(self, client, upload_obj_validated, mocker):
         _, flatten_id = create_flatten(client, upload_obj_validated, "/api/uploads/")
         model = "NewModel"
-        mocked_logger = mocker.patch("core.tasks.logger")
+        mocked_logger = mocker.patch("spoonbill_web.tasks.logger")
         flatten_data(flatten_id, model=model)
 
         mocked_logger.info.assert_called_once_with(
@@ -314,7 +313,7 @@ class TestFlattenDataTask:
         )
 
     def test_flatten_not_found(self, mocker):
-        mocked_logger = mocker.patch("core.tasks.logger")
+        mocked_logger = mocker.patch("spoonbill_web.tasks.logger")
         flatten_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
         flatten_data(flatten_id, model=self.model)
         mocked_logger.info.assert_called_once_with(
@@ -331,7 +330,7 @@ class TestFlattenDataTask:
 
     def test_flatten_handle_type_error(self, client, upload_obj_validated, mocker):
         _, flatten_id = create_flatten(client, upload_obj_validated, "/api/uploads/")
-        mocked_get_options = mocker.patch("core.tasks.get_flatten_options")
+        mocked_get_options = mocker.patch("spoonbill_web.tasks.get_flatten_options")
         exc_message = "TypeError message"
         mocked_get_options.side_effect = TypeError(exc_message)
         flatten_data(flatten_id, model=self.model)
@@ -372,7 +371,7 @@ class TestFlattenDataTask:
 
     def test_no_left_space(self, client, upload_obj_validated, mocker):
         _, flatten_id = create_flatten(client, upload_obj_validated, "/api/uploads/")
-        mocked_flattener = mocker.patch("core.tasks.FileFlattener.flatten_file")
+        mocked_flattener = mocker.patch("spoonbill_web.tasks.FileFlattener.flatten_file")
         mocked_flattener.side_effect = OSError(errno.ENOSPC, "No left space.")
         flatten_data(flatten_id, model=self.model)
 
