@@ -272,7 +272,7 @@ REST_FRAMEWORK = {
 
 # https://docs.celeryq.dev/en/latest/django/first-steps-with-django.html
 CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_BACKEND", "db+postgresql:///spoonbill_web?application_name=spoonbill_celery")
+CELERY_RESULT_BACKEND = "django-db"
 
 # https://pypi.org/project/channels-redis/
 CHANNEL_LAYERS = {
