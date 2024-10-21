@@ -183,7 +183,7 @@ msgpack==1.0.5
     # via
     #   -r requirements.txt
     #   channels-redis
-ocdsextensionregistry==0.4.0
+ocdsextensionregistry==0.5.0
     # via
     #   -r requirements.txt
     #   ocdskit

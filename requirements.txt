@@ -135,7 +135,7 @@ kombu==5.3.1
     # via celery
 msgpack==1.0.5
     # via channels-redis
-ocdsextensionregistry==0.4.0
+ocdsextensionregistry==0.5.0
     # via
     #   -r requirements.in
     #   ocdskit
