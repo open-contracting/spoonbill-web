@@ -36,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "i#y833-1r1g^fiq63y_5+v+zmc%ax_6g8$^^o&x%f2bo3omgif")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = not production
+DEBUG = os.getenv("DEBUG", str(not production)) == "True"
 
 ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0"]  # noqa: S104 # Docker
 if "ALLOWED_HOSTS" in os.environ:
@@ -177,28 +177,19 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
         "django.security.DisallowedHost": {
             "handlers": ["null"],
             "propagate": False,
         },
-        "django.request": {
+        "django.db.backends": {
             "handlers": ["console"],
-            "level": "ERROR",
+            "level": "DEBUG" if production else os.getenv("LOG_LEVEL", "INFO"),
             "propagate": False,
         },
+        # The app uses DEBUG messages.
         "spoonbill_web": {
             "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-        "backoff": {
-            "handlers": ["console"],
-            "level": "INFO",
+            "level": os.getenv("LOG_LEVEL", "INFO"),
             "propagate": False,
         },
     },
