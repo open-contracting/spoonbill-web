@@ -16,7 +16,7 @@ attrs==23.1.0
     #   requests-cache
     #   service-identity
     #   twisted
-autobahn==23.6.2
+autobahn==24.4.2
     # via daphne
 automat==22.10.0
     # via twisted
@@ -24,7 +24,7 @@ billiard==4.1.0
     # via celery
 cattrs==23.1.2
     # via requests-cache
-celery[django]==5.3.1
+celery==5.3.1
     # via
     #   -r requirements.in
     #   django-celery-beat
@@ -35,7 +35,7 @@ certifi==2024.7.4
     #   sentry-sdk
 cffi==1.15.1
     # via cryptography
-channels[daphne]==4.0.0
+channels==4.0.0
     # via
     #   -r requirements.in
     #   channels-redis
@@ -63,7 +63,7 @@ constantly==15.1.0
     # via twisted
 cron-descriptor==1.4.0
     # via django-celery-beat
-cryptography==43.0.3
+cryptography==44.0.2
     # via
     #   autobahn
     #   pyopenssl
@@ -158,7 +158,7 @@ pyasn1-modules==0.3.0
     # via service-identity
 pycparser==2.21
     # via cffi
-pyopenssl==24.2.1
+pyopenssl==24.3.0
     # via twisted
 python-crontab==3.0.0
     # via django-celery-beat
@@ -185,8 +185,13 @@ scalpl==0.4.2
     # via spoonbill
 sentry-sdk==2.8.0
     # via -r requirements.in
-service-identity==24.1.0
+service-identity==24.2.0
     # via twisted
+setuptools==76.0.0
+    # via
+    #   autobahn
+    #   incremental
+    #   zope-interface
 six==1.16.0
     # via
     #   automat
@@ -198,7 +203,7 @@ spoonbill==1.1.0
     # via -r requirements.in
 sqlparse==0.5.0
     # via django
-twisted[tls]==24.7.0rc1
+twisted==24.7.0rc1
     # via daphne
 txaio==23.1.1
     # via autobahn
