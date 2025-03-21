@@ -16,10 +16,6 @@ jobs:
           node-version: 18
           cache: npm
           cache-dependency-path: '**/package-lock.json'
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.6
-          bundler-cache: true
       - working-directory: frontend
         run: npm install
       - name: Run Vue tests
