@@ -70,7 +70,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_transfer.TransferMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -273,12 +272,6 @@ CHANNEL_LAYERS = {
             "hosts": [CELERY_BROKER_URL],
         },
     },
-}
-
-# https://pypi.org/project/django-transfer/
-TRANSFER_SERVER = os.getenv("TRANSFER_SERVER", "")
-TRANSFER_MAPPINGS = {
-    str(MEDIA_ROOT).rstrip("/"): MEDIA_URL.rstrip("/"),
 }
 
 

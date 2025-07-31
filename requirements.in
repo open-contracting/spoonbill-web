@@ -8,7 +8,6 @@ django<5
 django-celery-beat
 django-celery-results
 django-cors-headers
-django-transfer
 djangorestframework
 drf-nested-routers
 ijson

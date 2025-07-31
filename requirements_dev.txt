@@ -36,7 +36,7 @@ cattrs==23.1.2
     # via
     #   -r requirements.txt
     #   requests-cache
-celery[django]==5.3.1
+celery==5.3.1
     # via
     #   -r requirements.txt
     #   django-celery-beat
@@ -50,7 +50,7 @@ cffi==1.15.1
     # via
     #   -r requirements.txt
     #   cryptography
-channels[daphne]==4.0.0
+channels==4.0.0
     # via
     #   -r requirements.txt
     #   channels-redis
@@ -102,15 +102,12 @@ cryptography==44.0.2
     #   pyopenssl
     #   service-identity
 daphne==4.0.0
-    # via
-    #   -r requirements.txt
-    #   channels
+    # via -r requirements.txt
 dj-database-url==2.1.0
     # via -r requirements.txt
 django==4.2.22
     # via
     #   -r requirements.txt
-    #   celery
     #   channels
     #   dj-database-url
     #   django-celery-beat
@@ -129,8 +126,6 @@ django-timezone-field==5.1
     # via
     #   -r requirements.txt
     #   django-celery-beat
-django-transfer==0.4
-    # via -r requirements.txt
 djangorestframework==3.15.2
     # via
     #   -r requirements.txt
@@ -283,11 +278,16 @@ service-identity==24.2.0
     # via
     #   -r requirements.txt
     #   twisted
+setuptools==80.9.0
+    # via
+    #   -r requirements.txt
+    #   autobahn
+    #   incremental
+    #   zope-interface
 six==1.16.0
     # via
     #   -r requirements.txt
     #   automat
-    #   django-transfer
     #   flatten-dict
     #   python-dateutil
     #   url-normalize
@@ -297,7 +297,7 @@ sqlparse==0.5.0
     # via
     #   -r requirements.txt
     #   django
-twisted[tls]==24.7.0rc1
+twisted==24.7.0rc1
     # via
     #   -r requirements.txt
     #   daphne
