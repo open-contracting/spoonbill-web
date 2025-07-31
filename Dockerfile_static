@@ -15,6 +15,7 @@ ENV DJANGO_ENV=production
 
 WORKDIR /workdir/frontend
 RUN npx gettext-compile --output src/translations/translations.json locale/*/lang.po || true
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npx vue-cli-service build
 WORKDIR /workdir
 RUN python manage.py collectstatic --noinput -v2
