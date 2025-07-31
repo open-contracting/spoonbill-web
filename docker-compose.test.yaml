@@ -5,6 +5,7 @@ x-shared: &shared
 x-django: &django
   <<: *shared
   image: app
+  pull_policy: never
   extra_hosts:
     - "host.docker.internal:host-gateway"
   volumes:
@@ -48,7 +49,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile_django
-    pull_policy: never
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.app.entrypoints=http'
