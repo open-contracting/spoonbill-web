@@ -2,7 +2,7 @@
 FROM nikolaik/python-nodejs:python3.11-nodejs24 AS build-stage
 
 COPY requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --root-user-action=ignore --no-cache-dir -r /tmp/requirements.txt
 
 WORKDIR /workdir
 
