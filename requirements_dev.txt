@@ -91,7 +91,7 @@ constantly==15.1.0
     #   twisted
 coverage==6.5.0
     # via -r requirements_dev.in
-cron-descriptor==1.4.0
+cron-descriptor==1.4.5
     # via
     #   -r requirements.txt
     #   django-celery-beat
@@ -162,7 +162,7 @@ incremental==24.7.2
     #   twisted
 iniconfig==1.1.1
     # via pytest
-json-merge-patch==0.2
+json-merge-patch==0.3.0
     # via
     #   -r requirements.txt
     #   ocdsextensionregistry
@@ -206,7 +206,7 @@ prompt-toolkit==3.0.39
     # via
     #   -r requirements.txt
     #   click-repl
-psycopg2==2.9.7
+psycopg2==2.9.10
     # via -r requirements.txt
 pyasn1==0.5.0
     # via
