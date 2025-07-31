@@ -79,8 +79,25 @@ jobs:
           echo "CELERY_BACKEND=db+postgresql://postgres:postgres@host.docker.internal:${{ job.services.postgres.ports[5432] }}/postgres" >> .env
           echo "REDIS_URL=redis://redis:6379/0" >> .env
           echo "CORS_ALLOWED_ORIGINS=http://127.0.0.1:8000,http://127.0.0.1" >> .env
-      - run: docker compose -f docker-compose.test.yaml pull --ignore-pull-failures
-      - run: docker compose -f docker-compose.test.yaml build --progress=plain
+      # https://github.com/docker/setup-buildx-action#usage
+      - uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
+      # https://github.com/docker/build-push-action#usage
+      - uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
+        with:
+          load: true
+          context: .
+          file: Dockerfile_django
+          tags: app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
+        with:
+          load: true
+          context: .
+          file: Dockerfile_static
+          tags: static:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - run: docker compose -f docker-compose.test.yaml up -d
       - run: docker compose -f docker-compose.test.yaml run --rm app python manage.py migrate
       - run: docker ps
