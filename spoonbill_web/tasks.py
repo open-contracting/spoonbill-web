@@ -439,29 +439,25 @@ def download_data_source(object_id, model=None, lang_code="en"):
                 f"datasource_{object_id}",
                 {"type": "task.download_data_source", "error": _("Datasource %s not found") % object_id},
             )
-        except (OSError, Exception) as e:
-            message_id = {"OSError": "download_no_left_space", "Exception": "download_exception"}
-            message = {
-                "OSError": "Something went wrong during processing of your file, please contact support",
-                "Exception": "Something went wrong. Contact with support service.",
-            }
-            log_level = {"OSError": logger.info, "Exception": logger.exception}
-            log_level[type(e).__name__](
+        except (OSError, Exception) as e:  # noqa: BLE001
+            oserror = isinstance(e, OSError)
+            (logger.info if oserror else logger.exception)(
                 "Error while download datasource %s",
                 object_id,
                 extra={
-                    "MESSAGE_ID": message_id[type(e).__name__],
+                    "MESSAGE_ID": "download_no_left_space" if oserror else "download_exception",
                     "DATASOURCE_ID": object_id,
                     "MODEL": model,
                     "ERROR": str(e),
                     "STR_EXCEPTION": type(e).__name__,
                 },
             )
-            datasource.error = (
-                _("Currently, the space limit was reached. Please try again later.")
-                if "[Errno 28]" in str(e)
-                else _(message[type(e).__name__])
-            )
+            if "[Errno 28]" in str(e):
+                datasource.error = _("Currently, the space limit was reached. Please try again later.")
+            elif oserror:
+                datasource.error = _("Something went wrong during processing of your file, please contact support")
+            else:
+                datasource.error = _("Something went wrong. Contact with support service.")
             datasource.status = "failed"
             datasource.save(update_fields=["status", "error"])
             async_to_sync(channel_layer.group_send)(
