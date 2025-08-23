@@ -58,7 +58,7 @@ For Django, see the [Software Development Handbook](https://ocp-software-handboo
 
 ### Vue
 
-Change into the `frontend/` directory:
+Change to the `frontend/` directory:
 
 ```shell
 cd frontend
