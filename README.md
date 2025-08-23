@@ -54,31 +54,7 @@ celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseSc
 
 ## Internationalization
 
-### Django
-
-Extract messages:
-
-```shell
-./manage.py makemessages -a
-```
-
-Push to Transifex:
-
-```shell
-tx push -s -t
-```
-
-Pull from Transifex:
-
-```shell
-tx pull -a
-```
-
-Compile messages:
-
-```shell
-django-admin compilemessages
-```
+For Django, see the [Software Development Handbook](https://ocp-software-handbook.readthedocs.io/en/latest/python/i18n.html).
 
 ### Vue
 
