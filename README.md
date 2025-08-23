@@ -67,13 +67,17 @@ cd frontend
 Extract messages:
 
 ```shell
-npx gettext-extract --removeHTMLWhitespaces --output web-app-ui.pot src/main.js $(find src -type f -name '*.vue')
+npx gettext-extract --removeHTMLWhitespaces --output messages.pot src/main.js $(find src -type f -name '*.vue')
 ```
 
-Push and pull messages from Transifex as above.
+Push and pull messages from a translation tool, or use `pybabel` and then edit PO files to translate strings:
+
+```shell
+uv run pybabel update -N -i messages.pot -d locale
+```
 
 Compile messages:
 
 ```shell
-npx gettext-compile --output src/translations/translations.json <filenames>
+npx gettext-compile --output src/translations/translations.json locale/*/LC_MESSAGES/messages.po
 ```

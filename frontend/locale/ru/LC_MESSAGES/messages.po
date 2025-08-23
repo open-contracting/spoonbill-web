@@ -1,31 +1,37 @@
-# 
+#
 # Translators:
 # Viktor Nestulia <vnestulia@open-contracting.org>, 2021
 # James McKinney, 2021
 # Volodymyr <vtarnay@open-contracting.org>, 2021
 # Zoriana Zaiats, 2021
-# 
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-08-22 22:27-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Zoriana Zaiats, 2021\n"
-"Language-Team: Russian (https://www.transifex.com/open-contracting-partnership-1/teams/117704/ru/)\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: easygettext\n"
 "Language: ru\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+"Language-Team: Russian (https://www.transifex.com/open-contracting-"
+"partnership-1/teams/117704/ru/)\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) "
+"|| (n%100>=11 && n%100<=14)? 2 : 3);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:356
 msgid ""
-" then please restore one of the other tables or re-select available tables."
+" then please restore one of the other tables or re-select available "
+"tables."
 msgstr ""
-"после этого восстановить одну из других таблиц или повторно выберите таблицы"
-" доступные таблицы"
+"после этого восстановить одну из других таблиц или повторно выберите "
+"таблицы доступные таблицы"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:318
-msgid ""
-" without Sub-array tables.  Additionally, the following Sub-array tables:"
+msgid " without Sub-array tables.  Additionally, the following Sub-array tables:"
 msgstr ""
 
 #: src/views/Download.vue:3
@@ -33,6 +39,7 @@ msgid "{{ heading }}"
 msgstr "{{ heading }}"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:209
+#, python-brace-format
 msgid "%{ total } columns"
 msgid_plural "%{ total } columns"
 msgstr[0] "%{ total } колонка"
@@ -54,10 +61,10 @@ msgstr "Дополнительные ресурсы"
 
 #: src/views/SelectData.vue:26
 msgid ""
-"An array is a sort of list that is nested inside a field. When converting "
-"from JSON to CSV it is usually helpful to split out arrays into separate "
-"tables to make the data easier to work with. Some tables in OCDS have more "
-"than one array."
+"An array is a sort of list that is nested inside a field. When converting"
+" from JSON to CSV it is usually helpful to split out arrays into separate"
+" tables to make the data easier to work with. Some tables in OCDS have "
+"more than one array."
 msgstr ""
 "Массив - это своего рода список, вложенный в поле. При преобразовании из "
 "JSON в CSV обычно полезно разбивать массивы на отдельные таблицы, чтобы "
@@ -81,8 +88,8 @@ msgid ""
 "Any columns in the dataset that are not OCDS fields will not have any "
 "friendly headings applied to them."
 msgstr ""
-"К любым колонкам из набора данных, которые не являются полями OCDS, не будут"
-" применены  удобные оглавлений"
+"К любым колонкам из набора данных, которые не являются полями OCDS, не "
+"будут применены  удобные оглавлений"
 
 #: src/components/EditHeadings/EditHeadingOptions.vue:23
 msgid "Apply change"
@@ -135,12 +142,12 @@ msgstr "Отменить"
 #: src/views/SelectData.vue:5
 msgid ""
 "Choose the available tables that you want to flatten and add them to "
-"selected tables to continue. Tables that are unavailable were not found in "
-"the data."
+"selected tables to continue. Tables that are unavailable were not found "
+"in the data."
 msgstr ""
 "Выберите доступные таблицы, которые вы хотите сгладить, и добавьте их в "
-"выбранные таблицы, чтобы продолжить. Таблицы, которые недоступны, не были "
-"найдены в данных."
+"выбранные таблицы, чтобы продолжить. Таблицы, которые недоступны, не были"
+" найдены в данных."
 
 #: src/views/UploadFile/index.vue:5
 msgid "Command-Line tool"
@@ -184,21 +191,21 @@ msgstr "Данные из:"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:117
 msgid ""
-"Data regarding tender process - publicly inviting prospective contractors to"
-" submit bids for evaluation and selecting a winner or winners."
+"Data regarding tender process - publicly inviting prospective contractors"
+" to submit bids for evaluation and selecting a winner or winners."
 msgstr ""
 "Данные о тендерном процессе - публичное приглашение потенциальных "
 "подрядчиков подавать заявки на оценку и выбор победителя или победителей."
 
-#: src/views/UploadFile/index.vue:59 src/views/UploadFile/index.vue:25
+#: src/views/UploadFile/index.vue:25 src/views/UploadFile/index.vue:59
 msgid "Data Review Tool"
 msgstr "Инструмент Обзора Данных"
 
 #: src/views/UploadFile/index.vue:8
 msgid ""
-"Data you selected needs to be converted into an Excel/CSV file. The Flatten "
-"tool converts JSON OCDS data to Excel (.xlsx) and helps users to understand "
-"what data is contained in the file."
+"Data you selected needs to be converted into an Excel/CSV file. The "
+"Flatten tool converts JSON OCDS data to Excel (.xlsx) and helps users to "
+"understand what data is contained in the file."
 msgstr ""
 "Выбранные данные необходимо преобразовать в файл Excel / CSV. Инструмент "
 "Flatten преобразует данные JSON OCDS в Excel (.xlsx) и помогает "
@@ -206,9 +213,9 @@ msgstr ""
 
 #: src/views/UploadFile/UploadFileRegistry.vue:5
 msgid ""
-"Data you selected needs to be converted into an Excel/CSV file. The Flatten "
-"tool converts JSON OCDS data to Excel Excel (.xlsx) and helps users to "
-"understand what data is contained in the file."
+"Data you selected needs to be converted into an Excel/CSV file. The "
+"Flatten tool converts JSON OCDS data to Excel Excel (.xlsx) and helps "
+"users to understand what data is contained in the file."
 msgstr ""
 "Выбранные данные необходимо преобразовать в файл Excel / CSV. Инструмент "
 "Flatten преобразует данные JSON OCDS в Excel (.xlsx) и помогает "
@@ -242,7 +249,7 @@ msgstr "Скачать XLSX"
 msgid "Drag and drop or click here"
 msgstr "Перетащите или кликните здесь"
 
-#: src/components/App/AppTable.vue:14 src/components/App/AppTable.vue:3
+#: src/components/App/AppTable.vue:3 src/components/App/AppTable.vue:14
 msgid "Edit"
 msgstr "Править"
 
@@ -260,11 +267,11 @@ msgstr "Удобные заголовки ко всем таблицам на а
 
 #: src/components/UploadFile/UploadFileOptions.vue:16
 msgid ""
-"Explore the dataset to see what fields are available. Download tables to fit"
-" your requirements."
+"Explore the dataset to see what fields are available. Download tables to "
+"fit your requirements."
 msgstr ""
-"Изучите набор данных, чтобы узнать, какие поля доступны. Скачайте таблицы в "
-"соответствии с вашими требованиями."
+"Изучите набор данных, чтобы узнать, какие поля доступны. Скачайте таблицы"
+" в соответствии с вашими требованиями."
 
 #: src/components/EditHeadings/EditHeadingOptions.vue:31
 #: src/views/SelectData.vue:54 src/views/UploadFile/UploadFileRegistry.vue:36
@@ -298,17 +305,17 @@ msgstr "Как преобразовать данные CSV или Excel в JSON?
 
 #: src/views/SelectData.vue:34
 msgid ""
-"If a table is unavailable it means that the organisation publishing the data"
-" has no information for those tables."
+"If a table is unavailable it means that the organisation publishing the "
+"data has no information for those tables."
 msgstr ""
-"Если таблица недоступна, это означает, что организация, публикующая данные, "
-"не имеет информации для этих таблиц."
+"Если таблица недоступна, это означает, что организация, публикующая "
+"данные, не имеет информации для этих таблиц."
 
 #: src/views/UploadFile/index.vue:13
 msgid ""
-"If the file size you have uploaded is very large and has multiple tables, it"
-" is recommended that you only select and flatten data that you actually want"
-" to use."
+"If the file size you have uploaded is very large and has multiple tables,"
+" it is recommended that you only select and flatten data that you "
+"actually want to use."
 msgstr ""
 "Если размер загруженного файла очень велик и содержит несколько таблиц, "
 "рекомендуется выбирать и сглаживать только те данные, которые вы "
@@ -316,8 +323,8 @@ msgstr ""
 
 #: src/views/Download.vue:59
 msgid ""
-"If you are experienced with R, our manual for how to use R to analyse OCDS "
-"data can be found"
+"If you are experienced with R, our manual for how to use R to analyse "
+"OCDS data can be found"
 msgstr ""
 "Если у вас есть опыт работы с R, вы можете найти наше руководство по "
 "использованию R для анализа данных OCDS "
@@ -326,10 +333,9 @@ msgstr ""
 msgid "If you are uncertain whether your data complies with OCDS, use the"
 msgstr "Если вы не уверены, соответствуют ли ваши данные OCDS, используйте "
 
-#: src/views/UploadFile/index.vue:32 src/views/UploadFile/index.vue:4
+#: src/views/UploadFile/index.vue:4 src/views/UploadFile/index.vue:32
 msgid "If you would like to convert CSV data to JSON, please use the older"
-msgstr ""
-"Если вы хотите преобразовать данные CSV в JSON, используйте старую версию "
+msgstr "Если вы хотите преобразовать данные CSV в JSON, используйте старую версию "
 
 #: src/components/CustomizeTables/CustomizeDialog.vue:74
 msgid "into Main table: "
@@ -355,8 +361,8 @@ msgstr "Оставить все таблицы разделенными и пр�
 msgid "Keep arrays in main table"
 msgstr "Хранить массивы в одной таблице"
 
-#: src/components/CustomizeTables/CustomizeTablesTable.vue:8
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:1
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:8
 msgid "Missing data"
 msgstr "Недостающие данные"
 
@@ -372,8 +378,8 @@ msgstr "нет данных"
 msgid "Not all arrays can be merged"
 msgstr "Не все массивы можно объединить"
 
-#: src/components/UploadFile/UploadFileInput.vue:23
 #: src/components/UploadFile/UploadFileInput.vue:21
+#: src/components/UploadFile/UploadFileInput.vue:23
 msgid "Note that large files may take a while to process. Please be patient."
 msgstr ""
 "Обратите внимание, что обработка больших файлов может занять некоторое "
@@ -397,13 +403,13 @@ msgstr " или использовать "
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:100
 msgid ""
-"Organization references elsewhere in the data refer back to the entries in "
-"this list."
+"Organization references elsewhere in the data refer back to the entries "
+"in this list."
 msgstr ""
 "Ссылки на организации в других местах данных относятся к записям в этом "
 "списке."
 
-#: src/views/UploadFile/index.vue:39
+#: src/views/UploadFile/index.vue:13 src/views/UploadFile/index.vue:39
 msgid ""
 "Please note that the Command-Line Tool requires some knowledge of "
 "programming and is not suited to non-technical users."
@@ -411,15 +417,6 @@ msgstr ""
 "Обратите внимание, что инструмент командной строки требует определенных "
 "знаний в области программирования и не подходит для технически "
 "неподготовленных пользователей."
-
-#: src/views/UploadFile/index.vue:13
-msgid ""
-"Please note that the Command-Line Tool requires some knowledge of "
-"programming and is not-suited to non-technical users."
-msgstr ""
-"Обратите внимание, что инструмент командной строки требует определенных "
-"знаний в области программирования и не подходит для нетехнических "
-"пользователей."
 
 #: src/views/UploadFile/index.vue:53
 msgid "possible to flatten."
@@ -433,14 +430,15 @@ msgstr "Предварительно просмотреть таблицы"
 #: src/components/EditHeadings/EditHeadingOptions.vue:12
 msgid ""
 "R is a coding language that is used for data visualization, statistical "
-"analysis and data science. Users that work with R prefer to have the column "
-"headings to be provided in a certain way so that the manual work to make the"
-" data ready for analysis is reduced."
+"analysis and data science. Users that work with R prefer to have the "
+"column headings to be provided in a certain way so that the manual work "
+"to make the data ready for analysis is reduced."
 msgstr ""
-"R - это язык программирования, который используется для визуализации данных,"
-" статистического анализа и анализа данных. Пользователи, которые работают с "
-"R, предпочитают, чтобы заголовки столбцов были предоставлены определенным "
-"образом, чтобы уменьшить ручную работу по подготовке данных для анализа."
+"R - это язык программирования, который используется для визуализации "
+"данных, статистического анализа и анализа данных. Пользователи, которые "
+"работают с R, предпочитают, чтобы заголовки столбцов были предоставлены "
+"определенным образом, чтобы уменьшить ручную работу по подготовке данных "
+"для анализа."
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:357
 msgid "Re-select available tables"
@@ -475,8 +473,8 @@ msgid ""
 "Removing this table will mean it will not be included in flattened Excel "
 "file"
 msgstr ""
-"Удаление этой таблицы означает, что она не будет включена в сведенный файл "
-"Excel."
+"Удаление этой таблицы означает, что она не будет включена в сведенный "
+"файл Excel."
 
 #: src/components/App/AppTable.vue:39
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:60
@@ -487,8 +485,8 @@ msgstr "Восстановить таблицу"
 msgid "Save and Continue"
 msgstr "Сохранить и Продолжить"
 
-#: src/components/CustomizeTables/CustomizeTablesTable.vue:9
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:2
+#: src/components/CustomizeTables/CustomizeTablesTable.vue:9
 msgid "See column headings with missing data"
 msgstr "Просмотреть колонки с недостающими данными"
 
@@ -559,37 +557,38 @@ msgstr "Таблица"
 #: src/views/UploadFile/UploadFileRegistry.vue:10
 #: src/views/UploadFile/index.vue:17
 msgid ""
-"The file size is very large and has multiple tables. It is recommended that "
-"you only flatten data that you actually want to use."
+"The file size is very large and has multiple tables. It is recommended "
+"that you only flatten data that you actually want to use."
 msgstr ""
 "Размер файла очень большой и содержит несколько таблиц. Рекомендуется "
-"сглаживать только те данные, которые вы действительно хотите использовать."
+"сглаживать только те данные, которые вы действительно хотите "
+"использовать."
 
 #: src/views/UploadFile/index.vue:4
 msgid ""
-"The Flatten Tool converts JSON OCDS data to Excel (.xlsx) and helps you to "
-"understand what data is contained in the file."
+"The Flatten Tool converts JSON OCDS data to Excel (.xlsx) and helps you "
+"to understand what data is contained in the file."
 msgstr ""
-"Инструмент Flatten конвертирует данные JSON OCDS в Excel (.xlsx) и помогает "
-"понять, какие данные содержатся в файле."
+"Инструмент Flatten конвертирует данные JSON OCDS в Excel (.xlsx) и "
+"помогает понять, какие данные содержатся в файле."
 
 #: src/views/UploadFile/index.vue:18
 msgid ""
-"The JSON data you upload should be in OCDS 1.1 or 1.0, otherwise it may not "
-"be possible to flatten. If you are uncertain whether your data complies with"
-" OCDS, use the"
+"The JSON data you upload should be in OCDS 1.1 or 1.0, otherwise it may "
+"not be possible to flatten. If you are uncertain whether your data "
+"complies with OCDS, use the"
 msgstr ""
-"Загружаемые данные JSON должны быть в формате OCDS 1.1 или 1.0, в противном "
-"случае сгладить их будет невозможно. Если вы не уверены, соответствуют ли "
-"ваши данные OCDS, используйте"
+"Загружаемые данные JSON должны быть в формате OCDS 1.1 или 1.0, в "
+"противном случае сгладить их будет невозможно. Если вы не уверены, "
+"соответствуют ли ваши данные OCDS, используйте"
 
 #: src/views/UploadFile/index.vue:50
 msgid ""
-"The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise it "
-"may not be"
+"The JSON data you upload should be in OCDS version 1.1 or 1.0, otherwise "
+"it may not be"
 msgstr ""
-"Загружаемые данные JSON должны быть в формате OCDS 1.1 или 1.0, в противном "
-"случае"
+"Загружаемые данные JSON должны быть в формате OCDS 1.1 или 1.0, в "
+"противном случае"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:144
 msgid ""
@@ -598,8 +597,8 @@ msgid ""
 "part of an amendment."
 msgstr ""
 "Термин «поправка» часто имеет особое юридическое значение для издателя. "
-"Определенные изменения в тендере, присуждении контракта или контракте могут "
-"быть разрешены только как часть поправки."
+"Определенные изменения в тендере, присуждении контракта или контракте "
+"могут быть разрешены только как часть поправки."
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:34
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:257
@@ -628,16 +627,17 @@ msgstr "В этой таблице два массива"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:88
 msgid ""
-"There can be more than one award per contracting process e.g. because the "
-"contract is split among different providers, or because it is a standing "
-"offer."
+"There can be more than one award per contracting process e.g. because the"
+" contract is split among different providers, or because it is a standing"
+" offer."
 msgstr ""
-"Для каждого процесса заключения контракта может быть несколько присуждений, "
-"например потому что контракт разделен между разными поставщиками, или потому"
-" что это постоянное предложение."
+"Для каждого процесса заключения контракта может быть несколько "
+"присуждений, например потому что контракт разделен между разными "
+"поставщиками, или потому что это постоянное предложение."
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:163
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:185
+#, python-brace-format
 msgid "There is %{ n } array in this table"
 msgid_plural "There are %{ n } arrays in this table"
 msgstr[0] "В этой таблице %{n} массив"
@@ -646,6 +646,7 @@ msgstr[2] "В этой таблице %{n} массивов"
 msgstr[3] "В этой таблице %{n} массивов"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:225
+#, python-brace-format
 msgid "There is %{ n } column with additional data not part of OCDS"
 msgid_plural "There are %{ n } columns with additional data not part of OCDS"
 msgstr[0] "Есть %{n} столбец с дополнительными данными, не входящими в OCDS"
@@ -654,6 +655,7 @@ msgstr[2] "Есть %{n} столбцов с дополнительными да
 msgstr[3] "Есть %{n} столбцов с дополнительными данными, не входящими в OCDS"
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:207
+#, python-brace-format
 msgid "There is data for %{ n } of the"
 msgid_plural "There is data for %{ n } of the"
 msgstr[0] "Есть данные по %{n}"
@@ -689,8 +691,8 @@ msgid ""
 "This includes information related to the process of deciding what to "
 "contract, when, and how."
 msgstr ""
-"Сюда входит информация, относящаяся к процессу принятия решения о том что "
-"контрактировать, когда и как"
+"Сюда входит информация, относящаяся к процессу принятия решения о том что"
+" контрактировать, когда и как"
 
 #: src/components/UploadFile/UploadFileInput.vue:111
 msgid "This link is not valid. Please check and try again"
@@ -702,8 +704,9 @@ msgid ""
 "stages of the procurement process (planning, tender, award, contract, "
 "implementation)."
 msgstr ""
-"Эта таблица содержит список этапов, связанных с различными этапами процесса "
-"закупок (планирование, тендер, присуждение контракта, контракт, реализация)."
+"Эта таблица содержит список этапов, связанных с различными этапами "
+"процесса закупок (планирование, тендер, присуждение контракта, контракт, "
+"реализация)."
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:87
 msgid ""
@@ -714,17 +717,17 @@ msgstr "Эта таблица содержит информацию о стад�
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:124
 msgid ""
 "This table contains information from the contract creation phase of the "
-"procurement process and the signed contract between the buyer or procuring "
-"entity and supplier(s)."
+"procurement process and the signed contract between the buyer or "
+"procuring entity and supplier(s)."
 msgstr ""
-"Эта таблица содержит информацию, полученную на этапе создания контракта в "
-"процессе закупок и подписанного контракта между покупателем или закупающей "
-"организацией и поставщиком (ами)."
+"Эта таблица содержит информацию, полученную на этапе создания контракта в"
+" процессе закупок и подписанного контракта между покупателем или "
+"закупающей организацией и поставщиком (ами)."
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:106
 msgid ""
-"This table contains information from the planning phase of the contracting "
-"process."
+"This table contains information from the planning phase of the "
+"contracting process."
 msgstr ""
 "В этой таблице содержится информация, полученная на этапе планирования "
 "процесса заключения контракта."
@@ -739,23 +742,23 @@ msgstr ""
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:139
 msgid ""
-"This table contains information on the changes to the different stages of "
-"the procurement process (tender, award, contract). For example, when the "
-"value or duration of a contract is changed. "
+"This table contains information on the changes to the different stages of"
+" the procurement process (tender, award, contract). For example, when the"
+" value or duration of a contract is changed. "
 msgstr ""
-"Эта таблица содержит информацию об изменениях на различных этапах процесса "
-"закупок (тендер, присуждение контракта, контракт). Например, при изменении "
-"стоимости или продолжительности контракта."
+"Эта таблица содержит информацию об изменениях на различных этапах "
+"процесса закупок (тендер, присуждение контракта, контракт). Например, при"
+" изменении стоимости или продолжительности контракта."
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:152
 msgid ""
-"This table contains information on the documents available for the different"
-" stages of the procurement process (planning, tender, award, contract, "
-"implementation)."
+"This table contains information on the documents available for the "
+"different stages of the procurement process (planning, tender, award, "
+"contract, implementation)."
 msgstr ""
-"Эта таблица содержит информацию о документах, доступных для различных этапов"
-" процесса закупок (планирование, тендер, присуждение контракта, контракт, "
-"реализация)."
+"Эта таблица содержит информацию о документах, доступных для различных "
+"этапов процесса закупок (планирование, тендер, присуждение контракта, "
+"контракт, реализация)."
 
 #: src/components/CustomizeTables/CustomizeTablesTable.vue:95
 msgid ""
@@ -779,12 +782,12 @@ msgstr "проверить в первую очередь."
 #: src/components/EditHeadings/EditHeadingOptions.vue:5
 msgid ""
 "To make the data easier to work with you can apply user friendly or R "
-"friendly headings in English or Spanish to OCDS fields. The original OCDS "
-"headings are kept and can be removed in Excel."
+"friendly headings in English or Spanish to OCDS fields. The original OCDS"
+" headings are kept and can be removed in Excel."
 msgstr ""
-"Чтобы упростить работу с данными, вы можете применить к полям OCDS понятные "
-"или дружественные R заголовки на английском или испанском языках. Исходные "
-"заголовки OCDS сохраняются и могут быть удалены в Excel."
+"Чтобы упростить работу с данными, вы можете применить к полям OCDS "
+"понятные или дружественные R заголовки на английском или испанском "
+"языках. Исходные заголовки OCDS сохраняются и могут быть удалены в Excel."
 
 #: src/components/SelectData/SelectDataTableInfo.vue:26
 msgid "total row count"
@@ -863,12 +866,14 @@ msgstr ""
 
 #: src/views/Download.vue:45
 msgid ""
-"You can find a full list of definitions of the different OCDS fields in the"
+"You can find a full list of definitions of the different OCDS fields in "
+"the"
 msgstr "Вы можете найти полный список определений различных полей OCDS в "
 
 #: src/views/Download.vue:54
 msgid ""
-"You can learn more about how to analyse your Excel data using the following"
+"You can learn more about how to analyse your Excel data using the "
+"following"
 msgstr ""
 "Вы можете узнать больше о том, как анализировать данные Excel, используя "
 "следующие "
@@ -880,3 +885,15 @@ msgstr "Вы не можете удалить все таблицы. Если в
 #: src/components/UploadFile/UploadFileInput.vue:154
 msgid "Your file has been checked and is ready to use."
 msgstr "Ваш файл проверен и готов к использованию."
+
+#~ msgid ""
+#~ "Please note that the Command-Line "
+#~ "Tool requires some knowledge of "
+#~ "programming and is not-suited to "
+#~ "non-technical users."
+#~ msgstr ""
+#~ "Обратите внимание, что инструмент командной"
+#~ " строки требует определенных знаний в "
+#~ "области программирования и не подходит "
+#~ "для нетехнических пользователей."
+

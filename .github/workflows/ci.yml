@@ -117,7 +117,7 @@ jobs:
         run: |
           cp core/locale/es/LC_MESSAGES/django.po test/resources/core_es.po
           cp spoonbill_web/locale/es/LC_MESSAGES/django.po test/resources/backend_es.po
-          cp frontend/locale/es/lang.po test/resources/front_es.po
+          cp frontend/locale/es/LC_MESSAGES/messages.po test/resources/front_es.po
       - env:
           # See https://github.com/open-contracting/spoonbill-test
           SITE_URL: http://127.0.0.1

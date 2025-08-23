@@ -81,7 +81,7 @@
                         >.
                         <br />
                         <translate>
-                            Please note that the Command-Line Tool requires some knowledge of programming and is not-suited
+                            Please note that the Command-Line Tool requires some knowledge of programming and is not suited
                             to non-technical users.
                         </translate>
                     </p>
