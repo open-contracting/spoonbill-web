@@ -122,7 +122,7 @@ jobs:
         working-directory: test
         continue-on-error: true
         run: python -m robot tests
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           path: |
