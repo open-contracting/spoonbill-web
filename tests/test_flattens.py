@@ -121,7 +121,7 @@ class TestFlattenViews:
         assert response.json()["status"] == Flatten.SCHEDULED
 
     def test_clear_flattens_after_update_dataselection(self):
-        selection_id, _flatten_id = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
+        selection_id, _ = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
         response = self.client.get(self.flattens_url)
         assert response.status_code == 200
         assert len(response.json()) == 1
@@ -135,7 +135,7 @@ class TestFlattenViews:
         assert len(response.json()) == 0
 
     def test_clear_flattens_after_update_table(self):
-        selection_id, _flatten_id = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
+        selection_id, _ = create_flatten(self.client, self.datasource, "/api/uploads/", self.selection_id)
         response = self.client.get(self.flattens_url)
         assert response.status_code == 200
         assert len(response.json()) == 1
