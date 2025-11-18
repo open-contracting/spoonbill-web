@@ -35,12 +35,10 @@ services:
     volumes:
       - postgresql-data:/var/lib/postgresql/data
   redis:
-    image: bitnami/redis:6.2
+    image: redis:8
     restart: always
-    environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
     healthcheck:
-      test: redis-cli -h 127.0.0.1 ping | grep -q PONG
+      test: redis-cli ping | grep -q PONG
       interval: 10s
       timeout: 5s
       retries: 5
