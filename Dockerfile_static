@@ -26,6 +26,6 @@ COPY --from=build-stage --chown=nginx:root /workdir/static /usr/share/nginx/html
 COPY --chown=nginx:root frontend/default.conf /etc/nginx/conf.d/default.conf
 
 # Must match the settings.MEDIA_ROOT default value.
-RUN mkdir -p /data/media && chown -R nginx:root /data/media
+RUN mkdir -p /data/media
 
 USER nginx
