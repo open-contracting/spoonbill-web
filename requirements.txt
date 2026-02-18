@@ -2,7 +2,7 @@
 #    uv pip compile requirements.in -o requirements.txt
 amqp==5.1.1
     # via kombu
-asgiref==3.7.2
+asgiref==3.11.1
     # via
     #   -r requirements.in
     #   channels
@@ -11,20 +11,21 @@ asgiref==3.7.2
     #   django
 attrs==23.1.0
     # via
-    #   automat
     #   cattrs
     #   requests-cache
     #   service-identity
     #   twisted
-autobahn==24.4.2
+autobahn==25.12.2
     # via daphne
-automat==22.10.0
+automat==25.4.16
     # via twisted
 billiard==4.1.0
     # via celery
 cattrs==23.1.2
     # via requests-cache
-celery[django]==5.3.1
+cbor2==5.8.0
+    # via autobahn
+celery==5.3.1
     # via
     #   -r requirements.in
     #   django-celery-beat
@@ -33,13 +34,15 @@ certifi==2024.7.4
     # via
     #   requests
     #   sentry-sdk
-cffi==1.15.1
-    # via cryptography
-channels[daphne]==4.0.0
+cffi==2.0.0
+    # via
+    #   autobahn
+    #   cryptography
+channels==4.3.2
     # via
     #   -r requirements.in
     #   channels-redis
-channels-redis==4.1.0
+channels-redis==4.3.0
     # via -r requirements.in
 charset-normalizer==3.2.0
     # via requests
@@ -63,12 +66,12 @@ constantly==15.1.0
     # via twisted
 cron-descriptor==1.4.5
     # via django-celery-beat
-cryptography==44.0.2
+cryptography==46.0.5
     # via
     #   autobahn
     #   pyopenssl
     #   service-identity
-daphne==4.0.0
+daphne==4.2.1
     # via
     #   -r requirements.in
     #   channels
@@ -132,7 +135,9 @@ jsonref==1.1.0
 kombu==5.3.1
     # via celery
 msgpack==1.0.5
-    # via channels-redis
+    # via
+    #   autobahn
+    #   channels-redis
 ocdsextensionregistry==0.5.0
     # via
     #   -r requirements.in
@@ -148,6 +153,8 @@ prompt-toolkit==3.0.39
     # via click-repl
 psycopg2==2.9.10
     # via -r requirements.in
+py-ubjson==0.16.1
+    # via autobahn
 pyasn1==0.5.0
     # via
     #   pyasn1-modules
@@ -156,7 +163,7 @@ pyasn1-modules==0.3.0
     # via service-identity
 pycparser==2.21
     # via cffi
-pyopenssl==24.3.0
+pyopenssl==25.3.0
     # via twisted
 python-crontab==3.0.0
     # via django-celery-beat
@@ -185,9 +192,12 @@ sentry-sdk==2.8.0
     # via -r requirements.in
 service-identity==24.2.0
     # via twisted
+setuptools==82.0.0
+    # via
+    #   incremental
+    #   zope-interface
 six==1.16.0
     # via
-    #   automat
     #   flatten-dict
     #   python-dateutil
     #   url-normalize
@@ -195,18 +205,21 @@ spoonbill==1.1.0
     # via -r requirements.in
 sqlparse==0.5.4
     # via django
-twisted[tls]==24.7.0rc1
+twisted==25.5.0
     # via daphne
-txaio==23.1.1
+txaio==25.12.2
     # via autobahn
-typing-extensions==4.7.1
+typing-extensions==4.15.0
     # via
     #   dj-database-url
+    #   pyopenssl
     #   twisted
 tzdata==2023.3
     # via
     #   celery
     #   django-celery-beat
+ujson==5.11.0
+    # via autobahn
 url-normalize==1.4.3
     # via requests-cache
 urllib3==2.6.3
