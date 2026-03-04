@@ -25,7 +25,7 @@ cattrs==23.1.2
     # via requests-cache
 cbor2==5.8.0
     # via autobahn
-celery==5.3.1
+celery[django]==5.3.1
     # via
     #   -r requirements.in
     #   django-celery-beat
@@ -38,7 +38,7 @@ cffi==2.0.0
     # via
     #   autobahn
     #   cryptography
-channels==4.3.2
+channels[daphne]==4.3.2
     # via
     #   -r requirements.in
     #   channels-redis
@@ -77,7 +77,7 @@ daphne==4.2.1
     #   channels
 dj-database-url==2.1.0
     # via -r requirements.in
-django==4.2.28
+django==4.2.29
     # via
     #   -r requirements.in
     #   celery
@@ -192,10 +192,6 @@ sentry-sdk==2.8.0
     # via -r requirements.in
 service-identity==24.2.0
     # via twisted
-setuptools==82.0.0
-    # via
-    #   incremental
-    #   zope-interface
 six==1.16.0
     # via
     #   flatten-dict
@@ -205,7 +201,7 @@ spoonbill==1.1.0
     # via -r requirements.in
 sqlparse==0.5.4
     # via django
-twisted==25.5.0
+twisted[tls]==25.5.0
     # via daphne
 txaio==25.12.2
     # via autobahn
