@@ -233,7 +233,7 @@ pycparser==2.21
     # via
     #   -r requirements.txt
     #   cffi
-pyopenssl==25.3.0
+pyopenssl==26.0.0
     # via
     #   -r requirements.txt
     #   twisted

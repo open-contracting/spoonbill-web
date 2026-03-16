@@ -163,7 +163,7 @@ pyasn1-modules==0.3.0
     # via service-identity
 pycparser==2.21
     # via cffi
-pyopenssl==25.3.0
+pyopenssl==26.0.0
     # via twisted
 python-crontab==3.0.0
     # via django-celery-beat
