@@ -23,7 +23,7 @@ billiard==4.1.0
     # via celery
 cattrs==23.1.2
     # via requests-cache
-cbor2==5.8.0
+cbor2==5.9.0
     # via autobahn
 celery[django]==5.3.1
     # via
