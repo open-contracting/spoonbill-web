@@ -25,7 +25,7 @@ cattrs==23.1.2
     # via requests-cache
 cbor2==5.9.0
     # via autobahn
-celery==5.3.1
+celery[django]==5.3.1
     # via
     #   -r requirements.in
     #   django-celery-beat
@@ -38,7 +38,7 @@ cffi==2.0.0
     # via
     #   autobahn
     #   cryptography
-channels==4.3.2
+channels[daphne]==4.3.2
     # via
     #   -r requirements.in
     #   channels-redis
@@ -119,6 +119,8 @@ ijson==3.2.3
     #   -r requirements.in
     #   ocdskit
     #   spoonbill
+importlib-resources==6.5.2
+    # via spoonbill
 incremental==24.7.2
     # via twisted
 json-merge-patch==0.3.0
@@ -175,7 +177,7 @@ redis==5.0.0
     # via
     #   -r requirements.in
     #   channels-redis
-requests==2.32.4
+requests==2.33.0
     # via
     #   -r requirements.in
     #   ocdsextensionregistry
@@ -190,10 +192,6 @@ sentry-sdk==2.8.0
     # via -r requirements.in
 service-identity==24.2.0
     # via twisted
-setuptools==82.0.1
-    # via
-    #   incremental
-    #   zope-interface
 six==1.16.0
     # via
     #   flatten-dict
@@ -203,13 +201,14 @@ spoonbill==1.1.0
     # via -r requirements.in
 sqlparse==0.5.4
     # via django
-twisted==25.5.0
+twisted[tls]==25.5.0
     # via daphne
 txaio==25.12.2
     # via autobahn
 typing-extensions==4.15.0
     # via
     #   dj-database-url
+    #   pyopenssl
     #   twisted
 tzdata==2023.3
     # via
