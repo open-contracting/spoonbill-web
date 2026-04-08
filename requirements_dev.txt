@@ -111,7 +111,7 @@ daphne==4.2.1
     #   channels
 dj-database-url==2.1.0
     # via -r requirements.txt
-django==4.2.29
+django==4.2.30
     # via
     #   -r requirements.txt
     #   celery
