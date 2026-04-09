@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "vue"
         update-types: ["version-update:semver-major"]

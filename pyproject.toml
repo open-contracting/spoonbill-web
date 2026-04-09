@@ -42,4 +42,5 @@ omit = ["*/migrations/*"]
 DJANGO_SETTINGS_MODULE = 'core.settings'
 
 [tool.uv.pip]
+exclude-newer = "1 week"
 python-platform = "linux"  # greenlet
