@@ -37,7 +37,7 @@ TABLES_ORDER = (
 )
 
 
-# https://docs.djangoproject.com/en/4.2/ref/models/fields/#django.db.models.FileField.upload_to
+# https://docs.djangoproject.com/en/5.2/ref/models/fields/#django.db.models.FileField.upload_to
 def instance_directory_path(instance, filename):  # noqa: ARG001
     # file will be uploaded to MEDIA_ROOT/<id>/<uuid>
     return f"{instance.id}/{uuid.uuid4().hex}.json"
