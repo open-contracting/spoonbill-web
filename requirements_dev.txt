@@ -39,7 +39,7 @@ cbor2==5.9.0
     # via
     #   -r requirements.txt
     #   autobahn
-celery[django]==5.3.1
+celery==5.3.1
     # via
     #   -r requirements.txt
     #   django-celery-beat
@@ -54,7 +54,7 @@ cffi==2.0.0
     #   -r requirements.txt
     #   autobahn
     #   cryptography
-channels[daphne]==4.3.2
+channels==4.3.2
     # via
     #   -r requirements.txt
     #   channels-redis
@@ -99,22 +99,19 @@ cron-descriptor==1.4.5
     # via
     #   -r requirements.txt
     #   django-celery-beat
-cryptography==46.0.7
+cryptography==46.0.6
     # via
     #   -r requirements.txt
     #   autobahn
     #   pyopenssl
     #   service-identity
 daphne==4.2.1
-    # via
-    #   -r requirements.txt
-    #   channels
+    # via -r requirements.txt
 dj-database-url==2.1.0
     # via -r requirements.txt
-django==4.2.30
+django==5.2.12
     # via
     #   -r requirements.txt
-    #   celery
     #   channels
     #   dj-database-url
     #   django-celery-beat
@@ -123,13 +120,13 @@ django==4.2.30
     #   django-timezone-field
     #   djangorestframework
     #   drf-nested-routers
-django-celery-beat==2.5.0
+django-celery-beat==2.9.0
     # via -r requirements.txt
 django-celery-results==2.5.1
     # via -r requirements.txt
 django-cors-headers==4.2.0
     # via -r requirements.txt
-django-timezone-field==5.1
+django-timezone-field==7.2.1
     # via
     #   -r requirements.txt
     #   django-celery-beat
@@ -158,10 +155,6 @@ ijson==3.2.3
     # via
     #   -r requirements.txt
     #   ocdskit
-    #   spoonbill
-importlib-resources==6.5.2
-    # via
-    #   -r requirements.txt
     #   spoonbill
 incremental==24.7.2
     # via
@@ -214,7 +207,7 @@ prompt-toolkit==3.0.39
     # via
     #   -r requirements.txt
     #   click-repl
-psycopg2==2.9.10
+psycopg==3.3.3
     # via -r requirements.txt
 py-ubjson==0.16.1
     # via
@@ -261,10 +254,6 @@ python-dateutil==2.8.2
     #   -r requirements.txt
     #   celery
     #   python-crontab
-pytz==2023.3
-    # via
-    #   -r requirements.txt
-    #   django-timezone-field
 redis==5.0.0
     # via
     #   -r requirements.txt
@@ -290,6 +279,11 @@ service-identity==24.2.0
     # via
     #   -r requirements.txt
     #   twisted
+setuptools==82.0.1
+    # via
+    #   -r requirements.txt
+    #   incremental
+    #   zope-interface
 six==1.16.0
     # via
     #   -r requirements.txt
@@ -302,7 +296,7 @@ sqlparse==0.5.4
     # via
     #   -r requirements.txt
     #   django
-twisted[tls]==25.5.0
+twisted==25.5.0
     # via
     #   -r requirements.txt
     #   daphne
@@ -314,7 +308,6 @@ typing-extensions==4.15.0
     # via
     #   -r requirements.txt
     #   dj-database-url
-    #   pyopenssl
     #   twisted
 tzdata==2023.3
     # via

@@ -4,7 +4,7 @@ channels[daphne]
 channels_redis
 daphne
 dj-database-url
-django<5
+django<5.3
 django-celery-beat
 django-celery-results
 django-cors-headers
@@ -13,7 +13,7 @@ drf-nested-routers
 ijson
 jsonref
 ocdsextensionregistry
-psycopg2
+psycopg
 redis
 requests
 sentry-sdk
