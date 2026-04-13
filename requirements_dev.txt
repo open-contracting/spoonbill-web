@@ -15,7 +15,6 @@ attrs==23.1.0
     # via
     #   -r requirements.txt
     #   cattrs
-    #   pytest
     #   requests-cache
     #   service-identity
     #   twisted
@@ -208,7 +207,7 @@ platformdirs==3.10.0
     # via
     #   -r requirements.txt
     #   requests-cache
-pluggy==1.0.0
+pluggy==1.6.0
     # via pytest
 prompt-toolkit==3.0.39
     # via
@@ -233,11 +232,13 @@ pycparser==2.21
     # via
     #   -r requirements.txt
     #   cffi
+pygments==2.20.0
+    # via pytest
 pyopenssl==26.0.0
     # via
     #   -r requirements.txt
     #   twisted
-pytest==7.2.0
+pytest==9.0.3
     # via
     #   -r requirements_dev.in
     #   pytest-asyncio
