@@ -1,4 +1,3 @@
-import json
 import os
 import shutil
 import uuid
@@ -13,13 +12,6 @@ from spoonbill.stats import DataPreprocessor
 from spoonbill_web.models import DataFile, Upload, Url, Validation
 from spoonbill_web.utils import retrieve_tables
 from tests import ANALYZED_DATA_PATH, DATA_DIR, Response, Task
-
-
-@pytest.fixture
-def schema():
-    path = DATA_DIR.parents[1] / "data" / "schema.json"
-    with open(path) as fd:
-        return json.loads(fd.read())
 
 
 @pytest.fixture

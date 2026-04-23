@@ -37,8 +37,6 @@ from spoonbill_web.utils import (
     zip_files,
 )
 
-DATA_DIR = os.path.dirname(__file__) + "/data"
-SCHEMA_PATH = f"{DATA_DIR}/schema.json"
 getters = {
     "Upload": {"model": Upload, "serializer": UploadSerializer},
     "Url": {"model": Url, "serializer": UrlSerializer},
