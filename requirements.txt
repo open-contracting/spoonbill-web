@@ -217,7 +217,7 @@ ujson==5.12.0
     # via autobahn
 url-normalize==1.4.3
     # via requests-cache
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   requests
     #   requests-cache
