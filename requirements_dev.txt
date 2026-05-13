@@ -319,7 +319,7 @@ tzdata==2023.3
     #   -r requirements.txt
     #   celery
     #   django-celery-beat
-ujson==5.12.0
+ujson==5.12.1
     # via
     #   -r requirements.txt
     #   autobahn

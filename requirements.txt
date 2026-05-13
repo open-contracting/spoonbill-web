@@ -213,7 +213,7 @@ tzdata==2023.3
     # via
     #   celery
     #   django-celery-beat
-ujson==5.12.0
+ujson==5.12.1
     # via autobahn
 url-normalize==1.4.3
     # via requests-cache
