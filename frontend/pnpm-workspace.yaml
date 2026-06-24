@@ -1,4 +1,5 @@
 minimumReleaseAge: 10080
+trustPolicy: no-downgrade
 allowBuilds:
   core-js: false # via @vue/babel-preset-app
   yorkie: false # via @vue/cli-plugin-eslint
