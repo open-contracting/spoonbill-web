@@ -11,7 +11,7 @@ pre-commit install
 
 ```shell
 cd frontend
-npm install
+pnpm install
 ```
 
 ## Run tests
@@ -22,8 +22,9 @@ coverage run --source=core,spoonbill_web -m pytest -W error --no-migrations
 
 ```shell
 cd frontend
-npx vue-cli-service lint
-npx vue-cli-service test:unit
+pnpm exec knip
+pnpm exec vue-cli-service lint
+pnpm exec vue-cli-service test:unit
 ```
 
 ## Run servers
@@ -35,7 +36,7 @@ npx vue-cli-service test:unit
 
 ```shell
 cd frontend
-npx vue-cli-service serve
+pnpm exec vue-cli-service serve
 ```
 
 ## Run workers
@@ -67,7 +68,7 @@ cd frontend
 Extract messages:
 
 ```shell
-npx gettext-extract --removeHTMLWhitespaces --output messages.pot src/main.js $(find src -type f -name '*.vue')
+pnpm exec gettext-extract --removeHTMLWhitespaces --output messages.pot src/main.js $(find src -type f -name '*.vue')
 ```
 
 Push and pull messages from a translation tool, or use `pybabel` and then edit PO files to translate strings:
@@ -79,5 +80,5 @@ uv run pybabel update -N -i messages.pot -d locale
 Compile messages:
 
 ```shell
-npx gettext-compile --output src/translations/translations.json locale/*/LC_MESSAGES/messages.po
+pnpm exec gettext-compile --output src/translations/translations.json locale/*/LC_MESSAGES/messages.po
 ```

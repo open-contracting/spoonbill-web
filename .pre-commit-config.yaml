@@ -1,6 +1,6 @@
 ci:
   autoupdate_schedule: quarterly
-  skip: [pip-compile]
+  skip: [pip-compile, vue-cli-service-lint]
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.9
@@ -17,3 +17,11 @@ repos:
         name: pip-compile requirements_dev.in
         args: [requirements_dev.in, -o, requirements_dev.txt]
         files: ^requirements(_dev)?\.(in|txt)$
+  - repo: local
+    hooks:
+      - id: vue-cli-service-lint
+        name: vue-cli-service lint
+        entry: pnpm --dir frontend exec vue-cli-service lint
+        language: system
+        files: ^frontend/.*\.(js|jsx|vue)$
+        pass_filenames: false

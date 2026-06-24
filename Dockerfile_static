@@ -4,18 +4,22 @@ FROM nikolaik/python-nodejs:python3.11-nodejs24 AS build-stage
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --root-user-action=ignore --no-cache-dir -r /tmp/requirements.txt
 
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
+
+WORKDIR /workdir/frontend
+
+COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
+
 WORKDIR /workdir
-
-COPY frontend/package*.json ./
-RUN npm install
-
 COPY . .
 
 ENV DJANGO_ENV=production
 
 WORKDIR /workdir/frontend
-RUN npx gettext-compile --output src/translations/translations.json locale/*/LC_MESSAGES/messages.po || true
-RUN npx vue-cli-service build
+RUN pnpm exec gettext-compile --output src/translations/translations.json locale/*/LC_MESSAGES/messages.po || true
+RUN pnpm exec vue-cli-service build
 WORKDIR /workdir
 RUN python manage.py collectstatic --noinput -v2
 

@@ -13,17 +13,20 @@ jobs:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: '**/requirements*.txt'
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: frontend/package.json
       - uses: actions/setup-node@v6.4.0
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache: pnpm
+          cache-dependency-path: '**/pnpm-lock.yaml'
       - working-directory: frontend
-        run: npm install
-      - name: Run Vue tests
-        working-directory: frontend
-        shell: bash
-        run: npx vue-cli-service test:unit
+        run: pnpm install --frozen-lockfile
+      - working-directory: frontend
+        run: pnpm exec knip
+      - working-directory: frontend
+        run: pnpm exec vue-cli-service test:unit
       - run: pip install -r requirements.txt
       # Check requirements.txt contains production requirements.
       - run: ./manage.py --help

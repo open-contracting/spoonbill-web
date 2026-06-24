@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "paths": {
+    "@/*": ["src/*"] // resolves the "@/" alias; added to webpack by @vue/cli-service
+  },
+  "ignore": ["**/*.scss"], // *.scss are compiled by webpack, configured in vue.config.js
+  "ignoreDependencies": [
+    "easygettext", // provides the `gettext-extract` and `gettext-compile` commands
+    "sass", // used by sass-loader
+    "sass-loader", // compiles <style lang="scss"> elements; added to webpack by @vue/cli-service
+    "vuetify-loader", // auto-imports <v-*> components; added to webpack by vue-cli-plugin-vuetify
+    "vue-cli-plugin-vuetify", // auto-loaded by @vue/cli-service
+    "@vue/cli-plugin-eslint" // provides the `vue-cli-service lint` command
+  ]
+}

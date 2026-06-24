@@ -1,0 +1,4 @@
+allowBuilds:
+  core-js: false # via @vue/babel-preset-app
+  yorkie: false # via @vue/cli-plugin-eslint
+minimumReleaseAge: 10080
