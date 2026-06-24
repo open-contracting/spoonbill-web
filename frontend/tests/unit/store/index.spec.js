@@ -224,7 +224,7 @@ describe('store', () => {
             await server.send(
                 JSON.stringify({
                     progress: {
-                        percentage: 90
+                        percentage: 90,
                     },
                 })
             );

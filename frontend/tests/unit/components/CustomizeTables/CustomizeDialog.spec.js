@@ -2,9 +2,6 @@ import { mount, createLocalVue } from '@vue/test-utils';
 import CustomizeDialog from '@/components/CustomizeTables/CustomizeDialog';
 import store from '@/store';
 import Vuetify from 'vuetify';
-import ApiService from '@/services/ApiService';
-import { UPLOAD_TYPES } from '@/constants';
-import router from '@/router';
 
 describe('CustomizeDialog.vue', () => {
     const localVue = createLocalVue();
