@@ -1,5 +1,8 @@
 minimumReleaseAge: 10080
 trustPolicy: no-downgrade
+trustPolicyExclude:
+  - semver@5.7.2
+  - semver@6.3.1
 allowBuilds:
   core-js: false # via @vue/babel-preset-app
   yorkie: false # via @vue/cli-plugin-eslint
