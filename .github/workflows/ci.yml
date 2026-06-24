@@ -7,7 +7,7 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
       - uses: actions/setup-python@v6.2.0
         with:
           python-version: '3.11'
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Build the images and start the containers.
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
       - name: Create .env file
         run: |
           echo "DJANGO_ENV=production" >> .env
@@ -108,7 +108,7 @@ jobs:
       # - run: docker compose -f docker-compose.test.yaml logs app
 
       # Test the images.
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
         with:
           repository: open-contracting/spoonbill-test
           path: test
