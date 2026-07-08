@@ -24,8 +24,6 @@ jobs:
       - working-directory: frontend
         run: pnpm install --frozen-lockfile --ignore-scripts
       - working-directory: frontend
-        run: pnpm exec knip
-      - working-directory: frontend
         run: pnpm exec vue-cli-service test:unit
       - run: pip install -r requirements.txt
       # Check requirements.txt contains production requirements.

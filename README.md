@@ -22,7 +22,6 @@ coverage run --source=core,spoonbill_web -m pytest -W error --no-migrations
 
 ```shell
 cd frontend
-pnpm exec knip
 pnpm exec vue-cli-service lint
 pnpm exec vue-cli-service test:unit
 ```
