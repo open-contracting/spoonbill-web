@@ -22,7 +22,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
       - working-directory: frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - working-directory: frontend
         run: pnpm exec knip
       - working-directory: frontend
