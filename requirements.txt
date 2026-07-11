@@ -71,7 +71,7 @@ cryptography==46.0.7
     #   autobahn
     #   pyopenssl
     #   service-identity
-daphne==4.2.1
+daphne==4.2.2
     # via
     #   -r requirements.in
     #   channels
