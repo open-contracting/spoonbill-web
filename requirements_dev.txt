@@ -38,7 +38,7 @@ cbor2==5.9.0
     # via
     #   -r requirements.txt
     #   autobahn
-celery[django]==5.3.1
+celery==5.3.1
     # via
     #   -r requirements.txt
     #   django-celery-beat
@@ -53,7 +53,7 @@ cffi==2.0.0
     #   -r requirements.txt
     #   autobahn
     #   cryptography
-channels[daphne]==4.3.2
+channels==4.3.2
     # via
     #   -r requirements.txt
     #   channels-redis
@@ -105,15 +105,12 @@ cryptography==46.0.7
     #   pyopenssl
     #   service-identity
 daphne==4.2.2
-    # via
-    #   -r requirements.txt
-    #   channels
+    # via -r requirements.txt
 dj-database-url==2.1.0
     # via -r requirements.txt
 django==5.2.15
     # via
     #   -r requirements.txt
-    #   celery
     #   channels
     #   dj-database-url
     #   django-celery-beat
@@ -157,10 +154,6 @@ ijson==3.2.3
     # via
     #   -r requirements.txt
     #   ocdskit
-    #   spoonbill
-importlib-resources==7.1.0
-    # via
-    #   -r requirements.txt
     #   spoonbill
 incremental==24.7.2
     # via
@@ -287,6 +280,11 @@ service-identity==24.2.0
     # via
     #   -r requirements.txt
     #   twisted
+setuptools==83.0.0
+    # via
+    #   -r requirements.txt
+    #   incremental
+    #   zope-interface
 six==1.16.0
     # via
     #   -r requirements.txt
@@ -299,7 +297,7 @@ sqlparse==0.5.4
     # via
     #   -r requirements.txt
     #   django
-twisted[tls]==26.4.0
+twisted==26.4.0
     # via
     #   -r requirements.txt
     #   daphne
@@ -311,8 +309,6 @@ typing-extensions==4.15.0
     # via
     #   -r requirements.txt
     #   dj-database-url
-    #   psycopg
-    #   pyopenssl
     #   twisted
 tzdata==2023.3
     # via
